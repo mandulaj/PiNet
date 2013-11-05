@@ -1,0 +1,24 @@
+/* CSS Document */
+
+
+.loginbox, #resetform{
+	margin-left: auto;
+	margin-right: auto;
+	width: 250px;
+	margin-top: 100px;
+	background-color:#95ADBB;
+	box-shadow: 0px 5px 15px #565656;
+	padding: 20px;
+	padding-top: 1px;
+}
+
+#submitbutton {
+	padding: 5px;
+}
+
+.loginError{
+	margin: 0px;
+	background-color:#E75457;
+	border: 2px solid #E10005;
+	padding: 10px;
+}

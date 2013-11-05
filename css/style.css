@@ -1,0 +1,145 @@
+/* CSS Document */
+body {
+	-moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+	background:#FEFEFE;
+	padding: 0;
+}
+.arrowkey {
+	width: 100px;
+	height: 100px;
+	background: #B3B1B2;
+	margin: 3px;
+	border-radius: 10px;
+	box-shadow: 0px 5px 8px #333333; 
+	background-repeat:no-repeat;
+	background-position: center; 
+}
+
+h1 {
+	text-align:center;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 20px;
+	color: #FFF;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#top {
+	position: absolute;
+	padding: 0;
+	top: 0;
+	left: 0;
+	margin: 0;
+	width: 100%;
+	background: #242424;
+	box-shadow: 5px 0px 15px #1E1E1E;
+}
+
+#arrows {
+	width: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	
+}
+
+#stream {
+	margin-top: 30px;
+	width: 640px;
+	height: 480px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 3px solid #969696;
+	box-shadow: 0px 0px 10px #3E3E3E;
+}
+
+#upkey {
+	background-image:url(../images/arrowUp.png);
+	
+}
+
+#downkey {
+	background-image:url(../images/arrowDown.png);
+}
+
+#rightkey {
+	background-image:url(../images/arrowRight.png);
+}
+
+#leftkey {
+	background-image:url(../images/arrowLeft.png);
+}
+
+#slider {
+	position: absolute;
+	float: left;
+	/*border: 2px solid #030303;*/
+	width: 56px;
+	height: 410px;
+	border-radius: 10px;
+	/*background-color: #939393;*/
+	top: 50px;
+	left: 90%;
+}
+
+#track {
+	position: absolute;
+	width: 2px;
+	height: 400px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 26px;
+	margin-left: 26px;
+	background-color: #000;
+	z-index: 1;
+}
+	
+
+#grabthing {
+	position: relative;
+	width: 48px;
+	height: 25px;
+	margin: 4px;
+	background-color: #ABABAB;
+	border: 1px solid #030303;
+	box-shadow: 1px 1px 5px #2E2E2E;
+	z-index: 2;
+	cursor: n-resize;
+}
+
+#speedVal {
+	text-align:center;
+	vertical-align: middle;
+	margin: 0;
+	padding: 0;
+	font-weight:bold;
+}
+
+#logout {
+	color: white;
+	text-decoration: none;
+	float: right;
+	margin-top: -27px;
+	margin-right: 15px;
+}
+
+#logout:hover {
+	font-weight:bold;
+	margin-right: 13px;
+}
+
+#chpassword {
+	color: white;
+	text-decoration: none;
+	float: left;
+	margin-top: -27px;
+	margin-left: 15px;
+}
+
+#chpassword:hover {
+	font-weight:bold;
+	margin-left: 13px;
+}
