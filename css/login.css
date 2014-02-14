@@ -1,24 +1,68 @@
 /* CSS Document */
 
 
+
 .loginbox, #resetform{
 	margin-left: auto;
 	margin-right: auto;
-	width: 250px;
+	width: 260px;
 	margin-top: 100px;
-	background-color:#95ADBB;
+	background-color: #2794ED;
 	box-shadow: 0px 5px 15px #565656;
 	padding: 20px;
 	padding-top: 1px;
+	border-radius: 5px;
+}
+
+.input {
+	padding-left: 5px;
+	border: 2px solid #FFF;
+	font-size: 22px;
+	border-radius: 5px;
 }
 
 #submitbutton {
-	padding: 5px;
+	margin-top: 10px;
+	width: 130px;
+	text-align: center;
+	padding: 20px;
+	border-style: none;
+	border-radius: 7px;
+	background-color: #ACACAC;
+	-webkit-transition: 0.5s background-color;
+	transition: 0.5s background-color;
+	font-weight: bold;
+	font-size: 20px;
+	margin-left: 25%;
+}
+
+#submitbutton:hover {
+	background-color: #838383;
+	
+}
+
+@-webkit-keyframes error {
+	0%   {background: rgba(128, 0, 3, 0.8);}
+	50%  {background: rgba(128, 0, 3, 0.6);}
+	100% {background: rgba(128, 0, 3, 0.8);}
+}
+
+@keyframes error {
+	0%   {background: rgba(128, 0, 3, 0.8);}
+	50%  {background: rgba(128, 0, 3, 0.6);}
+	100% {background: rgba(128, 0, 3, 0.8);}
 }
 
 .loginError{
+	font-weight: bold;
+	font-size: 18px;
+	color: #CCC;
+	text-align: center;
 	margin: 0px;
-	background-color:#E75457;
-	border: 2px solid #E10005;
+	background-color:  rgba(128, 0, 3, 0.8);
+	border: 2px solid #1D0001;
+	border-radius: 5px;
 	padding: 10px;
+	-webkit-animation: error 2s infinite;
+	animation: error 2s infinite;
 }

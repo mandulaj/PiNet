@@ -5,23 +5,10 @@
     	<h2> Login </h2>
     	<form method="post" action="login.php">
         	
-            <table>
-                <tr>
-                    <td>Username:</td>
-                    <td><input id="inputName" type="text" name="username"></td>
-                </tr>
-                <tr>
-                    <td>Password:</td>
-                    <td><input id="inputPass" type="password" name="password"></td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td><input id="submitbutton" type="button" value="Sign In" onClick="submitVal()"></td>
-                </tr>
-            </table>
+           <input class="input" id="inputName" type="text" name="username" placeholder="Username">
+           <input class="input" id="inputPass" type="password" name="password" onKeyPress="submitEnter(event)" placeholder="Password">
+           <input id="submitbutton" type="button" value="Sign In" onClick="submitVal()">
 
-       
-            
         </form>
         
 			

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<dwsync>
+<file name="changepass.php" server="10.0.0.1//var/www/PiNet/" local="130266924120000000" remote="130349941080000000" Dst="1" />
+<file name="db_login.php" server="10.0.0.1//var/www/PiNet/" local="130260832020000000" remote="130349941080000000" Dst="1" />
+<file name="hash.openit" server="10.0.0.1//var/www/PiNet/" local="130334041960000000" remote="130349941080000000" Dst="1" />
+<file name="index.php" server="10.0.0.1//var/www/PiNet/" local="130280740840000000" remote="130349941080000000" Dst="1" />
+<file name="login.php" server="10.0.0.1//var/www/PiNet/" local="130261491430000000" remote="130349941080000000" Dst="1" />
+<file name="logout.php" server="10.0.0.1//var/www/PiNet/" local="130261362740000000" remote="130349941080000000" Dst="1" />
+<file name="changepass.php" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186360000000" Dst="1" />
+<file name="db_login.php" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186360000000" Dst="1" />
+<file name="hash.openit" server="10.0.0.3//var/www/PiNet/" local="130364614050000000" remote="130364614050000000" Dst="1" />
+<file name="index.php" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186370000000" Dst="1" />
+<file name="login.php" server="10.0.0.3//var/www/PiNet/" local="130355628970000000" remote="130364186380000000" Dst="1" />
+<file name="logout.php" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186380000000" Dst="1" />
+</dwsync>

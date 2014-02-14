@@ -40,7 +40,7 @@ function makeURL(keys,power)
 {
 	var url = document.URL.split("/");
 	url = url[0] + "//"+url[2];
-	url += ":8081?move="+keys+"&pow="+power+"&hash="+KeyHash;
+	url += ":8081?move="+keys+"&pow="+power+"&light="+lightStatus+"&ai"+aiStatus+"&hash="+KeyHash;
 	return url
 }
 
@@ -264,3 +264,8 @@ $(document).ready(function(e) {
 	}
 
 });
+
+function getStatus()
+{
+	
+}

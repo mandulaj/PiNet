@@ -14,7 +14,7 @@
         
         $connect = mysqli_connect($HOST_db,$USERNAME_db,$PASSWORD_db,"PiNetLogin") or die("Can't connect to db!");
         $password = hash("sha512",$saltFront.$password.$saltBack);
-        
+
         $username = mysqli_real_escape_string($connect, $username);
         $quary = mysqli_query($connect,"SELECT * FROM users WHERE username='$username' && password='$password'");
         $numrow = $quary->num_rows;
@@ -35,6 +35,7 @@
             echo($password);
             echo("<br />");
             echo("Username/Password pair wrong!");
+	echo($password);
 			header("Location: index.php");
         }
     } 

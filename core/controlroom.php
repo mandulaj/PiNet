@@ -1,11 +1,30 @@
 ﻿
-<div class="content"> 
+<div class="content">
+	<div class="sideBar">
+    	<div class="showsideBar"><span>&gt;</span> </div>
+        
+    	<div class="lightSwitch">
+			Off    
+    	</div>
+        <span>Lights</span>
+        
+        <div class="ai">
+			Off    
+    	</div>
+        <span>AI</span>
+    </div>
+    
+    <div class="piStats">
+    <h4>Pi Stats</h4>
+    </div>
+    
     <div id="stream">
+    <div id="live">LIVE<div></div></div>
     <script type="text/javascript">
 		var url = document.URL.split("/");
 		url = url[0] + "//"+url[2];
         var imageURL = url + ":8080/?action=stream";
-        document.write('<img src="'+imageURL+'">')
+        document.write('<img id="liveStream" src="'+imageURL+'"  onError="$(\'#live\').hide();this.onerror=null;this.src=\'images/offline.jpg\';">')
     </script> 
         <!--<img src="http://10.0.0.2:8080/?action=stream" alt="Stream"> -->
     </div>

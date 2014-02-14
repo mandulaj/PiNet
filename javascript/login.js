@@ -16,6 +16,16 @@ window.onload = function(){
 	}
 }
 
+function submitEnter(e)
+{
+	if(e.keyCode == 13)
+	{
+		submitVal();	
+	}
+	
+}
+
+
 
 var submitVal = function()
 {
