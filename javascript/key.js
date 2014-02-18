@@ -2,7 +2,8 @@
 
 var keylist = [0,0,0,0];
 var power = 100;
-
+var socket = io.connect(window.location.origin+":8081")
+var KeyHash = getCookie("keyhash");
 
 function getCookie(c_name)
 {
@@ -29,23 +30,12 @@ function getCookie(c_name)
 	return c_value;
 }
 
-KeyHash = getCookie("keyhash");
+
 if (KeyHash == "" || KeyHash.length != 128)
 {
 	KeyHash = "";
 }
 
-/** Will get removed **/
-function makeURL(keys,power) 
-{
-	var url = document.URL.split("/");
-	url = url[0] + "//"+url[2];
-	url += ":8081?move="+keys+"&pow="+power+"&light="+lightStatus+"&ai"+aiStatus+"&hash="+KeyHash;
-	return url
-}
-
-
-/** Will get removed **/
 function updatekey() 
 {
 	dataToSend = keylist;
@@ -59,16 +49,16 @@ function updatekey()
 	}
 	
 	var string_to_send = dataToSend.join("");
-	url = makeURL(string_to_send,power);
-	request.open("GET",url,true);
-	request.send()
+	socket.emit("commands",{
+		Hash: KeyHash,
+		Key: string_to_send,
+		Speed:  power,
+		ai: aiStatus,
+		light: lightStatus
+	});
+	
 	
 }
-
-
-
-
-
 
 var key37 = false;  // Makes sure only one request is send each time to the server
 var key38 = false;
@@ -273,3 +263,8 @@ function getStatus()
 {
 	
 }
+
+socket.on("roger",function(data){
+	socket.emit("affirmative",{time:data.time});
+	console.log(data)	
+});
