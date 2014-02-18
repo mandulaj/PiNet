@@ -12,4 +12,5 @@
 <file name="index.php" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186370000000" Dst="1" />
 <file name="login.php" server="10.0.0.3//var/www/PiNet/" local="130355628970000000" remote="130364186380000000" Dst="1" />
 <file name="logout.php" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186380000000" Dst="1" />
+<file name=".gitignore" server="10.0.0.3//var/www/PiNet/" local="130368875234358901" remote="130368878070000000" Dst="1" />
 </dwsync>
