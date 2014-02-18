@@ -35,7 +35,7 @@ if (KeyHash == "" || KeyHash.length != 128)
 	KeyHash = "";
 }
 
-
+/** Will get removed **/
 function makeURL(keys,power) 
 {
 	var url = document.URL.split("/");
@@ -44,6 +44,8 @@ function makeURL(keys,power)
 	return url
 }
 
+
+/** Will get removed **/
 function updatekey() 
 {
 	dataToSend = keylist;
@@ -62,6 +64,8 @@ function updatekey()
 	request.send()
 	
 }
+
+
 
 
 
