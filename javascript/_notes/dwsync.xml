@@ -18,4 +18,5 @@
 <file name="login.js" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186370000000" Dst="1" />
 <file name="MYP - Grade 9  10 Course Booklet Aug2012 copy.pdf" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186380000000" Dst="1" />
 <file name="passwd.js" server="10.0.0.3//var/www/PiNet/" local="130349941080000000" remote="130364186380000000" Dst="1" />
+<file name="socket.io.min.js" server="10.0.0.3//var/www/PiNet/" local="130376427938560179" remote="130376428010000000" Dst="1" />
 </dwsync>
