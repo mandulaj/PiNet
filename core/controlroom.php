@@ -1,4 +1,15 @@
-﻿
+﻿<div class="cover"></div>
+
+<div class="rec_window"> 
+	The Recordings
+    <div id="rec_window_close"></div>
+    
+	<div id="rec_window_content">
+    
+    </div>
+</div>
+
+
 <div class="content">
 	<div class="sideBar">
     	<div class="showsideBar"><span>&gt;</span> </div>
@@ -12,6 +23,15 @@
 			Off    
     	</div>
         <span>AI</span>
+        
+        <div class="rec">
+			Off    
+    	</div>
+        <span>REC</span>
+        <div class="rec_view">
+			View    
+    	</div>
+        <span>All Recordings</span>
     </div>
     
     <div class="piStats">

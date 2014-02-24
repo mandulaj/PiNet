@@ -1,65 +1,5 @@
 // JavaScript Document
 
-var keylist = [0,0,0,0];
-var power = 100;
-var socket = io.connect(window.location.origin+":8081")
-var KeyHash = getCookie("keyhash");
-
-function getCookie(c_name)
-{
-	var c_value = document.cookie;
-	var c_start = c_value.indexOf(" " + c_name + "=");
-	if (c_start == -1)
-	{
-		c_start = c_value.indexOf(c_name + "=");
-	}
-	if (c_start == -1)
-	{
-		c_value = null;
-	}
-	else
-	{
-	  	c_start = c_value.indexOf("=", c_start) + 1;
-	  	var c_end = c_value.indexOf(";", c_start);
-	  	if (c_end == -1)
-	  	{
-			c_end = c_value.length;
-		}
-		c_value = unescape(c_value.substring(c_start,c_end));
-	}
-	return c_value;
-}
-
-
-if (KeyHash == "" || KeyHash.length != 128)
-{
-	KeyHash = "";
-}
-
-function updatekey() 
-{
-	dataToSend = keylist;
-	if (keylist[1] == 1 && keylist[3] == 1){
-		dataToSend[1] = 0;
-		dataToSend[3] = 0;
-	}
-	if (keylist[0] == 1 && keylist[2] == 1){
-		dataToSend[0] = 0;
-		dataToSend[2] = 0;
-	}
-	
-	var string_to_send = dataToSend.join("");
-	socket.emit("commands",{
-		Hash: KeyHash,
-		Key: string_to_send,
-		Speed:  power,
-		ai: aiStatus,
-		light: lightStatus
-	});
-	
-	
-}
-
 var key37 = false;  // Makes sure only one request is send each time to the server
 var key38 = false;
 var key39 = false;
@@ -124,13 +64,12 @@ document.addEventListener("keyup",function()
 
 document.addEventListener("mouseup", function() { //fires when mouse is released clearing all the other buttons.
 	if (!Dragging && !is_touch_device){
-		keylist = [0,0,0,0];
+		window.PiNet.keylist = [0,0,0,0];
 		mUp(leftkey,true);
 		mUp(upkey,true);
 		mUp(rightkey,true);
 		mUp(downkey,true);
-		updatekey();
-		console.log("mup")
+		window.PiNet.updatekey();
 	}
 },false);
 
@@ -139,20 +78,20 @@ document.addEventListener("mouseup", function() { //fires when mouse is released
 function mDown(obj) { //fires when key is pressed
 	switch (obj.id) {
 		case "upkey":
-			keylist[0] = 1;
+			window.PiNet.keylist[0] = 1;
 			break;
 		case "leftkey":
-			keylist[1] = 1;
+			window.PiNet.keylist[1] = 1;
 			break;
 		case "downkey":
-			keylist[2] = 1;
+			window.PiNet.keylist[2] = 1;
 			break;
 		case "rightkey":
-			keylist[3] = 1;
+			window.PiNet.keylist[3] = 1;
 			break;
 		
 	}
-	updatekey()
+	window.PiNet.updatekey()
 	obj.style.backgroundColor = "#454545";
 }
 
@@ -160,19 +99,19 @@ function mUp(obj, all_element) { //fires when key is released
 	if (all_element == false)  {
 		switch (obj.id) {
 			case "upkey":
-				keylist[0] = 0;
+				window.PiNet.keylist[0] = 0;
 				break;
 			case "leftkey":
-				keylist[1] = 0;
+				window.PiNet.keylist[1] = 0;
 				break;
 			case "downkey":
-				keylist[2] = 0;
+				window.PiNet.keylist[2] = 0;
 				break;
 			case "rightkey":
-				keylist[3] = 0;
+				window.PiNet.keylist[3] = 0;
 				break;
 		}
-		updatekey()
+		window.PiNet.updatekey()
 	}
 	obj.style.backgroundColor = "#B3B1B2";
 }
@@ -183,26 +122,26 @@ $(document).ready(function(e) {
 	{
 		
 		upkey.addEventListener("touchstart",function() {
-			keylist[0] = 1;
-			updatekey();
+			window.PiNet.keylist[0] = 1;
+			window.PiNet.updatekey();
 			upkey.style.backgroundColor = "#454545";
 		},false);
 		
 		downkey.addEventListener("touchstart",function() {
-			keylist[2] = 1;
-			updatekey();
+			window.PiNet.keylist[2] = 1;
+			window.PiNet.updatekey();
 			downkey.style.backgroundColor = "#454545";
 		},false);
 		
 		leftkey.addEventListener("touchstart",function() {
-			keylist[1] = 1;
-			updatekey();
+			window.PiNet.keylist[1] = 1;
+			window.PiNet.updatekey();
 			leftkey.style.backgroundColor = "#454545";
 		},false);
 		
 		rightkey.addEventListener("touchstart",function() {
-			keylist[3] = 1;
-			updatekey();
+			window.PiNet.keylist[3] = 1;
+			window.PiNet.updatekey();
 			rightkey.style.backgroundColor = "#454545";
 		},false);
 	
@@ -210,26 +149,26 @@ $(document).ready(function(e) {
 		
 		
 		upkey.addEventListener("touchend",function() {
-			keylist[0] = 0;
-			updatekey();
+			window.PiNet.keylist[0] = 0;
+			window.PiNet.updatekey();
 			upkey.style.backgroundColor = "#B3B1B2";
 		},false);
 		
 		downkey.addEventListener("touchend",function() {
-			keylist[2] = 0;
-			updatekey();
+			window.PiNet.keylist[2] = 0;
+			window.PiNet.updatekey();
 			downkey.style.backgroundColor = "#B3B1B2";
 		},false);
 		
 		leftkey.addEventListener("touchend",function() {
-			keylist[1] = 0;
-			updatekey();
+			window.PiNet.keylist[1] = 0;
+			window.PiNet.updatekey();
 			leftkey.style.backgroundColor = "#B3B1B2";
 		},false);
 		
 		rightkey.addEventListener("touchend",function() {
-			keylist[3] = 0;
-			updatekey();
+			window.PiNet.keylist[3] = 0;
+			window.PiNet.updatekey();
 			rightkey.style.backgroundColor = "#B3B1B2";
 		},false);
 	}
@@ -238,22 +177,18 @@ $(document).ready(function(e) {
 		upkey.addEventListener("mousedown",function()
 		{
 			mDown(upkey);
-			console.log("up");
 		});
 		downkey.addEventListener("mousedown",function()
 		{
 			mDown(downkey);
-			console.log("down");
 		});
 		rightkey.addEventListener("mousedown",function()
 		{
 			mDown(rightkey);
-			console.log("left");
 		});
 		leftkey.addEventListener("mousedown",function()
 		{
 			mDown(leftkey);
-			console.log("right");
 		});
 	}
 
@@ -264,7 +199,39 @@ function getStatus()
 	
 }
 
-socket.on("roger",function(data){
-	socket.emit("affirmative",{time:data.time});
-	console.log(data)	
-});
+
+
+
+/* Recording object ***/
+function Recording(name)
+{
+	this.name = name;
+	this.date = new Date().toLocaleTimeString("en-GB")
+	this.moves = []
+	this.status = "stop"	
+}
+
+Recording.prototype.add = function(moves)
+{
+	this.moves.push(moves)
+}
+
+Recording.prototype.start = function(obj)
+{
+	this.startButton = obj;
+	if( this.status == "start")
+	{
+		this.status = "stop";
+		$(obj).css("background-image","url(images/videoplay.png)")	
+	}
+	else if ( this.status == "stop" )
+	{
+		this.status = "start";
+		$(obj).css("background-image","url(images/videostop.png)")	
+	}
+}
+
+Recording.prototype.hardStop = function()
+{
+	this.status = "stop"	
+}

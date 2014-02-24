@@ -26,6 +26,7 @@ body {
     user-select: none;
 	background:#FEFEFE;
 	padding: 0;
+	margin: 0;
 	font-family: Chivo, snas-serif;
 }
 .arrowkey {
@@ -286,10 +287,8 @@ h1 {
 	box-shadow: 0 0 20px #FFF;
 	background-color: #111;
 	border: 2px solid #666;
-	-webkit-transition: 0.5s color;
-	transition: 0.5s color;
-	-webkit-transition: 0.5s background-color;
-	transition: 0.5s background-color;
+	-webkit-transition: 0.5s background-color, 0.5s color;
+	transition: 0.5s background-color, 0.5s color;
 }
 
 
@@ -297,7 +296,7 @@ h1 {
 	color: #999;
 }
 
-.ai {
+.ai, .rec, .rec_view {
 	cursor: pointer;
 	margin-left: auto;
 	margin-right: auto;
@@ -313,12 +312,89 @@ h1 {
 	box-shadow: 0 0 20px #FFF;
 	background-color: #111;
 	border: 2px solid #666;
-	-webkit-transition: 0.5s color;
-	transition: 0.5s color;
-	-webkit-transition: 0.5s background-color;
-	transition: 0.5s background-color;
+	-webkit-transition: 0.5s background-color, 0.5s color;
+	transition: 0.5s background-color, 0.5s color;
 }
 
-.ai:hover {
+.ai:hover, .rec:hover, .rec_view:hover {
 	color: #999;
+}
+
+
+.cover {
+	z-index: 100;
+	position: fixed;
+	width: 100%;
+	top: 0px;
+	bottom: 0px;
+	background-color: #FFF;	
+}
+
+#recIndic {
+	width: 20px;
+	height: 20px;
+	background-color: red;
+	position: absolute;
+	top: 8px;
+	left: 163px;
+	border-radius: 10px;
+	animation: rec 3s infinite;
+	-webkit-animation: rec 3s infinite;	
+}
+
+.rec_window {
+	text-align: center;
+	font-size: 24px;
+	display:none;
+	position: absolute;
+	z-index: 21;
+	left: 50%;
+	top: 105px;
+	margin-left: -310px;
+	width: 620px;
+	background-color: #999;
+	border-radius: 10px;
+	box-shadow: 5px 5px 20px #000000;
+}
+
+.rec_window>#rec_window_close {
+	width: 30px;
+	height: 30px;
+	cursor: pointer;
+	background-color: #444;
+	position: absolute;
+	border-radius: 15px;
+	top: 7px;
+	left: 583px;
+	-webkit-transition: 0.5s background-color;
+	transition: 0.5s background-color;
+	background-image: url(../images/cross.png);
+	background-size: contain;
+}
+
+.rec_window>#rec_window_close:hover {
+	background-color: #232323;
+}
+
+#rec_window_content>div {
+	margin-top: 25px;
+}
+
+#rec_startstop {
+	width: 45px;
+	height: 45px;
+	border-radius: 5px;
+	background-color: #555;
+	background-image:url(../images/videoplay.png);
+	background-size: contain;
+	float: right;
+	position:relative;
+	left: -168px;
+	top: -9px;
+	-webkit-transition: 0.5s background-color, 0.5s color;
+	transition: 0.5s background-color, 0.5s color;
+}
+
+#rec_startstop:hover {
+	background-color: #333;
 }

@@ -11,4 +11,7 @@
 <file name="arrowUp.png" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186370000000" Dst="1" />
 <file name="drawing.svg" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186370000000" Dst="1" />
 <file name="offline.jpg" server="10.0.0.3//var/www/PiNet/" local="130364638618761212" remote="130364638780000000" Dst="1" />
+<file name="cross.png" server="10.0.0.3//var/www/PiNet/" local="130305094200000000" remote="130377403870000000" Dst="1" />
+<file name="videoplay.png" server="10.0.0.3//var/www/PiNet/" local="130377449803458845" remote="130377450140000000" Dst="1" />
+<file name="videostop.png" server="10.0.0.3//var/www/PiNet/" local="130377455117954873" remote="130377459020000000" Dst="1" />
 </dwsync>
