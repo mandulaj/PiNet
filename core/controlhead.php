@@ -10,5 +10,5 @@
 <script type="text/javascript" src="javascript/jquery.js"> </script>
 <script type="text/javascript" src="javascript/socket.io.min.js"> </script>
 <script type="text/javascript" src="javascript/key.js"> </script>
-<script type="text/javascript" src="javascript/ajax.js"> </script>
+
 
