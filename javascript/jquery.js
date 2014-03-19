@@ -3,10 +3,8 @@ var Dragging = false;
 var is_touch_device = 'ontouchstart' in document.documentElement;
 var sideBar = 0;
 var recordings = 0;
-//var lightStatus = 0;
-//var aiStatus = 0;
-//var recStatus = 0;
-//var recordings = [];
+
+
 
 function Robot()
 {
@@ -17,6 +15,11 @@ function Robot()
 	this.aiStatus = 0;
 	this.recStatus = 0;
 	this.recordings = [];
+    this.previousCommand = {
+        keys: "0000",
+        speed: 100,
+        light: 0
+    };
 	
 	this.socket = io.connect(window.location.origin+":8081");
 	this.socket.on("roger",function(data){
@@ -72,15 +75,67 @@ Robot.prototype.updatekey = function()
 	
 	if ( this.recStatus == 1 )
 	{
-        this.recordings[this.recordings.length - 1].add(new Move(
+        var command = "STOP";
+        if(this.previousCommand.keys != string_to_send)
+        {
+            switch(string_to_send)
             {
-                direction: string_to_send,
-                speed: this.power,
-                light: this.lightStatus
+                case "0000":
+                    command = "STOP";
+                    break;
+                case "1000":
+                    command = "F";
+                    break;
+                case "0100":
+                    command = "L";
+                    break;
+                case "0010":
+                    command = "B";
+                    break;
+                case "0001":
+                    command = "R";
+                    break;
+                case "1100":
+                    command = "FL";
+                    break;
+                case "1001":
+                    command = "FR";
+                    break;
+                case "0110":
+                    command = "BL";
+                    break;
+                case "0011":
+                    command = "BR";
+                    break;
+                default:
+                    command = "STOP";
+                    
             }
-        ));
+        }
+        else if(this.previousCommand.speed != this.power)
+        {
+            command = "S"+this.power.toString();
+        }
+        else if(this.previousCommand.light != this.lightStatus)
+        {
+            if(this.lightStatus == 0)
+            {
+                command = "LIGHTOFF";
+            }
+            else
+            {
+                command = "LIGHTON";
+            }
+        }
+        
+        this.recordings[this.recordings.length - 1].add(new Move(command));
 		
 	}
+    
+    this.previousCommand.keys = string_to_send;
+    this.previousCommand.speed = this.power;
+    this.previousCommand.light = this.lightStatus;
+    
 	this.socket.emit("commands",{
 		Hash: this.KeyHash,
 		Key: string_to_send,
@@ -164,8 +219,11 @@ function updateVal() {
 		slidthing.childNodes[0].style.color = "#000";
 	}
 	slidthing.childNodes[0].innerHTML = percent+"%";
-	power = percent;
-	window.PiNet.updatekey();
+	if (PiNet.power != percent)
+    {
+        PiNet.power = percent;
+        window.PiNet.updatekey();
+    }
 }
 
 
@@ -284,3 +342,83 @@ $(document).ready(function(e) {
 
 });
 
+
+
+/* Recording object ***/
+function Recording(name,socket)
+{
+	this.name = name;
+    this.socket = socket;
+	this.date = new Date().toLocaleTimeString("en-GB")
+	this.moves = []
+	this.status = "stop"
+    this.time = 0;
+}
+
+Recording.prototype.add = function(moves)
+{
+    if(this.moves.length != 0)
+    {
+        var date = new Date;
+        var timeNow = date.getTime();
+        var timeDiff = timeNow - this.time;
+        this.time = timeNow;
+        this.moves[this.moves.length - 1].setTimeDelay(timeDiff);
+    }
+    else
+    {
+        var date = new Date;
+        this.time = date.getTime();
+    }
+    this.moves.push(moves)
+	
+}
+
+Recording.prototype.start = function(obj)
+{
+    var thisObj = this;
+	this.startButton = obj;
+	if( this.status == "start")
+	{
+		this.socket.emit("mission",{"status":"stop"});
+        this.status = "stop";
+		$(obj).css("background-image","url(images/videoplay.png)")	
+	}
+	else if ( this.status == "stop" )
+	{
+		this.status = "start";
+        this.socket.emit("mission",{moves:window.JSON.stringify(this.moves)});
+		$(obj).css("background-image","url(images/videostop.png)")	
+	}
+}
+
+Recording.prototype.hardStop = function()
+{
+	this.status = "stop";
+    
+}
+
+Recording.prototype.stopLastRecord = function()
+{
+    var date = new Date;
+    var timeNow = date.getTime()/1000;
+    var timeDiff = timeNow - this.time;
+    
+    this.moves[this.moves.length.setStop(timeDiff)]
+}
+
+function Move(command)
+{
+    this.command = command;
+    this.delay = 0;   
+}
+
+Move.prototype.setTimeDelay = function(delay)
+{
+    this.delay = delay;
+}
+
+Move.prototype.setStop = function(delay)
+{
+    this.delay = delay;
+}
