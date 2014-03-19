@@ -72,6 +72,13 @@ Robot.prototype.updatekey = function()
 	
 	if ( this.recStatus == 1 )
 	{
+        this.recordings[this.recordings.length - 1].add(new Move(
+            {
+                direction: string_to_send,
+                speed: this.power,
+                light: this.lightStatus
+            }
+        ));
 		
 	}
 	this.socket.emit("commands",{
@@ -90,7 +97,7 @@ Robot.prototype.addNewRecording = function()
 	{
 		this.recordings.shift();
 	}
-	this.recordings.push( new Recording(name) );
+	this.recordings.push( new Recording(name,this.socket) );
 }
 
 Robot.prototype.drawRecordings = function()
@@ -116,6 +123,11 @@ Robot.prototype.stopAllMissions = function()
 	{
 		this.recordings[i].hardStop()
 	}
+}
+
+Robot.prototype.stopMissionRecording = function()
+{
+    this.recordings[this.recordings.length-1].stopLastRecord();
 }
 
 $(document).ready(function()
