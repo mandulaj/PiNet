@@ -350,7 +350,7 @@ function Recording(name,socket)
 	this.name = name;
     this.socket = socket;
 	this.date = new Date().toLocaleTimeString("en-GB")
-	this.moves = []
+	this.moves = [];
 	this.status = "stop"
     this.time = 0;
 }
@@ -380,14 +380,14 @@ Recording.prototype.start = function(obj)
 	this.startButton = obj;
 	if( this.status == "start")
 	{
-		this.socket.emit("mission",{"status":"stop"});
+		this.socket.emit("mission",{status:"stop"});
         this.status = "stop";
 		$(obj).css("background-image","url(images/videoplay.png)")	
 	}
 	else if ( this.status == "stop" )
 	{
 		this.status = "start";
-        this.socket.emit("mission",{moves:window.JSON.stringify(this.moves)});
+        this.socket.emit("mission",{status:"start", moves:window.JSON.stringify(this.moves)});
 		$(obj).css("background-image","url(images/videostop.png)")	
 	}
 }
@@ -395,7 +395,7 @@ Recording.prototype.start = function(obj)
 Recording.prototype.hardStop = function()
 {
 	this.status = "stop";
-    
+    this.socket.emit("mission",{status:"stop"});
 }
 
 Recording.prototype.stopLastRecord = function()
