@@ -73,7 +73,7 @@
 
 	<body unselectable="on">
     	<div id="top">
-			<h1>Welcome to PiNet control room</h1>
+			<h3>Welcome to PiNet control room</h3>
             <?php
 				if ($loggedin){
 					echo "<a href='index.php?changepassword=true' id='chpassword'>Change Password</a>";

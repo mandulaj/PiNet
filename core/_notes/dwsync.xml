@@ -8,8 +8,8 @@
 <file name="loginpg.php" server="10.0.0.1//var/www/PiNet/" local="130349043305843806" remote="130349941060000000" Dst="1" />
 <file name="changepass.php" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186360000000" Dst="1" />
 <file name="changepasshead.php" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186360000000" Dst="1" />
-<file name="controlhead.php" server="10.0.0.3//var/www/PiNet/" local="130397403272576928" remote="130397403320000000" Dst="1" />
-<file name="controlroom.php" server="10.0.0.3//var/www/PiNet/" local="130377393945889514" remote="130377393980000000" Dst="1" />
+<file name="controlhead.php" server="10.0.0.3//var/www/PiNet/" local="130399045510138065" remote="130399045590000000" Dst="1" />
+<file name="controlroom.php" server="10.0.0.3//var/www/PiNet/" local="130399057149007317" remote="130399057230000000" Dst="1" />
 <file name="init.php" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186360000000" Dst="1" />
 <file name="loginpg.php" server="10.0.0.3//var/www/PiNet/" local="130363731692088946" remote="130364186360000000" Dst="1" />
 </dwsync>
