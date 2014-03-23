@@ -372,6 +372,21 @@ $(document).ready(function(e) {
 		$(".rec_window").fadeOut(500);
 		PiNet.stopAllMissions()
 	});
+    
+    
+    $("#laser").mousedown(function(){
+        $("#laser").css("background-color","rgb(206, 13, 13)")
+        window.PiNet.laser_status = 1;
+        window.PiNet.updatekey();
+        
+    });
+    
+    $("#laser").mouseup(function(){
+        $("#laser").css("background-color","")
+        window.PiNet.laser_status = 0;
+        window.PiNet.updatekey();
+    });
+    
 
 });
 

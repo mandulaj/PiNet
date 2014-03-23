@@ -76,7 +76,7 @@
             <tr>
                 <td></td>
                 <td><div class="cam_arrowkey" id="cam_upkey"></div></td>
-                <td></td>
+                <td> <div id="laser"></div></td>
             </tr>
             <tr>
                 <td><div class="cam_arrowkey" id="cam_leftkey"></div></td>
@@ -91,6 +91,8 @@
         </table>
     
     </div>
+    
+   
     
     
     <script type="text/javascript">

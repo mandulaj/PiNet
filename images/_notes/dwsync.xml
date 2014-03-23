@@ -19,4 +19,5 @@
 <file name="cam_arrowRight.png" server="10.0.0.3//var/www/PiNet/" local="130400674462506281" remote="130400679000000000" Dst="1" />
 <file name="cam_arrowLeft.png" server="10.0.0.3//var/www/PiNet/" local="130400673984847842" remote="130400679000000000" Dst="1" />
 <file name="cam_arrowDown.png" server="10.0.0.3//var/www/PiNet/" local="130400673101578993" remote="130400679000000000" Dst="1" />
+<file name="laser.png" server="10.0.0.3//var/www/PiNet/" local="130400695904761121" remote="130400696110000000" Dst="1" />
 </dwsync>

@@ -265,25 +265,25 @@ $(document).ready(function(e) {
         cam_upkey.addEventListener("touchstart",function() {
 			window.PiNet.camMoves[0] = 1;
 			window.PiNet.updatekey();
-			upkey.style.backgroundColor = "#454545";
+			cam_upkey.style.backgroundColor = "#454545";
 		},false);
 		
 		cam_downkey.addEventListener("touchstart",function() {
 			window.PiNet.camMoves[2] = 1;
 			window.PiNet.updatekey();
-			downkey.style.backgroundColor = "#454545";
+			cam_downkey.style.backgroundColor = "#454545";
 		},false);
 		
 		cam_leftkey.addEventListener("touchstart",function() {
 			window.PiNet.camMoves[1] = 1;
 			window.PiNet.updatekey();
-			leftkey.style.backgroundColor = "#454545";
+			cam_leftkey.style.backgroundColor = "#454545";
 		},false);
 		
 		cam_rightkey.addEventListener("touchstart",function() {
 			window.PiNet.camMoves[3] = 1;
 			window.PiNet.updatekey();
-			rightkey.style.backgroundColor = "#454545";
+			cam_rightkey.style.backgroundColor = "#454545";
 		},false);
         
         cam_default.addEventListener("touchstart",function() {
@@ -291,7 +291,7 @@ $(document).ready(function(e) {
 			window.PiNet.updatekey();
             window.PiNet.camMoves = [0,0,0,0];
             window.PiNet.updatekey();
-			rightkey.style.backgroundColor = "#454545";
+			cam_default.style.backgroundColor = "#454545";
 		},false);
 	
 		
@@ -324,26 +324,41 @@ $(document).ready(function(e) {
         cam_upkey.addEventListener("touchend",function() {
 			window.PiNet.camMoves[0] = 0;
 			window.PiNet.updatekey();
-			upkey.style.backgroundColor = "#B3B1B2";
+			cam_upkey.style.backgroundColor = "#B3B1B2";
 		},false);
 		
 		cam_downkey.addEventListener("touchend",function() {
 			window.PiNet.camMoves[2] = 0;
 			window.PiNet.updatekey();
-			downkey.style.backgroundColor = "#B3B1B2";
+			cam_downkey.style.backgroundColor = "#B3B1B2";
 		},false);
 		
 		cam_leftkey.addEventListener("touchend",function() {
 			window.PiNet.camMoves[1] = 0;
 			window.PiNet.updatekey();
-			leftkey.style.backgroundColor = "#B3B1B2";
+			cam_leftkey.style.backgroundColor = "#B3B1B2";
 		},false);
 		
 		cam_rightkey.addEventListener("touchend",function() {
 			window.PiNet.camMoves[3] = 0;
 			window.PiNet.updatekey();
-			rightkey.style.backgroundColor = "#B3B1B2";
+			cam_rightkey.style.backgroundColor = "#B3B1B2";
 		},false);
+        cam_default.addEventListener("touchend",function() {
+			cam_default.style.backgroundColor = "#B3B1B2";
+		},false);
+        
+        document.getElementById("laser").addEventListener("touchstart",function(){
+            $("#laser").css("background-color","rgb(206, 13, 13)")
+            window.PiNet.laser_status = 1;
+            window.PiNet.updatekey();
+        });
+        
+        document.getElementById("laser").addEventListener("touchend",function(){
+            $("#laser").css("background-color","")
+            window.PiNet.laser_status = 0;
+            window.PiNet.updatekey();
+        });
         
 	}
 	else

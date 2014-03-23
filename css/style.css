@@ -546,3 +546,25 @@ h3 {
 #rec_startstop:hover {
 	background-color: #333;
 }
+
+#laser {
+    position: absolute;
+    right: 10px;
+    width: 75px;
+    height: 75px;
+    
+    background-color: rgb(228, 228, 37);
+    background-image: url(../images/laser.png);
+    background-size: cover;
+    border: 2px solid #F5BA00;
+    border-radius: 50px;
+    
+    -webkit-transition: 0.5s background-color;
+	transition: 0.5s background-color;
+    
+}
+
+#laser:hover {
+    
+    background-color: rgb(216, 130, 0);
+}
