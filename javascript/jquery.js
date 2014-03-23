@@ -12,6 +12,8 @@ function Robot()
 	this.keylist = [0,0,0,0];
 	this.power = 100;
 	this.lightStatus = 0;
+    this.laser_status = 0;
+    this.camMoves = [0,0,0,0];
 	this.aiStatus = 0;
 	this.recStatus = 0;
 	this.recordings = [];
@@ -70,9 +72,28 @@ Robot.prototype.updatekey = function()
 		dataToSend[0] = 0;
 		dataToSend[2] = 0;
 	}
-	
+    
 	var string_to_send = dataToSend.join("");
 	
+    var dataToSend = this.camMoves;
+	if (this.camMoves[1] == 1 && this.camMoves[3] == 1){
+		dataToSend[1] = 0;
+		dataToSend[3] = 0;
+	}
+	if (this.camMoves[0] == 1 && this.camMoves[2] == 1){
+		dataToSend[0] = 0;
+		dataToSend[2] = 0;
+	}
+    
+    if (this.camMoves[0] == -1)
+    {
+        var camMoves = "default"
+    }
+    else
+    {
+        var camMoves = dataToSend.join("");
+    }
+    
 	if ( this.recStatus == 1 )
 	{
         var command = "STOP";
@@ -141,8 +162,20 @@ Robot.prototype.updatekey = function()
 		Key: string_to_send,
 		Speed:  this.power,
 		ai: this.aiStatus,
-		light: this.lightStatus
+		light: this.lightStatus,
+        laser: this.laser_status,
+        cam: camMoves
 	});
+    
+    console.log({
+		Hash: this.KeyHash,
+		Key: string_to_send,
+		Speed:  this.power,
+		ai: this.aiStatus,
+		light: this.lightStatus,
+        laser: this.laser_status,
+        cam: camMoves
+	})
 }
 
 Robot.prototype.addNewRecording = function()

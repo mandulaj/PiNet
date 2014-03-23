@@ -52,9 +52,44 @@ body {
 	background-size: contain;
 	-webkit-transition: 0.2s background;
 	transition: 0.2s background;
+    cursor: pointer;
 }
 
 .arrowkey:hover {
+	background: #999;
+	background-repeat:no-repeat;
+	background-position: center;
+	background-size: contain; 
+}
+
+
+.cam_arrowkey {
+	-webkit-user-drag: none;
+    -webkit-user-modify: none;
+    -webkit-highlight: none;
+
+    -webkit-touch-callout:  none;
+    -webkit-user-select:    none;
+    -khtml-user-select:     none;
+    -moz-user-select:       none;
+    -ms-user-select:        none;
+    -o-user-select:         none;
+    user-select:            none;
+	width: 50px;
+	height: 50px;
+	background: #B3B1B2;
+	margin: 3px;
+	border-radius: 10px;
+	box-shadow: 0px 5px 8px #333333; 
+	background-repeat:no-repeat;
+	background-position: center;
+	background-size: contain;
+	-webkit-transition: 0.2s background;
+	transition: 0.2s background;
+    cursor: pointer;
+}
+
+.cam_arrowkey:hover {
 	background: #999;
 	background-repeat:no-repeat;
 	background-position: center;
@@ -89,6 +124,13 @@ h3 {
 	margin-top: 5px;
 }
 
+#cam_arrows {
+	width: 150px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 5px;
+}
+
 #stream {
 	margin-top: 65px;
 	width: 640px;
@@ -115,6 +157,12 @@ h3 {
 		height : 80px;
 		width: 80px;
 	}
+    .cam_arrowkey
+	{
+		height : 40px;
+		width: 40px;
+	}
+    
 	#arrows {
 		width: 240px; 
 	}
@@ -135,6 +183,11 @@ h3 {
 	{
 		height : 60px;
 		width: 60px;
+	}
+    .cam_arrowkey
+	{
+		height : 30px;
+		width: 30px;
 	}
 	#arrows {
 		width: 180px; 
@@ -158,6 +211,11 @@ h3 {
 		height : 50px;
 		width: 50px;
 	}
+    .cam_arrowkey
+	{
+		height : 25px;
+		width: 25px;
+	}
 	#arrows {
 		width: 150px; 
 	}
@@ -180,6 +238,28 @@ h3 {
 
 #leftkey {
 	background-image:url(../images/arrowLeft.png);
+}
+
+
+#cam_upkey {
+	background-image:url(../images/cam_arrowUp.png);
+	
+}
+
+#cam_downkey {
+	background-image:url(../images/cam_arrowDown.png);
+}
+
+#cam_rightkey {
+	background-image:url(../images/cam_arrowRight.png);
+}
+
+#cam_leftkey {
+	background-image:url(../images/cam_arrowLeft.png);
+}
+
+#cam_default {
+	background-image:url(../images/cam_default.png);
 }
 
 

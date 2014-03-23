@@ -1,4 +1,4 @@
-﻿<div class="cover"></div>
+<div class="cover"></div>
 
 <div class="rec_window"> 
 	The Recordings
@@ -71,13 +71,40 @@
     
     </div>
     
+    <div id="cam_arrows">
+        <table>
+            <tr>
+                <td></td>
+                <td><div class="cam_arrowkey" id="cam_upkey"></div></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><div class="cam_arrowkey" id="cam_leftkey"></div></td>
+                <td><div class="cam_arrowkey" id="cam_default"></div></td>
+                <td><div class="cam_arrowkey" id="cam_rightkey"></div></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><div class="cam_arrowkey" id="cam_downkey"></div></td>
+                <td></td>
+            </tr>
+        </table>
+    
+    </div>
+    
     
     <script type="text/javascript">
         var upkey = document.getElementById("upkey");
         var downkey = document.getElementById("downkey");
         var leftkey = document.getElementById("leftkey");
         var rightkey = document.getElementById("rightkey");
-        var slidthing = document.getElementById("grabthing");
         
+        var cam_upkey = document.getElementById("cam_upkey");
+        var cam_downkey = document.getElementById("cam_downkey");
+        var cam_leftkey = document.getElementById("cam_leftkey");
+        var cam_rightkey = document.getElementById("cam_rightkey");
+        var cam_default = document.getElementById("cam_default");
+        
+        var slidthing = document.getElementById("grabthing");
     </script>
 </div>
