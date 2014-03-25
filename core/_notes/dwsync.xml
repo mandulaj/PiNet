@@ -9,7 +9,7 @@
 <file name="changepass.php" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186360000000" Dst="1" />
 <file name="changepasshead.php" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186360000000" Dst="1" />
 <file name="controlhead.php" server="10.0.0.3//var/www/PiNet/" local="130399045510138065" remote="130399045590000000" Dst="1" />
-<file name="controlroom.php" server="10.0.0.3//var/www/PiNet/" local="130400691867409546" remote="130400692180000000" Dst="1" />
+<file name="controlroom.php" server="10.0.0.3//var/www/PiNet/" local="130402552919763785" remote="130402553010000000" Dst="1" />
 <file name="init.php" server="10.0.0.3//var/www/PiNet/" local="130349941060000000" remote="130364186360000000" Dst="1" />
 <file name="loginpg.php" server="10.0.0.3//var/www/PiNet/" local="130363731692088946" remote="130364186360000000" Dst="1" />
 </dwsync>

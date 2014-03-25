@@ -133,19 +133,19 @@ h3 {
 
 #stream {
 	margin-top: 65px;
-	width: 640px;
-	height: 480px;
+	width: 644px;
+	height: 484px;
 	margin-left: auto;
 	margin-right: auto;
-	border: 3px solid #969696;
+	border: 2px solid #969696;
 	box-shadow: 0px 0px 10px #3E3E3E;
 }
 
 @media (max-width: 750px )
 {
 	#stream {
-		width: 420px;
-		height: 315px;
+		width: 424px;
+		height: 319px;
 	}
 	
 	#liveStream {
@@ -171,8 +171,8 @@ h3 {
 @media (max-width: 450px )
 {
 	#stream {
-		width: 320px;
-		height: 240px;
+		width: 324px;
+		height: 244px;
 	}
 	
 	#liveStream {
@@ -198,8 +198,8 @@ h3 {
 @media (max-width: 320px )
 {
 	#stream {
-		width: 300px;
-		height: 225px;
+		width: 304px;
+		height: 229px;
 	}
 	
 	#liveStream {
@@ -376,13 +376,14 @@ h3 {
 .piStats {
 	text-align: center;
 	position: absolute;
-	top: 550px;
+	top: 580px;
 	right: 10px;
 	width: 180px;
 	height: 230px;
 	background-color: #CCC;
 	border-radius: 5px;
 	z-index: 1;
+    box-shadow: 0px 2px 20px black;
 }
 
 .sideBar {
@@ -397,6 +398,7 @@ h3 {
 	left: -105px;
 	text-align: center;
 	z-index: 50;
+    
 }
 
 .showsidebar {
@@ -567,4 +569,24 @@ h3 {
 #laser:hover {
     
     background-color: rgb(216, 130, 0);
+}
+
+.stat_title {
+    font-weight: bold;
+}
+
+.stat_val {
+    font-style: italic;
+}
+
+.piStats>h5 {
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.piStats>h4 {
+    font-weight: bold;
+    font-size: 20px;
+    
 }

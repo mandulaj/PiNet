@@ -35,7 +35,15 @@
     </div>
     
     <div class="piStats visible-sm visible-md visible-lg">
-    <h4>Pi Stats</h4>
+        <h4>Pi Stats</h4>
+        <h5>CPU</h5>
+        <span class="stat_title">Boot time: </span><span class="stat_val" id="stat_boot">-</span> <br>
+        <span class="stat_title">CPU Load: </span><span class="stat_val" id="stat_load">0%</span> <br>
+        
+        
+        <h5>RAM</h5>
+        <span class="stat_title">Free RAM: </span><span class="stat_val" id="stat_freeRam">0%</span> <br>
+        <span class="stat_title">Total RAM: </span><span class="stat_val" id="stat_totalRam">0GB</span> <br>
     </div>
     
     <div id="stream">

@@ -24,8 +24,10 @@ function Robot()
     };
 	
 	this.socket = io.connect(window.location.origin+":8081");
-	this.socket.on("roger",function(data){
+	
+    this.socket.on("roger",function(data){
 		thisObj.socket.emit("affirmative",{time:data.time});
+        thisObj.updateStatus(data.load);
 	});
 	
 	this.KeyHash = this.getCookie("keyhash");
@@ -36,6 +38,31 @@ function Robot()
 	}
 }
 
+
+Robot.prototype.updateStatus = function(status)
+{
+    var mem = status.mem;
+    var cpu = status.cpu;
+    var lav = cpu.avload[0]*100;
+    var freeRam = (mem.free/mem.total)*100;
+    
+    if (mem.total > 1000000000)
+    {
+        var suffix = "GB";
+        var memory = mem.total/134217728;
+    }
+    else
+    {
+        var suffix = "MB";
+        var memory = mem.total/1048576;
+    }
+    
+    var bootDate = new Date(cpu.boot);
+    $(".piStats>#stat_boot").html(bootDate.toLocaleString());
+    $(".piStats>#stat_load").html(lav.toFixed(2) + "%");
+    $(".piStats>#stat_freeRam").html(freeRam.toFixed(2) + "%");
+    $(".piStats>#stat_totalRam").html(memory.toFixed(2) + suffix);
+}
 Robot.prototype.getCookie = function(c_name)
 {
 	var c_value = document.cookie;
