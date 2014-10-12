@@ -6,10 +6,11 @@ var express     = require('express'),
   bodyParser    = require('body-parser'),
   passport      = require('passport'),
   sqlite3       = require('sqlite3').verbose(),
-  session       = require('express-session');
+  session       = require('express-session'),
+  config        = require('./config/config.json');
 
 var app = express();
-var db = new sqlite3.Database('userdb.db');
+var db = new sqlite3.Database(config.db);
 
 db.run("CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)");
 // view engine setup
@@ -23,13 +24,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
-  secret: "pianocat"
+  secret: config.secret
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-require("./lib/passport.js")(passport, db);
+require("./config/passport.js")(passport, db);
 require('./routes/index')(app, passport);
 
 // catch 404 and forward to error handler
