@@ -1,18 +1,21 @@
 var jwt = require('jsonwebtoken');
 var express = require('express');
-var router = express.Router();
+var indexRouter = express.Router();
+var userRouter = express.Router();
 
 /* GET home page. */
 module.exports = function(app, passport) {
-  router.get('/', function(req, res) {
+
+  // Index
+  indexRouter.get('/', function(req, res) {
     if (req.isAuthenticated()) {
       res.redirect("/user");
     } else {
-      res.render('index', { title: 'Express' });
+      res.render('index', {});
     }
   });
 
-  router.post('/login', function(req, res, next) {
+  indexRouter.post('/login', function(req, res, next) {
 
     passport.authenticate('local-login', function(err, user, info) {
       if (err)
@@ -41,7 +44,7 @@ module.exports = function(app, passport) {
 
   });
 
-  router.post('/signup', function(req, res, next) {
+  indexRouter.post('/signup', function(req, res, next) {
     passport.authenticate('local-signup', function(err, user, info) {
       if (err) {
         return res.send({
@@ -60,18 +63,24 @@ module.exports = function(app, passport) {
     })(req, res, next);
   });
 
-  router.get("/logout", function(req, res) {
+  indexRouter.get("/logout", function(req, res) {
     req.logout();
     res.redirect("/");
   });
 
-  router.get("/user", isAuthenticated, function(req, res) {
-    res.render("room",{
 
-    });
+
+  // User
+  userRouter.use(isAuthenticated);
+  userRouter.get("/", function(req, res) {
+    res.render("room",{});
+  });
+  userRouter.get("/changepassword", function(req, res) {
+    res.render("passChange",{});
   });
 
-  app.use('/', router);
+  app.use('/user', userRouter);
+  app.use('/', indexRouter);
 
   function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
