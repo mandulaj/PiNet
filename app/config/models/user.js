@@ -8,7 +8,7 @@ function User(db, conn) {
 User.prototype.findById = function(id, cb) {
   var self = this;
   this.db.serialize(function(){
-    var stm = self.db.prepare("SELECT rowid AD id, username FROM users WHERE rowid=(?)");
+    var stm = self.db.prepare("SELECT rowid AS id, username FROM users WHERE rowid=(?)");
     stm.get(id, function(err, user){
       return cb(err, user);
     });
@@ -19,7 +19,7 @@ User.prototype.findById = function(id, cb) {
 User.prototype.findByUsername = function(username, cb) {
   var self = this;
   this.db.serialize(function(){
-    var stm = self.db.prepare("SELECT rowid AD id, username, password FROM users WHERE username=(?)");
+    var stm = self.db.prepare("SELECT rowid AS id, username, password FROM users WHERE username=(?)");
     stm.get(username, function(err, row){
       return cb(err, row);
     });
