@@ -2,20 +2,21 @@
 <head>
   <title>PiNet</title>
   <link type="text/css" rel="stylesheet" href="/static/css/style.css" />
-</head>﻿
-<body unselectable="on">
   <link rel="stylesheet" href="/static/css/login.css" />
+  <script type="text/javascript" src="/static/modules/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript" src="/static/js/login.js"> </script>
+</head>
+<body unselectable="on">
   <div id="top">
     <h3>Welcome to PiNet control room</h3>
   </div>
   <div calss="maincontent">
     <div class="loginbox" id="loginbox">
         <h2> Login </h2>
-        <form method="post" action="login.php">
+        <form method="post">
              <input class="input" id="inputName" type="text" name="username" placeholder="Username">
              <input class="input" id="inputPass" type="password" name="password" onKeyPress="submitEnter(event)" placeholder="Password">
-             <input id="submitbutton" type="button" value="Sign In" onClick="submitVal()">
+             <input id="submitbutton" type="button" value="Sign In">
         </form>
       <div id="Error"></div>
     </div>

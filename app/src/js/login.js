@@ -1,60 +1,54 @@
 // JavaScript Document
 
 
-window.onload = function(){
-	var errorbox = document.getElementById("Error");
-	console.log(passErr);
-	if (valErr){
-		errorbox.innerHTML = "You forgot to enter the username or password!";
-		errorbox.setAttribute( "class", "loginError" );
-	}
-	if (passErr){
-		console.log("in");
-		errorbox.innerHTML = "No such user-password combination.";
-		errorbox.setAttribute( "class", "loginError" );
-		
-	}
+$(document).ready(function() {
+  var errorbox = $("#Error");
+
+  $("#submitbutton").click(submitValues);
+});
+
+function submitEnter(e) {
+  if (e.keyCode == 13) {
+    submitValues();
+  }
 }
 
-function submitEnter(e)
-{
-	if(e.keyCode == 13)
-	{
-		submitVal();	
-	}
-	
-}
-
-
-
-var submitVal = function()
-{
-	var Error = ""
-	var errorbox = document.getElementById("Error");
-	var user = document.getElementById("inputName").value;
-	var pass = document.getElementById("inputPass").value;
-	var form = document.getElementsByTagName("form");
-	if (!user){
-		Error += "You forgot the username!<br />";
-	}
-	
-	if (!pass){
-		Error += "You forgot the password!<br />";
-	}
-	
-	if(!Error)
-	{
-		if(errorbox.className == "loginError"){
-			errorbox.removeAttribute("class");
-			errorbox.innerHTML = "";
-		}
-		form[0].submit();
-		
-	}
-	else
-	{
-		
-		errorbox.innerHTML = Error;
-		errorbox.setAttribute( "class", "loginError" );
-	}
-}
+var submitValues = function() {
+  var errorMsg = "";
+  var errorbox = $("#Error");
+  var username = $("#inputName").val();
+  var password = $("#inputPass").val();
+  var form = document.getElementsByTagName("form");
+  if (!username) {
+    errorMsg += "You forgot the username!<br />";
+  }
+  if (!password) {
+    errorMsg += "You forgot the password!<br />";
+  }
+  if (errorMsg) {
+    errorbox.html(errorMsg);
+    errorbox.addClass("loginError");
+  } else {
+    errorbox.html("");
+    errorbox.removeClass("loginError");
+    $.ajax({
+      url: "/login",
+      type: "POST",
+      cache: false,
+      //contentType: 'application/json',
+      dataType: "json",
+      data: {
+        username: username,
+        password: password
+      }
+    }).done(function(data){
+      if (!data.login) {
+        errorbox.html("No such user-password combination!");
+        errorbox.addClass("loginError");
+      } else {
+        sessionStorage.setItem("token", data.token);
+        window.location.replace("/user");
+      }
+    });
+  }
+};
