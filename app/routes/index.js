@@ -12,7 +12,7 @@ module.exports = function(app, passport) {
     }
   });
 
-  app.post('/login', function(req, res, next) {
+  router.post('/login', function(req, res, next) {
 
     passport.authenticate('local-login', function(err, user, info) {
       if (err)
@@ -41,18 +41,18 @@ module.exports = function(app, passport) {
 
   });
 
-  app.get("/logout", function(req, res) {
+  router.get("/logout", function(req, res) {
     req.logout();
     res.redirect("/");
   });
 
-  app.get("/user", isAuthenticated, function(req, res) {
+  router.get("/user", isAuthenticated, function(req, res) {
     res.render("index",{
 
     });
   });
 
-  app.use('/', routes);
+  app.use('/', router);
 
   function isAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
