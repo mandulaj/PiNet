@@ -1,4 +1,6 @@
 /* CSS Document */
+@transitionSpeed: 0.2s;
+
 @font-face {
   font-family: 'Chivo';
   font-style: normal;
@@ -47,7 +49,7 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transition: 0.2s background;
+  transition: @transitionSpeed background;
   cursor: pointer;
 
 }
@@ -80,7 +82,7 @@ body {
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-  transition: 0.2s background;
+  transition: @transitionSpeed background;
   cursor: pointer;
 
 }
@@ -310,7 +312,7 @@ h3 {
   box-shadow: 1px 1px 5px #2e2e2e;
   z-index: 2;
   cursor: n-resize;
-  transition: 0.2s background-color;
+  transition: @transitionSpeed background-color;
 
 }
 #grabthing:hover {
@@ -388,7 +390,7 @@ h3 {
   margin-left: -2px;
   line-height: 30px;
   font-weight: bold;
-  transition: 0.5s background-color;
+  transition: @transitionSpeed background-color;
 
 }
 .showsidebar:hover {
@@ -411,7 +413,7 @@ h3 {
   box-shadow: 0 0 20px #fff;
   background-color: #111;
   border: 2px solid #666;
-  transition: 0.5s background-color, 0.5s color;
+  transition: @transitionSpeed background-color, @transitionSpeed color;
 
 }
 .lightSwitch:hover {
@@ -436,7 +438,7 @@ h3 {
   box-shadow: 0 0 20px #fff;
   background-color: #111;
   border: 2px solid #666;
-  transition: 0.5s background-color, 0.5s color;
+  transition: @transitionSpeed background-color, @transitionSpeed color;
 
 }
 .ai:hover,
@@ -489,7 +491,7 @@ h3 {
   border-radius: 15px;
   top: 7px;
   left: 583px;
-  transition: 0.5s background-color;
+  transition: @transitionSpeed background-color;
   background-image: url("../images/cross.png");
   background-size: contain;
 
@@ -513,7 +515,7 @@ h3 {
   position: relative;
   left: -168px;
   top: -9px;
-  transition: 0.5s background-color, 0.5s color;
+  transition: @transitionSpeed background-color, @transitionSpeed color;
 
 }
 #rec_startstop:hover {
@@ -532,7 +534,7 @@ h3 {
   border: 2px solid #f5ba00;
   border-radius: 50px;
 
-  transition: 0.5s background-color;
+  transition: @transitionSpeed background-color;
 
 }
 #laser:hover {
