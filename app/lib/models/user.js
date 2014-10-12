@@ -66,20 +66,17 @@ User.prototype.createNewUser = function(data, cb) {
   });
 };
 
-
-
 User.prototype.verify = function(username, password, cb) {
   this.findByUsername(username, function(err, user) {
     if (err || !user) {
       return cb(err, false);
     }
-
-    if (bcrypt.compareSync(password, user.password)) {
-      cb(null, user);
-    } else {
-      cb(null, false);
-    }
-
+    bcrypt.compare(password, user.password, function(err, hash){
+      if (err) {
+        return cb(err, false);
+      }
+      return cb(null, user);
+    });
   });
 };
 
