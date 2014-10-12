@@ -3,19 +3,19 @@
   font-family: 'Chivo';
   font-style: normal;
   font-weight: 400;
-  src: url(../Chivo/Chivo-Regular.ttf);
+  src: url(/static/fonts/Chivo-Regular.ttf);
 }
 @font-face {
   font-family: 'Chivo';
   font-style: normal;
   font-weight: 900;
-  src:url(../Chivo/Chivo-Black.ttf);
+  src:url(/static/fonts/Chivo-Black.ttf);
 }
 @font-face {
   font-family: 'Chivo';
   font-style: italic;
   font-weight: 900;
-  src: url(../Chivo/Chivo-Italic.ttf);;
+  src: url(/static/fonts/Chivo-Italic.ttf);;
 }
 
 body {
@@ -46,7 +46,7 @@ body {
 	background: #B3B1B2;
 	margin: 3px;
 	border-radius: 10px;
-	box-shadow: 0px 5px 8px #333333; 
+	box-shadow: 0px 5px 8px #333333;
 	background-repeat:no-repeat;
 	background-position: center;
 	background-size: contain;
@@ -59,7 +59,7 @@ body {
 	background: #999;
 	background-repeat:no-repeat;
 	background-position: center;
-	background-size: contain; 
+	background-size: contain;
 }
 
 
@@ -80,7 +80,7 @@ body {
 	background: #B3B1B2;
 	margin: 3px;
 	border-radius: 10px;
-	box-shadow: 0px 5px 8px #333333; 
+	box-shadow: 0px 5px 8px #333333;
 	background-repeat:no-repeat;
 	background-position: center;
 	background-size: contain;
@@ -93,7 +93,7 @@ body {
 	background: #999;
 	background-repeat:no-repeat;
 	background-position: center;
-	background-size: contain; 
+	background-size: contain;
 }
 
 
@@ -147,7 +147,7 @@ h3 {
 		width: 424px;
 		height: 319px;
 	}
-	
+
 	#liveStream {
 		width: 420px;
 		height: 315px;
@@ -162,9 +162,9 @@ h3 {
 		height : 40px;
 		width: 40px;
 	}
-    
+
 	#arrows {
-		width: 240px; 
+		width: 240px;
 	}
 }
 
@@ -174,7 +174,7 @@ h3 {
 		width: 324px;
 		height: 244px;
 	}
-	
+
 	#liveStream {
 		width: 320px;
 		height: 240px;
@@ -190,9 +190,9 @@ h3 {
 		width: 30px;
 	}
 	#arrows {
-		width: 180px; 
+		width: 180px;
 	}
-	
+
 }
 
 @media (max-width: 320px )
@@ -201,7 +201,7 @@ h3 {
 		width: 304px;
 		height: 229px;
 	}
-	
+
 	#liveStream {
 		width: 300px;
 		height: 225px;
@@ -217,15 +217,15 @@ h3 {
 		width: 25px;
 	}
 	#arrows {
-		width: 150px; 
+		width: 150px;
 	}
-	
+
 }
 
 
 #upkey {
 	background-image:url(../images/arrowUp.png);
-	
+
 }
 
 #downkey {
@@ -243,7 +243,7 @@ h3 {
 
 #cam_upkey {
 	background-image:url(../images/cam_arrowUp.png);
-	
+
 }
 
 #cam_downkey {
@@ -274,7 +274,7 @@ h3 {
 	line-height: 25px;
 	width: 55px;
 	height: 25px;
-	z-index: 20;	
+	z-index: 20;
 }
 
 @-webkit-keyframes rec {
@@ -319,7 +319,7 @@ h3 {
 	background-color: #000;
 	z-index: 1;
 }
-	
+
 
 #grabthing {
 	position: relative;
@@ -398,7 +398,7 @@ h3 {
 	left: -105px;
 	text-align: center;
 	z-index: 50;
-    
+
 }
 
 .showsidebar {
@@ -477,7 +477,7 @@ h3 {
 	width: 100%;
 	top: 0px;
 	bottom: 0px;
-	background-color: #FFF;	
+	background-color: #FFF;
 }
 
 #recIndic {
@@ -489,7 +489,7 @@ h3 {
 	left: 163px;
 	border-radius: 10px;
 	animation: rec 3s infinite;
-	-webkit-animation: rec 3s infinite;	
+	-webkit-animation: rec 3s infinite;
 }
 
 .rec_window {
@@ -554,20 +554,20 @@ h3 {
     right: 10px;
     width: 75px;
     height: 75px;
-    
+
     background-color: rgb(228, 228, 37);
     background-image: url(../images/laser.png);
     background-size: cover;
     border: 2px solid #F5BA00;
     border-radius: 50px;
-    
+
     -webkit-transition: 0.5s background-color;
 	transition: 0.5s background-color;
-    
+
 }
 
 #laser:hover {
-    
+
     background-color: rgb(216, 130, 0);
 }
 
@@ -588,5 +588,5 @@ h3 {
 .piStats>h4 {
     font-weight: bold;
     font-size: 20px;
-    
+
 }

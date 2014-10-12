@@ -1,6 +1,6 @@
 var express     = require('express'),
   path          = require('path'),
-  favicon       = require('serve-favicon'),
+//  favicon       = require('serve-favicon'),
   logger        = require('morgan'),
   cookieParser  = require('cookie-parser'),
   bodyParser    = require('body-parser'),
@@ -28,7 +28,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use("/static", express.static(path.join(__dirname, 'public')));
 
 require("./config/passport.js")(passport, db);
 require('./routes/index')(app, passport);
