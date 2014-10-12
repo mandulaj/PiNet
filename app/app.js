@@ -11,6 +11,7 @@ var express     = require('express'),
 var app = express();
 var db = new sqlite3.Database('userdb.db');
 
+db.run("CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -28,7 +29,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
-require("./lib/passport.js")(app, passport, db);
+require("./lib/passport.js")(passport, db);
 require('./routes/index')(app, passport);
 
 // catch 404 and forward to error handler
@@ -68,7 +69,10 @@ module.exports = app;
 function exitHandler(options, err) {
   if (options.cleanup){
     //TODO: cleanup
-    db.exit();
+    db.close(function(){
+      console.log("Exit Success!");
+      process.exit(0);
+    });
   }
   if (err) console.log(err.stack);
   if (options.exit) process.exit();
