@@ -1,4 +1,5 @@
-var //config = require("../../config/config.json"),
+var crypto = require('crypto'),
+  config = require("../config.json"),
   bcrypt = require("bcrypt");
 
 function User(db, conn) {
@@ -8,7 +9,7 @@ function User(db, conn) {
 User.prototype.findById = function(id, cb) {
   var self = this;
   this.db.serialize(function(){
-    var stm = self.db.prepare("SELECT rowid AS id, username FROM users WHERE rowid=(?)");
+    var stm = self.db.prepare("SELECT id, username FROM users WHERE id=(?)");
     stm.get(id, function(err, user){
       return cb(err, user);
     });
@@ -19,7 +20,7 @@ User.prototype.findById = function(id, cb) {
 User.prototype.findByUsername = function(username, cb) {
   var self = this;
   this.db.serialize(function(){
-    var stm = self.db.prepare("SELECT rowid AS id, username, password FROM users WHERE username=(?)");
+    var stm = self.db.prepare("SELECT id, username, password FROM users WHERE username=(?)");
     stm.get(username, function(err, row){
       return cb(err, row);
     });
@@ -55,9 +56,14 @@ User.prototype.createNewUser = function(data, cb) {
         return cb(err, null);
       }
       data.password = hash;
+
+      var idHash = crypto.createHash(config.hash.name);
+
+      idHash.update(data.username);
+      idHash.update(data.password);
       self.db.serialize(function(){
-        var stm = self.db.prepare("INSERT INTO users (username, password) VALUES ((?),(?))");
-        stm.run(data.username, data.password, function(err){
+        var stm = self.db.prepare("INSERT INTO users (id, username, password) VALUES ((?),(?),(?))");
+        stm.run(idHash.digest(config.hash.encoding), data.username, data.password, function(err){
           return cb(err, data);
         });
         stm.finalize();

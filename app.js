@@ -12,7 +12,7 @@ var express     = require('express'),
 var app = express();
 var db = new sqlite3.Database(config.db);
 
-db.run("CREATE TABLE IF NOT EXISTS users (username TEXT, password TEXT)");
+db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY NOT NULL UNIQUE, username TEXT NOT NULL UNIQUE, password TEXT NOT NULL)");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

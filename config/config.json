@@ -1,5 +1,9 @@
 {
   "version": "1.0.0",
   "db": "userdb.db",
-  "secret": "pianocat"
+  "secret": "pianocat",
+  "hash": {
+    "name": "sha512",
+    "encoding": "hex"
+  }
 }
