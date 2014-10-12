@@ -66,7 +66,7 @@ module.exports = function(app, passport) {
   });
 
   router.get("/user", isAuthenticated, function(req, res) {
-    res.render("index",{
+    res.render("room",{
 
     });
   });
