@@ -5,9 +5,11 @@ var express     = require('express'),
   cookieParser  = require('cookie-parser'),
   bodyParser    = require('body-parser'),
   passport      = require('passport'),
+  sqlite3       = require('sqlite3').verbose(),
   session       = require('express-session');
 
 var app = express();
+var db = new sqlite3.Database('userdb.db');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,6 +28,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
+require("./lib/passport.js")(app, passport, db);
 require('./routes/index')(app, passport);
 
 // catch 404 and forward to error handler
@@ -61,3 +64,17 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
+function exitHandler(options, err) {
+  if (options.cleanup){
+    //TODO: cleanup
+    db.exit();
+  }
+  if (err) console.log(err.stack);
+  if (options.exit) process.exit();
+}
+
+//do something when app is closing
+process.on('exit', exitHandler.bind(null,{cleanup:true}));
+process.on('SIGINT', exitHandler.bind(null, {exit:true}));
+process.on('uncaughtException', exitHandler.bind(null, {exit:true}));
