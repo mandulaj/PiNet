@@ -23,7 +23,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session({
-  secret: config.secret
+  saveUninitialized: true,
+  resave: true,
+  secret: config.secret,
 }));
 app.use(passport.initialize());
 app.use(passport.session());
