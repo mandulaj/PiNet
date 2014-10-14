@@ -78,7 +78,7 @@ User.prototype.verify = function(username, password, cb) {
       return cb(err, false);
     }
     bcrypt.compare(password, user.password, function(err, hash){
-      if (err) {
+      if (err || !hash) {
         return cb(err, false);
       }
       return cb(null, user);
