@@ -11,13 +11,13 @@ User.prototype.findById = function(id, cb) {
   this.db.serialize(function(){
     var stm = self.db.prepare("SELECT * FROM users WHERE id=(?)");
     stm.get(id, function(err, user){
-      console.log(user);
       return cb(err, user);
     });
     stm.finalize();
   });
 };
 
+// TODO: findByUsername sucks
 User.prototype.findByUsername = function(username, cb) {
   var self = this;
   this.db.serialize(function(){
@@ -48,28 +48,18 @@ User.prototype.numUsers = function(username, cb) {
 /* TODO: add this function*/
 User.prototype.createNewUser = function(data, cb) {
   var self = this;
-  bcrypt.genSalt(10, function(err, salt){
-    if (err) {
-      return cb(err, null);
-    }
-    bcrypt.hash(data.password, salt, function(err, hash){
-      if (err) {
-        return cb(err, null);
-      }
-      data.password = hash;
-
-      var idHash = crypto.createHash(config.hash.name);
-
-      idHash.update(data.username);
-      idHash.update(data.password);
-      self.db.serialize(function(){
-        var stm = self.db.prepare("INSERT INTO users (id, username, password, lastLogin) VALUES ((?), (?), (?), (?))");
-        var now = new Date();
-        stm.run(idHash.digest(config.hash.encoding), data.username, data.password, now.toString(), function(err){
-          return cb(err, data);
-        });
-        stm.finalize();
+  self.createPassword(data.password, function(err, hash){
+    data.password = hash;
+    var idHash = crypto.createHash(config.hash.name);
+    idHash.update(data.username);
+    idHash.update(data.password);
+    self.db.serialize(function(){
+      var stm = self.db.prepare("INSERT INTO users (id, username, password, lastLogin) VALUES ((?), (?), (?), (?))");
+      var now = new Date();
+      stm.run(idHash.digest(config.hash.encoding), data.username, data.password, now.toString(), function(err){
+        return cb(err, data);
       });
+      stm.finalize();
     });
   });
 };
@@ -94,14 +84,53 @@ User.prototype.updateLogin = function(id, cb) {
     var stm = self.db.prepare("UPDATE users SET lastLogin = (?) WHERE id=(?)");
     var now = new Date();
     stm.run(now.toString(), id, function(err, data){
-      console.log(err, data, id);
       return cb(err);
     });
     stm.finalize();
   });
 };
 
+User.prototype.changePassword = function(id, oldPassword, newPassword, cb){
+  var self = this;
+  this.findById(id,function(err, user){
+    if (err) {
+      return cb(err, false);
+    }
+    self.verify(user.username, oldPassword, function(err, success){
+      if (err || !success) {
+        return cb(err, false);
+      }
+      self.createPassword(newPassword, function(err, hash){
+        if (err) {
+          return cb(err, false);
+        }
+        self.db.serialize(function(){
+          var stm = self.db.prepare("UPDATE users SET password = (?) WHERE id=(?)");
+          stm.run(hash, id, function(err, data){
+            if (err) {
+              return cb(err, false);
+            }
+            return cb(null, true);
+          });
+        });
+      });
+    });
+  });
+};
 
+User.prototype.createPassword = function(password, cb){
+  bcrypt.genSalt(10, function(err, salt){
+    if (err) {
+      return cb(err, null);
+    }
+    bcrypt.hash(password, salt, function(err, hash){
+      if (err) {
+        return cb(err, null);
+      }
+      cb(err, hash);
+    });
+  });
+};
 
 
 module.exports = User;
