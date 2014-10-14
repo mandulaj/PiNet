@@ -51,7 +51,13 @@ module.exports = function(passport, db) {
         return done(null, false);
 
       User.verify(username, password, function(err, user) {
-        done(err, user);
+        if (!err && user) {
+          User.updateLogin(user.id, function(){
+            done(err, user);
+          });
+        } else {
+          done(err, false);
+        }
       });
     }
   ));

@@ -12,11 +12,12 @@ var express     = require('express'),
 var app = express();
 var db = new sqlite3.Database(config.db);
 
-db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY NOT NULL UNIQUE, username TEXT NOT NULL UNIQUE, password TEXT NOT NULL)");
+db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use("/static", express.static(path.join(__dirname, 'public')));
 app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -29,7 +30,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use("/static", express.static(path.join(__dirname, 'public')));
 
 require("./config/passport.js")(passport, db);
 require('./routes/index')(app, passport);
