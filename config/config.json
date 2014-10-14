@@ -3,7 +3,7 @@
   "db": "userdb.db",
   "secret": "pianocat",
   "hash": {
-    "name": "sha512",
+    "name": "sha256",
     "encoding": "hex"
   }
 }
