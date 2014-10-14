@@ -6,6 +6,7 @@ function User(db, conn) {
   this.db = db;
 }
 
+// Gets info about user with the given id --> cb(err, user)
 User.prototype.findById = function(id, cb) {
   var self = this;
   this.db.serialize(function(){
@@ -17,13 +18,13 @@ User.prototype.findById = function(id, cb) {
   });
 };
 
-// TODO: findByUsername sucks
-User.prototype.findByUsername = function(username, cb) {
+
+User.prototype.getIdFromUsername = function(username, cb) {
   var self = this;
   this.db.serialize(function(){
-    var stm = self.db.prepare("SELECT id, username, password FROM users WHERE username=(?)");
+    var stm = self.db.prepare("SELECT id FROM users WHERE username=(?)");
     stm.get(username, function(err, row){
-      return cb(err, row);
+      return cb(err, row.id);
     });
     stm.finalize();
   });
@@ -64,8 +65,8 @@ User.prototype.createNewUser = function(data, cb) {
   });
 };
 
-User.prototype.verify = function(username, password, cb) {
-  this.findByUsername(username, function(err, user) {
+User.prototype.verify = function(id, password, cb) {
+  this.findById(id, function(err, user) {
     if (err || !user) {
       return cb(err, false);
     }
@@ -73,7 +74,7 @@ User.prototype.verify = function(username, password, cb) {
       if (err || !hash) {
         return cb(err, false);
       }
-      return cb(null, user);
+      return cb(null, true);
     });
   });
 };
@@ -92,26 +93,21 @@ User.prototype.updateLogin = function(id, cb) {
 
 User.prototype.changePassword = function(id, oldPassword, newPassword, cb){
   var self = this;
-  this.findById(id,function(err, user){
-    if (err) {
+  self.verify(id, oldPassword, function(err, success){
+    if (err || !success) {
       return cb(err, false);
     }
-    self.verify(user.username, oldPassword, function(err, success){
-      if (err || !success) {
+    self.createPassword(newPassword, function(err, hash){
+      if (err) {
         return cb(err, false);
       }
-      self.createPassword(newPassword, function(err, hash){
-        if (err) {
-          return cb(err, false);
-        }
-        self.db.serialize(function(){
-          var stm = self.db.prepare("UPDATE users SET password = (?) WHERE id=(?)");
-          stm.run(hash, id, function(err, data){
-            if (err) {
-              return cb(err, false);
-            }
-            return cb(null, true);
-          });
+      self.db.serialize(function(){
+        var stm = self.db.prepare("UPDATE users SET password = (?) WHERE id=(?)");
+        stm.run(hash, id, function(err, data){
+          if (err) {
+            return cb(err, false);
+          }
+          return cb(null, true);
         });
       });
     });
