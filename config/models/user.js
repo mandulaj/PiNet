@@ -24,7 +24,11 @@ User.prototype.getIdFromUsername = function(username, cb) {
   this.db.serialize(function(){
     var stm = self.db.prepare("SELECT id FROM users WHERE username=(?)");
     stm.get(username, function(err, row){
-      return cb(err, row.id);
+      console.log(row)
+      if (err || !row) {
+        return cb(err, null);
+      }
+      return cb(null, row.id);
     });
     stm.finalize();
   });
