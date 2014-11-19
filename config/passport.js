@@ -50,13 +50,15 @@ module.exports = function(passport, db) {
       if (!password)
         return done(null, false);
 
-      User.getIdFromUsername(username, function(err, id){
+      User.getIdFromUsername(username, function(err, id) {
 
         User.verify(id, password, function(err, success) {
 
           if (!err && success) {
-            User.updateLogin(id, function(){
-              done(err, {id: id});
+            User.updateLogin(id, function() {
+              done(err, {
+                id: id
+              });
             });
           } else {
             done(err, false);
