@@ -50,7 +50,7 @@ User.prototype.numUsers = function(username, cb) {
   });
 };
 
-/* TODO: add this function*/
+// Creates a new user using the data provided
 User.prototype.createNewUser = function(data, cb) {
   var self = this;
   self.createPassword(data.password, function(err, hash) {
@@ -60,8 +60,8 @@ User.prototype.createNewUser = function(data, cb) {
     idHash.update(data.password);
     self.db.serialize(function() {
       var stm = self.db.prepare("INSERT INTO users (id, username, password, lastLogin) VALUES ((?), (?), (?), (?))");
-      var now = new Date();
-      stm.run(idHash.digest(config.hash.encoding), data.username, data.password, now.toString(), function(err) {
+      var now = new Date().valueOf();
+      stm.run(idHash.digest(config.hash.encoding), data.username, data.password, now, function(err) {
         return cb(err, data);
       });
       stm.finalize();
@@ -90,7 +90,7 @@ User.prototype.updateLogin = function(id, cb) {
   var self = this;
   self.db.serialize(function() {
     var stm = self.db.prepare("UPDATE users SET lastLogin = (?) WHERE id=(?)");
-    var now = new Date();
+    var now = new Date().valueOf();
     stm.run(now.toString(), id, function(err, data) {
       return cb(err);
     });
