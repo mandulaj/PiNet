@@ -46,9 +46,9 @@ module.exports = function(passport, db) {
     },
     function(req, username, password, done) {
       if (!username)
-        return done(null, false);
+        done(null, false);
       if (!password)
-        return done(null, false);
+        done(null, false);
 
       User.getIdFromUsername(username, function(err, id) {
 
@@ -61,7 +61,11 @@ module.exports = function(passport, db) {
               });
             });
           } else {
-            done(err, false);
+            User.reportFailedLogin(req.ip, function() {
+              if (err) {
+                done(err, false);
+              }
+            });
           }
         });
       });

@@ -24,7 +24,6 @@ User.prototype.getIdFromUsername = function(username, cb) {
   this.db.serialize(function() {
     var stm = self.db.prepare("SELECT id FROM users WHERE username=(?)");
     stm.get(username, function(err, row) {
-      console.log(row)
       if (err || !row) {
         return cb(err, null);
       }
@@ -128,6 +127,24 @@ User.prototype.createPassword = function(password, cb) {
         return cb(err, null);
       }
       cb(err, hash);
+    });
+  });
+};
+
+User.prototype.reportFailedLogin = function(ip, cb) {
+  var self = this;
+  var id = crypto.createHash(config.hash.name).update(ip).digest(config.hash.encoding);
+  var now = new Date().valueOf();
+  self.db.serialize(function() {
+    var stm = self.db.prepare("INSERT INTO logins (id, ip, lastDate) VALUES((?), (?), (?))");
+    stm.run(id, ip, now, function(err, data) {
+      if (err && err.errno === 19) {
+        var stm = self.db.prepare("UPDATE logins SET accessed = accessed + 1, lastDate = (?) WHERE id = (?)");
+        stm.run(now, id, function(err, data) {
+          //return cb(err);
+        });
+      }
+      //return cb(err);
     });
   });
 };
