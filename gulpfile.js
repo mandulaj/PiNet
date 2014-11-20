@@ -3,13 +3,15 @@ var gulp = require('gulp'),
   nodemon = require('gulp-nodemon'),
   minifyCSS = require('gulp-minify-css'),
   less = require('gulp-less'),
+  jade = require('gulp-jade'),
   prefix = require('gulp-autoprefixer');
 
 
 var paths = {
   images: 'src/images/*',
   scripts: 'src/js/*.js',
-  less: 'src/less/*.less'
+  less: 'src/less/*.less',
+  jade: 'src/jade/*.jade'
 };
 
 gulp.task('scripts', function() {
@@ -35,10 +37,19 @@ gulp.task('less', function() {
     .pipe(gulp.dest('public/css'));
 });
 
+gulp.task('jade', function() {
+  return gulp.src(paths.jade)
+    .pipe(jade({
+      pretty: true
+    }))
+    .pipe(gulp.dest('public/jadeTest'));
+});
+
 gulp.task('watch', function() {
   gulp.watch(paths.scripts, ['scripts']);
   gulp.watch(paths.images, ['images']);
   gulp.watch(paths.less, ['less']);
+  gulp.watch(paths.jade, ['jade']);
 });
 
 gulp.task('develop', function() {
@@ -53,6 +64,6 @@ gulp.task('develop', function() {
 });
 
 
-gulp.task('default', ['scripts', 'images', 'watch', 'less', 'develop'], function() {
+gulp.task('default', ['jade', 'scripts', 'images', 'watch', 'less', 'develop'], function() {
   console.log("Gulp is starting...");
 });
