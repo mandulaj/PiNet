@@ -166,5 +166,25 @@ User.prototype.reportFailedLogin = function(ip, cb) {
   });
 };
 
+User.prototype.getAccessStatus = function(id, cb) {
+  var self = this;
+  self.db.serialize(function() {
+    var stm = self.db.prepare("SELECT access FROM users WHERE id = (?)");
+    stm.get(id, function(err, data) {
+      if (!err) {
+        return cb(data.access);
+      } else {
+        return cb(-1);
+      }
+    });
+  });
+};
+
+User.prototype.isAdmin = function(id, cb) {
+  this.getAccessStatus(id, function(status) {
+    return cb(status === 4);
+  });
+};
+
 
 module.exports = User;
