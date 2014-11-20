@@ -17,12 +17,14 @@ var paths = {
 
 gulp.task('scripts', function() {
   return gulp.src(paths.scripts)
+    .pipe(plumber())
     //.pipe(uglify())
     .pipe(gulp.dest('public/js'));
 });
 
 gulp.task('images', function() {
   return gulp.src(paths.images)
+    .pipe(plumber())
     .pipe(gulp.dest('public/images'));
 });
 
@@ -41,6 +43,7 @@ gulp.task('less', function() {
 
 gulp.task('jade', function() {
   return gulp.src(paths.jade)
+    .pipe(plumber())
     .pipe(jade({
       pretty: true
     }))
