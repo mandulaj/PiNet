@@ -73,10 +73,10 @@ module.exports = function(app, passport) {
   // User
   userRouter.use(isAuthenticated);
   userRouter.get("/", function(req, res) {
-    res.render("room",{});
+    res.render("room", {});
   });
   userRouter.get("/changepassword", function(req, res) {
-    res.render("passChange",{});
+    res.render("passChange", {});
   });
 
   app.use('/user', userRouter);
