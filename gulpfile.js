@@ -4,6 +4,7 @@ var gulp = require('gulp'),
   minifyCSS = require('gulp-minify-css'),
   less = require('gulp-less'),
   jade = require('gulp-jade'),
+  plumber = require('gulp-plumber'),
   prefix = require('gulp-autoprefixer');
 
 
@@ -27,6 +28,7 @@ gulp.task('images', function() {
 
 gulp.task('less', function() {
   return gulp.src(paths.less)
+    .pipe(plumber())
     .pipe(less({
       keepSpecialComments: 0,
     }))
