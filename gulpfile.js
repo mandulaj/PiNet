@@ -6,6 +6,7 @@ var gulp = require('gulp'),
   jade = require('gulp-jade'),
   plumber = require('gulp-plumber'),
   changed = require('gulp-changed'),
+  rename = require('gulp-rename'),
   prefix = require('gulp-autoprefixer');
 
 
@@ -52,7 +53,10 @@ gulp.task('jade', function() {
     .pipe(jade({
       pretty: true
     }))
-    .pipe(gulp.dest('public/jadeTest'));
+    .pipe(rename({
+      extname: ".ejs"
+    }))
+    .pipe(gulp.dest('views'));
 });
 
 gulp.task('watch', function() {

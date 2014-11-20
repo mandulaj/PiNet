@@ -3,3 +3,4 @@ db_login.php
 *.log
 *public
 *.db
+views
