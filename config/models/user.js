@@ -19,6 +19,7 @@ User.prototype.findById = function(id, cb) {
 };
 
 
+// Get the id of a user, using his username
 User.prototype.getIdFromUsername = function(username, cb) {
   var self = this;
   this.db.serialize(function() {
@@ -33,7 +34,7 @@ User.prototype.getIdFromUsername = function(username, cb) {
   });
 };
 
-
+// Returns the number of users with a given username
 User.prototype.numUsers = function(username, cb) {
   var self = this;
   this.db.serialize(function() {
@@ -68,6 +69,8 @@ User.prototype.createNewUser = function(data, cb) {
   });
 };
 
+// verify a user using his id and password
+// return error and success in callback
 User.prototype.verify = function(id, password, cb) {
   this.findById(id, function(err, user) {
     if (err || !user) {
@@ -82,6 +85,7 @@ User.prototype.verify = function(id, password, cb) {
   });
 };
 
+// Update the last login date in the database (called on a successful login)
 User.prototype.updateLogin = function(id, cb) {
   var self = this;
   self.db.serialize(function() {
@@ -94,6 +98,8 @@ User.prototype.updateLogin = function(id, cb) {
   });
 };
 
+// Change the password of a user (must have id, old password, and new password)
+// return error and success in callback
 User.prototype.changePassword = function(id, oldPassword, newPassword, cb) {
   var self = this;
   self.verify(id, oldPassword, function(err, success) {
@@ -117,6 +123,8 @@ User.prototype.changePassword = function(id, oldPassword, newPassword, cb) {
   });
 };
 
+// Create a password hash using bcrypt
+// Password hash is returned in a callback(err, password_hash)
 User.prototype.createPassword = function(password, cb) {
   bcrypt.genSalt(10, function(err, salt) {
     if (err) {
@@ -131,20 +139,29 @@ User.prototype.createPassword = function(password, cb) {
   });
 };
 
+// Report a user failed to login (log this activity and start keeping and eye on this user)
 User.prototype.reportFailedLogin = function(ip, cb) {
   var self = this;
   var id = crypto.createHash(config.hash.name).update(ip).digest(config.hash.encoding);
   var now = new Date().valueOf();
   self.db.serialize(function() {
-    var stm = self.db.prepare("INSERT INTO logins (id, ip, lastDate) VALUES((?), (?), (?))");
-    stm.run(id, ip, now, function(err, data) {
-      if (err && err.errno === 19) {
-        var stm = self.db.prepare("UPDATE logins SET accessed = accessed + 1, lastDate = (?) WHERE id = (?)");
-        stm.run(now, id, function(err, data) {
-          //return cb(err);
+    var stm = self.db.prepare("SELECT id, lastDate, threat FROM logins WHERE id = (?)");
+    stm.get(id, function(err, data) {
+      if (!data) {
+        stm = self.db.prepare("INSERT INTO logins (id, ip, lastDate) VALUES((?), (?), (?))");
+        stm.run(id, ip, now, function(err, data) {
+          return cb(err);
+        });
+      } else {
+        var threat = data.threat;
+        if (((now - data.lastDate) / 1000) < 3) {
+          threat += 1;
+        }
+        stm = self.db.prepare("UPDATE logins SET accessed = accessed + 1, lastDate = (?), threat = (?) WHERE id = (?)");
+        stm.run(now, threat, id, function(err, data) {
+          return cb(err);
         });
       }
-      //return cb(err);
     });
   });
 };
