@@ -5,6 +5,7 @@ var gulp = require('gulp'),
   less = require('gulp-less'),
   jade = require('gulp-jade'),
   plumber = require('gulp-plumber'),
+  changed = require('gulp-changed'),
   prefix = require('gulp-autoprefixer');
 
 
@@ -18,6 +19,7 @@ var paths = {
 gulp.task('scripts', function() {
   return gulp.src(paths.scripts)
     .pipe(plumber())
+    .pipe(changed('public/js'))
     //.pipe(uglify())
     .pipe(gulp.dest('public/js'));
 });
@@ -25,12 +27,14 @@ gulp.task('scripts', function() {
 gulp.task('images', function() {
   return gulp.src(paths.images)
     .pipe(plumber())
+    .pipe(changed("public/images"))
     .pipe(gulp.dest('public/images'));
 });
 
 gulp.task('less', function() {
   return gulp.src(paths.less)
     .pipe(plumber())
+    .pipe(changed('public/css'))
     .pipe(less({
       keepSpecialComments: 0,
     }))
@@ -44,6 +48,7 @@ gulp.task('less', function() {
 gulp.task('jade', function() {
   return gulp.src(paths.jade)
     .pipe(plumber())
+    .pipe(changed('public/jadeTest'))
     .pipe(jade({
       pretty: true
     }))
