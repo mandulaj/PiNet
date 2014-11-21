@@ -166,6 +166,7 @@ User.prototype.reportFailedLogin = function(ip, cb) {
   });
 };
 
+// Get the power of a user
 User.prototype.getAccessStatus = function(id, cb) {
   var self = this;
   self.db.serialize(function() {
@@ -180,12 +181,14 @@ User.prototype.getAccessStatus = function(id, cb) {
   });
 };
 
+// Is the user and admin
 User.prototype.isAdmin = function(id, cb) {
   this.getAccessStatus(id, function(status) {
     return cb(status === 4);
   });
 };
 
+// set the power of a user to the new power
 User.prototype.updateAdminPower = function(id, power, cb) {
   var self = this;
   self.db.serialize(function() {
@@ -194,6 +197,34 @@ User.prototype.updateAdminPower = function(id, power, cb) {
       cb(err);
     });
   });
+};
+
+
+// Check data for white list and required items
+User.prototype.checkFormData = function(data) {
+  var whiteList = ['username', 'password', 'access']; // Allowed items
+  var required = ['username', 'password', 'access']; // Required items
+
+  // Check white list
+  for (var i in data) {
+    if (whiteList.indexOf(i) === -1) {
+      return false;
+    }
+  }
+  // Check required fields
+  for (i in required) {
+    if (typeof data[required[i]] === 'undefined') {
+      return false;
+    }
+  }
+
+  // Check the username and password are not ""
+  if (data.username === "" || data.password === "") {
+    return false;
+  }
+
+  // All test passed, return true
+  return true;
 };
 
 
