@@ -59,9 +59,9 @@ User.prototype.createNewUser = function(data, cb) {
     idHash.update(data.username);
     idHash.update(data.password);
     self.db.serialize(function() {
-      var stm = self.db.prepare("INSERT INTO users (id, username, password, lastLogin) VALUES ((?), (?), (?), (?))");
+      var stm = self.db.prepare("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))");
       var now = new Date().valueOf();
-      stm.run(idHash.digest(config.hash.encoding), data.username, data.password, now, function(err) {
+      stm.run(idHash.digest(config.hash.encoding), data.username, data.password, data.access, now, function(err) {
         return cb(err, data);
       });
       stm.finalize();
@@ -183,6 +183,16 @@ User.prototype.getAccessStatus = function(id, cb) {
 User.prototype.isAdmin = function(id, cb) {
   this.getAccessStatus(id, function(status) {
     return cb(status === 4);
+  });
+};
+
+User.prototype.updateAdminPower = function(id, power, cb) {
+  var self = this;
+  self.db.serialize(function() {
+    var stm = self.db.prepare("UPDATE users SET access = (?) WHERE id = (?)");
+    stm.run(power, id, function(err) {
+      cb(err);
+    });
   });
 };
 
