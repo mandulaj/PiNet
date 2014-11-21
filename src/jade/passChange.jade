@@ -1,0 +1,23 @@
+doctype html
+
+html
+  head
+    title PiNet
+    link(type='text/css', rel='stylesheet', href='/static/css/style.css')
+    link(type='text/css', rel='stylesheet', href='/static/css/passwd.css')
+    link(type='text/css', rel='stylesheet', href='/static/css/login.css')
+  body
+    #resetform
+      form(method='post', action='changepass.php')
+        p Old password
+        input#oldPassword(type='password', name='oldPassword')
+        p New password
+        input#newPassword(type='password', name='newPassword')
+        p Retype new password
+        input#newPasswordAgain(type='password', name='newPasswordAgain')
+        br
+        input(type='button', onclick='vlalidate()', value='Submit')
+        a(href='index.php') Go back
+      #Error
+
+    script(src='/static/js/passwd.js')

@@ -3,7 +3,6 @@
 
 $(document).ready(function() {
   var errorbox = $("#Error");
-
   $("#submitbutton").click(submitValues);
 });
 
@@ -41,7 +40,7 @@ var submitValues = function() {
         username: username,
         password: password
       }
-    }).done(function(data){
+    }).done(function(data) {
       if (!data.login) {
         errorbox.html("No such user-password combination!");
         errorbox.addClass("loginError");

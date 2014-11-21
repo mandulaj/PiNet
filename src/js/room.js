@@ -1,41 +1,45 @@
 // JavaScript Document
+/*
 var Dragging = false;
 var is_touch_device = 'ontouchstart' in document.documentElement;
 var sideBar = 0;
-var recordings = 0;
+var recordings = 0;*/
 
-
+function UIWindow() {
+  this.dragging = false;
+  this.is_touch_device = 'ontouchstart' in document.documentElement;
+  this.sideBar = false;
+  this.recording = false;
+}
 
 function Robot() {
-  thisObj = this;
-  this.keylist = [0, 0, 0, 0];
+  var self = this;
+  this.keylist = [false, false, false, false];
   this.power = 100;
-  this.lightStatus = 0;
-  this.laser_status = 0;
-  this.camMoves = [0, 0, 0, 0];
-  this.aiStatus = 0;
-  this.recStatus = 0;
+  this.lightStatus = false;
+  this.laser_status = false;
+  this.camMoves = [false, false, false, false];
+  this.aiStatus = false;
+  this.recStatus = false;
   this.recordings = [];
   this.previousCommand = {
-    keys: "0000",
+    keys: 0,
     speed: 100,
     light: 0
   };
 
-  this.socket = io.connect(window.location.origin + ":8081");
-
-  this.socket.on("roger", function(data) {
-    thisObj.socket.emit("affirmative", {
-      time: data.time
-    });
-    thisObj.updateStatus(data.load);
+  this.socket = io("/commands", {
+    'query': 'token=' + sessionStorage.getItem("socketIOtoken")
   });
 
-  this.KeyHash = this.getCookie("keyhash");
-  if (this.KeyHash === "" || this.KeyHash.length != 128) {
-    this.KeyHash = "";
-    alert("Failed to authenticate!");
-  }
+  // Server ping + usage data update
+  this.socket.on("roger", function(data) {
+    self.socket.emit("affirmative", {
+      time: data.time
+    });
+    self.updateStatus(data.load);
+  });
+
 }
 
 
@@ -47,6 +51,7 @@ Robot.prototype.updateStatus = function(status) {
   var suffix = "";
   var memory;
 
+  // Chose the unit
   if (mem.total > 1000000000) {
     suffix = "GB";
     memory = mem.total / 134217728;
@@ -61,52 +66,53 @@ Robot.prototype.updateStatus = function(status) {
   $(".piStats>#stat_freeRam").html(freeRam.toFixed(2) + "%");
   $(".piStats>#stat_totalRam").html(memory.toFixed(2) + suffix);
 };
-Robot.prototype.getCookie = function(c_name) {
-  var c_value = document.cookie;
-  var c_start = c_value.indexOf(" " + c_name + "=");
-  if (c_start == -1) {
-    c_start = c_value.indexOf(c_name + "=");
-  }
-  if (c_start == -1) {
-    c_value = null;
-  } else {
-    c_start = c_value.indexOf("=", c_start) + 1;
-    var c_end = c_value.indexOf(";", c_start);
-    if (c_end == -1) {
-      c_end = c_value.length;
-    }
-    c_value = unescape(c_value.substring(c_start, c_end));
-  }
-  return c_value;
-};
 
 Robot.prototype.updatekey = function() {
-  var dataToSend = this.keylist;
-  if (this.keylist[1] == 1 && this.keylist[3] == 1) {
-    dataToSend[1] = 0;
-    dataToSend[3] = 0;
-  }
-  if (this.keylist[0] == 1 && this.keylist[2] == 1) {
-    dataToSend[0] = 0;
-    dataToSend[2] = 0;
+  function generateNumber(keylist) {
+    var res = 0;
+    var bit = 1;
+    for (var i in keylist) {
+      if (keylist[i]) {
+        res |= bit;
+      }
+      bit *= 2;
+    }
+    return res;
   }
 
-  var string_to_send = dataToSend.join("");
+  var dataToSend = this.keylist;
+
+  // Case both left and right arrows are pressed
+  if (this.keylist[1] === true && this.keylist[3] === true) {
+    dataToSend[1] = false;
+    dataToSend[3] = false;
+  }
+
+  // Case both up and down arrows are pressed
+  if (this.keylist[0] === true && this.keylist[2] === true) {
+    dataToSend[0] = false;
+    dataToSend[2] = false;
+  }
+
+  var keyStatusNumber = generateNumber(dataToSend);
 
   dataToSend = this.camMoves;
-  if (this.camMoves[1] == 1 && this.camMoves[3] == 1) {
-    dataToSend[1] = 0;
-    dataToSend[3] = 0;
+
+  // Case both left and right arrows are pressed
+  if (this.camMoves[1] === true && this.camMoves[3] === true) {
+    dataToSend[1] = false;
+    dataToSend[3] = false;
   }
-  if (this.camMoves[0] == 1 && this.camMoves[2] == 1) {
-    dataToSend[0] = 0;
-    dataToSend[2] = 0;
+  // Case both up and down arrows are pressed
+  if (this.camMoves[0] === true && this.camMoves[2] === true) {
+    dataToSend[0] = false;
+    dataToSend[2] = false;
   }
   var camMoves;
   if (this.camMoves[0] == -1) {
     camMoves = "default";
   } else {
-    camMoves = dataToSend.join("");
+    camMoves = generateNumber(dataToSend);
   }
 
   if (this.recStatus == 1) {
@@ -399,7 +405,7 @@ Recording.prototype.add = function(moves) {
 };
 
 Recording.prototype.start = function(obj) {
-  var thisObj = this;
+  var self = this;
   this.startButton = obj;
   if (this.status == "start") {
     this.socket.emit("mission", {
