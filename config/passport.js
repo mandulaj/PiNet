@@ -22,18 +22,36 @@ module.exports = function(passport, db) {
       passReqToCallback: true
     },
     function(req, username, password, done) {
-      // TODO: check length of username and password
-      /*if (!checkSignupForm(req.body)) {
-        return done(null, null);
-      }*/
-      User.numUsers(username, function(err, num) {
-        if (err || num) {
-          done(err, false);
-        } else {
-          User.createNewUser(req.body, function(err, user) {
-            done(err, user);
-          });
+
+      // is the user logged on
+      if (!req.user.id) {
+        return done(null, false);
+      }
+      // is he an admin
+      User.isAdmin(req.user.id, function(admin) {
+        if (!admin) {
+          // No, return false
+          return done(null, false);
         }
+
+        var newData = req.body;
+
+        //Check if the data is ok
+        if (!User.checkFormData(newData)) {
+          return done(null, false);
+        }
+
+        // Does the user already exist
+        User.numUsers(username, function(err, num) {
+          if (err || num) {
+            done(err, false);
+          } else {
+            // All is good, make the new user
+            User.createNewUser(newData, function(err, user) {
+              done(err, user);
+            });
+          }
+        });
       });
     }
   ));
