@@ -1,7 +1,22 @@
-db_login.php
+## .gitignore file for PiNet
+
+# Node modules
 *node_modules
+
+#Log files
 *.log
+
+# Compiled CSS, JavaScript, Images and external modules
 *public
-*.db
+
+# Rendered jade views
 views
+
+# Compiled python byte code
+*pyc
+
+# Folder containing SSL key and certificate
 keys
+
+# Database file
+*.db
