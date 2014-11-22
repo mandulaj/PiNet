@@ -406,7 +406,7 @@ Recording.prototype.start = function(obj) {
     this.status = "start";
     this.socket.emit("mission", {
       status: "start",
-      moves: window.JSON.stringify(this.moves)
+      moves: this.moves
     });
     console.log(window.JSON.stringify(this.moves));
     $(obj).css("background-image", "url(images/videostop.png)");
