@@ -3,8 +3,8 @@
 var Dragging = false;
 var is_touch_device = 'ontouchstart' in document.documentElement;
 var sideBar = 0;
-var recordings = 0;*/
-
+var recordings = 0;
+*/
 function UIWindow() {
   this.dragging = false;
   this.is_touch_device = 'ontouchstart' in document.documentElement;
@@ -14,22 +14,25 @@ function UIWindow() {
 
 function Robot() {
   var self = this;
-  this.keylist = [false, false, false, false];
-  this.power = 100;
-  this.lightStatus = false;
-  this.laser_status = false;
-  this.camMoves = [false, false, false, false];
-  this.aiStatus = false;
+  this.componentStatus = {
+    keys: [0, 0, 0, 0],
+    speed: 100,
+    light: false,
+    laser: false,
+    cam: [0, 0, 0, 0],
+    ai: false
+  };
   this.recStatus = false;
   this.recordings = [];
   this.previousCommand = {
-    keys: 0,
+    keys: [0, 0, 0, 0],
     speed: 100,
-    light: 0
+    light: false,
+    laser: false
   };
 
   this.socket = io("/commands", {
-    'query': 'token=' + sessionStorage.getItem("socketIOtoken")
+    'query': 'token=' + sessionStorage.getItem("token")
   });
 
   // Server ping + usage data update
@@ -67,7 +70,9 @@ Robot.prototype.updateStatus = function(status) {
   $(".piStats>#stat_totalRam").html(memory.toFixed(2) + suffix);
 };
 
-Robot.prototype.updatekey = function() {
+Robot.prototype.update = function() {
+  var self = this;
+  // Creates a shorter version of the keylist
   function generateNumber(keylist) {
     var res = 0;
     var bit = 1;
@@ -80,80 +85,75 @@ Robot.prototype.updatekey = function() {
     return res;
   }
 
-  var dataToSend = this.keylist;
+  // Prevents opposite keys being pressed at the same time
+  function sanatizeKeys(keys) {
+    var result = keys;
+    // Case both left and right arrows are pressed
+    if (keys[1] === 1 && keys[3] === 1) {
+      result[1] = 0;
+      result[3] = 0;
+    }
 
-  // Case both left and right arrows are pressed
-  if (this.keylist[1] === true && this.keylist[3] === true) {
-    dataToSend[1] = false;
-    dataToSend[3] = false;
+    // Case both up and down arrows are pressed
+    if (keys[0] === 1 && keys[2] === 1) {
+      result[0] = 0;
+      result[2] = 0;
+    }
+    return result;
   }
 
-  // Case both up and down arrows are pressed
-  if (this.keylist[0] === true && this.keylist[2] === true) {
-    dataToSend[0] = false;
-    dataToSend[2] = false;
+  function equalArray(array1, array2) {
+    if (array1.length !== array2.length) {
+      return false;
+    }
+    for (var i = 0; i < array1.length; i++) {
+      if (array1[i] !== array2[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 
-  var keyStatusNumber = generateNumber(dataToSend);
+  // sanatize robot movement keys
+  var keyMoves = sanatizeKeys(this.componentStatus.keys);
 
-  dataToSend = this.camMoves;
+  // TODO: implement this on the serverside
+  // keyMoves = generateNumber(keyMoves);
 
-  // Case both left and right arrows are pressed
-  if (this.camMoves[1] === true && this.camMoves[3] === true) {
-    dataToSend[1] = false;
-    dataToSend[3] = false;
-  }
-  // Case both up and down arrows are pressed
-  if (this.camMoves[0] === true && this.camMoves[2] === true) {
-    dataToSend[0] = false;
-    dataToSend[2] = false;
-  }
-  var camMoves;
-  if (this.camMoves[0] == -1) {
+  // sanatize camera movement keys
+  var camMoves = sanatizeKeys(this.componentStatus.cam);
+
+  if (this.camMoves[0] === -1) {
     camMoves = "default";
   } else {
-    camMoves = generateNumber(dataToSend);
+    // TODO: implement this on the serverside
+    // camMoves = generateNumber(camMoves);
   }
 
   if (this.recStatus == 1) {
     var command = "STOP";
-    if (this.previousCommand.keys != string_to_send) {
-      switch (string_to_send) {
-        case "0000":
-          command = "STOP";
-          break;
-        case "1000":
-          command = "F";
-          break;
-        case "0100":
-          command = "L";
-          break;
-        case "0010":
-          command = "B";
-          break;
-        case "0001":
-          command = "R";
-          break;
-        case "1100":
-          command = "FL";
-          break;
-        case "1001":
-          command = "FR";
-          break;
-        case "0110":
-          command = "BL";
-          break;
-        case "0011":
-          command = "BR";
-          break;
-        default:
-          command = "STOP";
-
+    if (equalArray(this.previousCommand.keys, keyMoves)) {
+      command = "";
+      if (keyMoves[0] === 1) {
+        command += "F";
+      } else if (keyMoves[2] === 1) {
+        command += "B";
       }
-    } else if (this.previousCommand.speed != this.power) {
-      command = "S" + this.power.toString();
-    } else if (this.previousCommand.light != this.lightStatus) {
-      if (this.lightStatus === 0) {
+
+      if (keyMoves[1] === 1) {
+        command += "L";
+      } else if (keyMoves[3] === 1) {
+        command += "R";
+      }
+
+      if (command === "") {
+        command = "STOP";
+      }
+
+    } else if (this.previousCommand.speed != this.componentStatus.speed) {
+      command = "S" + this.componentStatus.speed.toString();
+    } else if (this.previousCommand.light != this.componentStatus.light) {
+      if (this.componentStatus.light === 0) {
         command = "LIGHTOFF";
       } else {
         command = "LIGHTON";
@@ -164,29 +164,19 @@ Robot.prototype.updatekey = function() {
 
   }
 
-  this.previousCommand.keys = string_to_send;
-  this.previousCommand.speed = this.power;
-  this.previousCommand.light = this.lightStatus;
+  this.previousCommand.keys = keyMoves;
+  this.previousCommand.speed = this.componentStatus.speed;
+  this.previousCommand.light = this.componentStatus.light;
 
   this.socket.emit("commands", {
-    Hash: this.KeyHash,
-    Key: string_to_send,
-    Speed: this.power,
-    ai: this.aiStatus,
-    light: this.lightStatus,
-    laser: this.laser_status,
-    cam: camMoves
+    cam: camMoves,
+    keys: keyMoves,
+    speed: self.componentStatus.speed,
+    ai: self.componentStatus.ai,
+    light: self.componentStatus.light,
+    laser: self.componentStatus.laser,
   });
 
-  console.log({
-    Hash: this.KeyHash,
-    Key: string_to_send,
-    Speed: this.power,
-    ai: this.aiStatus,
-    light: this.lightStatus,
-    laser: this.laser_status,
-    cam: camMoves
-  });
 };
 
 Robot.prototype.addNewRecording = function() {
@@ -204,7 +194,6 @@ Robot.prototype.drawRecordings = function() {
     $("#rec_window_content").html("");
   }
   for (var i = 0; i < this.recordings.length; i++) {
-    console.log(i);
     $("#rec_window_content").append("<div><span id='rec_name'>" + this.recordings[i].name + "</span> <span id='rec_date'>" + this.recordings[i].date + "</span> <div id='rec_startstop' onClick='PiNet.recordings[" + i + "].start(this)'></div>");
   }
 };
@@ -230,7 +219,7 @@ $(function() {
     containment: 'parent',
     grid: [0, 20],
     drag: function(event, ui) {
-      updateVal();
+      updateSpeed();
     },
     start: function(event, ui) {
       Dragging = true;
@@ -245,7 +234,7 @@ $(function() {
 
 
 
-function updateVal() {
+function updateSpeed() {
   var top = slidthing.style.top;
   top = top.replace("px", "");
   top = 400 - top.valueOf();
@@ -257,21 +246,21 @@ function updateVal() {
     slidthing.childNodes[0].style.color = "#000";
   }
   slidthing.childNodes[0].innerHTML = percent + "%";
-  if (PiNet.power != percent) {
-    PiNet.power = percent;
-    window.PiNet.updatekey();
+  if (PiNet.componentStatus.speed != percent) {
+    PiNet.componentStatus.speed = percent;
+    window.PiNet.update();
   }
 }
 
 
 $("#grabthing").mousedown(function() {
   $(window).mousemove(function() {
-    updateVal();
+    updateSpeed();
   });
 });
 
 $(document).ready(function(e) {
-  updateVal();
+  updateSpeed();
 
   $(".showsidebar").click(function() {
     if (sideBar === 0) {
@@ -295,17 +284,17 @@ $(document).ready(function(e) {
   $(".lightSwitch").click(function() {
     if (window.PiNet.lightStatus === 0) {
       window.PiNet.lightStatus = 1;
-      window.PiNet.updatekey();
+      window.PiNet.update();
       $(".lightSwitch").css("background-color", "#FFF");
       $(".lightSwitch").html("On");
     } else if (window.PiNet.lightStatus == 1) {
       window.PiNet.lightStatus = 2;
-      window.PiNet.updatekey();
+      window.PiNet.update();
       $(".lightSwitch").css("background-color", "rgb(123, 238, 33)");
       $(".lightSwitch").html("Auto");
     } else if (window.PiNet.lightStatus == 2) {
       window.PiNet.lightStatus = 0;
-      window.PiNet.updatekey();
+      window.PiNet.update();
       $(".lightSwitch").css("background-color", "#111");
       $(".lightSwitch").html("Off");
     }
@@ -314,12 +303,12 @@ $(document).ready(function(e) {
   $(".ai").click(function() {
     if (window.PiNet.aiStatus === 0 && window.PiNet.recStatus === 0 && recordings === 0) {
       window.PiNet.aiStatus = 1;
-      window.PiNet.updatekey();
+      window.PiNet.update();
       $(".ai").css("background-color", "rgb(138, 0, 0)");
       $(".ai").html("On");
     } else {
       window.PiNet.aiStatus = 0;
-      window.PiNet.updatekey();
+      window.PiNet.update();
       $(".ai").css("background-color", "#111");
       $(".ai").html("Off");
     }
@@ -363,14 +352,14 @@ $(document).ready(function(e) {
   $("#laser").mousedown(function() {
     $("#laser").css("background-color", "rgb(206, 13, 13)");
     window.PiNet.laser_status = 1;
-    window.PiNet.updatekey();
+    window.PiNet.update();
 
   });
 
   $("#laser").mouseup(function() {
     $("#laser").css("background-color", "");
     window.PiNet.laser_status = 0;
-    window.PiNet.updatekey();
+    window.PiNet.update();
   });
 
 
@@ -419,6 +408,7 @@ Recording.prototype.start = function(obj) {
       status: "start",
       moves: window.JSON.stringify(this.moves)
     });
+    console.log(window.JSON.stringify(this.moves));
     $(obj).css("background-image", "url(images/videostop.png)");
   }
 };

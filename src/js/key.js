@@ -137,7 +137,7 @@ document.addEventListener("keyup", function() {
 
 document.addEventListener("mouseup", function() { //fires when mouse is released clearing all the other buttons.
   if (!Dragging && !is_touch_device) {
-    window.PiNet.keylist = [0, 0, 0, 0];
+    window.PiNet.componentStatus.keys = [0, 0, 0, 0];
     mUp(leftkey, true);
     mUp(upkey, true);
     mUp(rightkey, true);
@@ -149,7 +149,7 @@ document.addEventListener("mouseup", function() { //fires when mouse is released
     mUp(cam_rightkey, true);
     mUp(cam_default, true);
 
-    window.PiNet.updatekey();
+    window.PiNet.update();
   }
 }, false);
 
@@ -158,40 +158,40 @@ document.addEventListener("mouseup", function() { //fires when mouse is released
 function mDown(obj) { //fires when key is pressed
   switch (obj.id) {
     case "upkey":
-      window.PiNet.keylist[0] = 1;
+      window.PiNet.componentStatus.keys[0] = 1;
       break;
     case "leftkey":
-      window.PiNet.keylist[1] = 1;
+      window.PiNet.componentStatus.keys[1] = 1;
       break;
     case "downkey":
-      window.PiNet.keylist[2] = 1;
+      window.PiNet.componentStatus.keys[2] = 1;
       break;
     case "rightkey":
-      window.PiNet.keylist[3] = 1;
+      window.PiNet.componentStatus.keys[3] = 1;
       break;
 
     case "cam_upkey":
-      window.PiNet.camMoves[0] = 1;
+      window.PiNet.componentStatus.cam[0] = 1;
       break;
     case "cam_leftkey":
-      window.PiNet.camMoves[1] = 1;
+      window.PiNet.componentStatus.cam[1] = 1;
       break;
     case "cam_downkey":
-      window.PiNet.camMoves[2] = 1;
+      window.PiNet.componentStatus.cam[2] = 1;
       break;
     case "cam_rightkey":
-      window.PiNet.camMoves[3] = 1;
+      window.PiNet.componentStatus.cam[3] = 1;
       break;
     case "cam_default":
-      window.PiNet.camMoves = [-1, -1, -1, -1];
-      window.PiNet.updatekey();
-      window.PiNet.camMoves = [0, 0, 0, 0];
+      window.PiNet.componentStatus.cam = [-1, -1, -1, -1];
+      window.PiNet.update();
+      window.PiNet.componentStatus.cam = [0, 0, 0, 0];
       break;
 
 
 
   }
-  window.PiNet.updatekey();
+  window.PiNet.update();
   obj.style.backgroundColor = "#454545";
 }
 
@@ -199,32 +199,32 @@ function mUp(obj, all_element) { //fires when key is released
   if (all_element === false) {
     switch (obj.id) {
       case "upkey":
-        window.PiNet.keylist[0] = 0;
+        window.PiNet.componentStatus.keys[0] = 0;
         break;
       case "leftkey":
-        window.PiNet.keylist[1] = 0;
+        window.PiNet.componentStatus.keys[1] = 0;
         break;
       case "downkey":
-        window.PiNet.keylist[2] = 0;
+        window.PiNet.componentStatus.keys[2] = 0;
         break;
       case "rightkey":
-        window.PiNet.keylist[3] = 0;
+        window.PiNet.componentStatus.keys[3] = 0;
         break;
 
       case "cam_upkey":
-        window.PiNet.camMoves[0] = 0;
+        window.PiNet.componentStatus.cam[0] = 0;
         break;
       case "cam_leftkey":
-        window.PiNet.camMoves[1] = 0;
+        window.PiNet.componentStatus.cam[1] = 0;
         break;
       case "cam_downkey":
-        window.PiNet.camMoves[2] = 0;
+        window.PiNet.componentStatus.cam[2] = 0;
         break;
       case "cam_rightkey":
-        window.PiNet.camMoves[3] = 0;
+        window.PiNet.componentStatus.cam[3] = 0;
         break;
     }
-    window.PiNet.updatekey();
+    window.PiNet.update();
   }
   obj.style.backgroundColor = "#B3B1B2";
 }
@@ -234,59 +234,59 @@ $(document).ready(function(e) {
   if (is_touch_device) {
 
     upkey.addEventListener("touchstart", function() {
-      window.PiNet.keylist[0] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[0] = 1;
+      window.PiNet.update();
       upkey.style.backgroundColor = "#454545";
     }, false);
 
     downkey.addEventListener("touchstart", function() {
-      window.PiNet.keylist[2] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[2] = 1;
+      window.PiNet.update();
       downkey.style.backgroundColor = "#454545";
     }, false);
 
     leftkey.addEventListener("touchstart", function() {
-      window.PiNet.keylist[1] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[1] = 1;
+      window.PiNet.update();
       leftkey.style.backgroundColor = "#454545";
     }, false);
 
     rightkey.addEventListener("touchstart", function() {
-      window.PiNet.keylist[3] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[3] = 1;
+      window.PiNet.update();
       rightkey.style.backgroundColor = "#454545";
     }, false);
 
 
     cam_upkey.addEventListener("touchstart", function() {
-      window.PiNet.camMoves[0] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[0] = 1;
+      window.PiNet.update();
       cam_upkey.style.backgroundColor = "#454545";
     }, false);
 
     cam_downkey.addEventListener("touchstart", function() {
-      window.PiNet.camMoves[2] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[2] = 1;
+      window.PiNet.update();
       cam_downkey.style.backgroundColor = "#454545";
     }, false);
 
     cam_leftkey.addEventListener("touchstart", function() {
-      window.PiNet.camMoves[1] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[1] = 1;
+      window.PiNet.update();
       cam_leftkey.style.backgroundColor = "#454545";
     }, false);
 
     cam_rightkey.addEventListener("touchstart", function() {
-      window.PiNet.camMoves[3] = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[3] = 1;
+      window.PiNet.update();
       cam_rightkey.style.backgroundColor = "#454545";
     }, false);
 
     cam_default.addEventListener("touchstart", function() {
-      window.PiNet.camMoves = [-1, -1, -1, -1];
-      window.PiNet.updatekey();
-      window.PiNet.camMoves = [0, 0, 0, 0];
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam = [-1, -1, -1, -1];
+      window.PiNet.update();
+      window.PiNet.componentStatus.cam = [0, 0, 0, 0];
+      window.PiNet.update();
       cam_default.style.backgroundColor = "#454545";
     }, false);
 
@@ -294,50 +294,50 @@ $(document).ready(function(e) {
 
 
     upkey.addEventListener("touchend", function() {
-      window.PiNet.keylist[0] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[0] = 0;
+      window.PiNet.update();
       upkey.style.backgroundColor = "#B3B1B2";
     }, false);
 
     downkey.addEventListener("touchend", function() {
-      window.PiNet.keylist[2] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[2] = 0;
+      window.PiNet.update();
       downkey.style.backgroundColor = "#B3B1B2";
     }, false);
 
     leftkey.addEventListener("touchend", function() {
-      window.PiNet.keylist[1] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[1] = 0;
+      window.PiNet.update();
       leftkey.style.backgroundColor = "#B3B1B2";
     }, false);
 
     rightkey.addEventListener("touchend", function() {
-      window.PiNet.keylist[3] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.keys[3] = 0;
+      window.PiNet.update();
       rightkey.style.backgroundColor = "#B3B1B2";
     }, false);
 
     cam_upkey.addEventListener("touchend", function() {
-      window.PiNet.camMoves[0] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[0] = 0;
+      window.PiNet.update();
       cam_upkey.style.backgroundColor = "#B3B1B2";
     }, false);
 
     cam_downkey.addEventListener("touchend", function() {
-      window.PiNet.camMoves[2] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[2] = 0;
+      window.PiNet.update();
       cam_downkey.style.backgroundColor = "#B3B1B2";
     }, false);
 
     cam_leftkey.addEventListener("touchend", function() {
-      window.PiNet.camMoves[1] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[1] = 0;
+      window.PiNet.update();
       cam_leftkey.style.backgroundColor = "#B3B1B2";
     }, false);
 
     cam_rightkey.addEventListener("touchend", function() {
-      window.PiNet.camMoves[3] = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.cam[3] = 0;
+      window.PiNet.update();
       cam_rightkey.style.backgroundColor = "#B3B1B2";
     }, false);
     cam_default.addEventListener("touchend", function() {
@@ -346,14 +346,14 @@ $(document).ready(function(e) {
 
     document.getElementById("laser").addEventListener("touchstart", function() {
       $("#laser").css("background-color", "rgb(206, 13, 13)");
-      window.PiNet.laser_status = 1;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.laser = 1;
+      window.PiNet.update();
     });
 
     document.getElementById("laser").addEventListener("touchend", function() {
       $("#laser").css("background-color", "");
-      window.PiNet.laser_status = 0;
-      window.PiNet.updatekey();
+      window.PiNet.componentStatus.laser = 0;
+      window.PiNet.update();
     });
 
   } else {
