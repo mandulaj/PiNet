@@ -1,5 +1,11 @@
 {
   "version": "1.0.0",
+  "ssl": true,
+  "keys": {
+    "key": "./keys/server.key",
+    "cert": "./keys/server.crt"
+  },
+  "port": 3000,
   "db": "userdb.db",
   "secret": "pianocat",
   "hash": {

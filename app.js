@@ -1,5 +1,8 @@
-var express = require('express'),
+var https = require('https'),
+  http = require('http'),
+  express = require('express'),
   path = require('path'),
+  fs = require('fs'),
   favicon = require('serve-favicon'),
   logger = require('morgan'),
   cookieParser = require('cookie-parser'),
@@ -7,10 +10,25 @@ var express = require('express'),
   passport = require('passport'),
   sqlite3 = require('sqlite3').verbose(),
   session = require('express-session'),
+  io = require('socket.io'),
   config = require('./config/config.json');
+
 
 var app = express();
 var db = new sqlite3.Database(config.db);
+var server;
+if (config.ssl) {
+  var options = {
+    key: fs.readFileSync(config.keys.key),
+    cert: fs.readFileSync(config.keys.cert)
+  };
+  server = https.createServer(options, app).listen(config.port);
+} else {
+  server = http.createServer(app).listen(config.port);
+}
+console.log('Express server listening on http' + ((config.ssl) ? ("s") : ("")) + "://127.0.0.1:" + server.address().port);
+
+var socket = io(server);
 
 db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
 db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ))");
