@@ -7,7 +7,11 @@
   },
   "port": 3000,
   "db": "userdb.db",
-  "secret": "pianocat",
+  "secrets": {
+    "generateRandom": false,
+    "jwt": "I had to go to the toilet last night!",
+    "cookie": "Cookie cats don't exist but PI cats are real, no joke!"
+  },
   "hash": {
     "name": "sha256",
     "encoding": "hex"
