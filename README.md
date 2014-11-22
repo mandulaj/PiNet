@@ -1,7 +1,7 @@
 PiNet
 =========
 
-**P**artially **i**ntelligent **N**etwork **e**nabled **t**ractor
+**P** artially **i** ntelligent **N** etwork **e** nabled **t** ractor
 
 ~~The shame of my life XD~~
 
