@@ -12,16 +12,16 @@ SOCKET_PORT = 8800  # Port to which the socket is bonded
 SOCKET_HOST = '127.0.0.1'
 PRINT_TO_CONSOLE = False  # If true prints messages to the console
 DEBUG = False  # If true prints messages marked as 'debug' to console
-PINS = [11, 12, 13, 15, 23, 19, 18, 16]
-
-# 11 - RF
-# 12 - RB
-# 13 - LF
-# 15 - LB
-# 23 - Light
-# 19 - Laser
-# 18 - ServoH
-# 16 - ServoV
+PINS = {
+    "rf": 11,
+    "rb": 12,
+    "lf": 13,
+    "lb"15,
+    "light": 23,
+    "laser"19,
+    "servoH": 18,
+    "servoV": 16
+}
 
 
 CODE = {  # object setting up the colors used to print to terminal
@@ -80,13 +80,21 @@ def colorstr(astr, color):
 class NetworkDriver():
 
     def __init__(self, pinArray, host, port):
-        self.Key = "0000"
-        self.Cam = "default"
-        self.Speed = 100
-        self.Light = 0
-        self.Laser = 0
-        self.Running = 1
-        self.Robot = PiNet(pinArray[0], pinArray[1], pinArray[2], pinArray[3], pinArray[4], pinArray[5], pinArray[6], pinArray[7])
+        self.componentsStatus = {
+            "key": [0, 0, 0, 0],
+            "cam": "default",
+            "speed": 100,
+            "light": False,
+            "laser": False,
+            "running": True
+        }
+        #self.Key = "0000"
+        #self.Cam = "default"
+        #self.Speed = 100
+        #self.Light = 0
+        #self.Laser = 0
+        #self.Running = 1
+        self.Robot = PiNet(pinArray)
         self.serversocket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)  # sets up the socket
 
@@ -105,41 +113,44 @@ class NetworkDriver():
             self.serversocket.listen(1)
         self.writeLog("Success in setting up socket", "info")
         self.writeLog("Server running on: " +
-                      str(self.SOCKET_HOST) + ":" + str(self.SOCKET_PORT), "debug")
+                      str(self.SOCKET_HOST) +
+                      ":" +
+                      str(self.SOCKET_PORT), "debug")
 
     # sets the global Key and Speed to the values received from the socket
     def parseData(self, data):
         # print "Data: "+data
-        if data[0] == "0" or data[0] == "1":
-            self.writeLog(data, "debug")
-            splitArr = data.split(",")
-            if len(splitArr) == 5:
-                self.Key = splitArr[0]
-                self.Speed = int(splitArr[1])
-                self.Light = int(splitArr[2])
-                self.Laser = int(splitArr[3])
-                self.Cam = splitArr[4]
-            else:
-                self.Key = "0000"
-                self.Speed = 100
-                self.Light = 0
-                self.Laser = 0
-                self.Cam = "default"
-        else:
-            if data == "STOPMISSION":
-                try:
-                    self.mRef.stop()
-                except AttributeError:
-                    self.writeLog("No Mission going...", "debug")
-            else:
-                moves = eval(data)
-                mission = Mission(self.Robot)
-                mission.new(moves)
-                mission.run()
 
-                return mission
+        # if data[0] == "0" or data[0] == "1":
+        #     self.writeLog(data, "debug")
+        #     splitArr = data.split(",")
+        #     if len(splitArr) == 5:
+        #         self.Key = splitArr[0]
+        #         self.Speed = int(splitArr[1])
+        #         self.Light = int(splitArr[2])
+        #         self.Laser = int(splitArr[3])
+        #         self.Cam = splitArr[4]
+        #     else:
+        #         self.Key = "0000"
+        #         self.Speed = 100
+        #         self.Light = 0
+        #         self.Laser = 0
+        #         self.Cam = "default"
+        # else:
+        #     if data == "STOPMISSION":
+        #         try:
+        #             self.mRef.stop()
+        #         except AttributeError:
+        #             self.writeLog("No Mission going...", "debug")
+        #     else:
+        #         moves = eval(data)
+        #         mission = Mission(self.Robot)
+        #         mission.new(moves)
+        #         mission.run()
+        #
+        #         return mission
 
-    # used to write messages to the log file + print them to the screen
+        # used to write messages to the log file + print them to the screen
     def writeLog(self, message, mode="info", writeToFile=True):
         string = "Python>>> "
         global PRINT_TO_CONSOLE, DEBUG
@@ -169,55 +180,80 @@ class NetworkDriver():
                 time.strftime("%a, %d %b %Y %H:%M:%S >>> ", time.gmtime()) + message + "\n")
             a.close()
 
+    def direction(self):
+        key = self.componentsStatus["key"]
+
+        if key == [0, 0, 0, 0]:
+            return "stop"
+
+        direction = ""
+
+        if key[0] == 1:
+            direction += "f"
+        elif key[2] == 1:
+            direction += "b"
+
+        if key[1] == 1:
+            direction += "l"
+        elif key[3] == 1:
+            direction += "r"
+
+        if direction == "":
+            return "stop"
+        else:
+            return direction
+
     def run(self):
         try:
             # Main loop -------------------------------------------------------
             while self.Running:
                 (clientsocket, address) = self.serversocket.accept()
                 while 1:
-                    # get 10 bytes of data 4_key + 3_speed + 1_light + 2_comma
                     data = clientsocket.recv(8192)
                     self.mRef = self.parseData(data)  # parse it
 
                     if not data:
                         break
 
+                    direction = self.direction()
+                    speed = self.componentsStatus['speed']
                     # I KNOW I COULD USE JUST ONE NUMBER INSTEAD BUT IT IS
                     # EASIER TO READ WHEN I SEE THE NUMBERS VISUALLY
-                    if self.Key == "1000":
-                        self.Robot.go(self.Speed, 0)
-                    elif self.Key == "0001":
-                        self.Robot.go(self.Speed, 90)
-                    elif self.Key == "0100":
-                        self.Robot.go(self.Speed, -90)
-                    elif self.Key == "0010":
-                        self.Robot.go(self.Speed, 180)
-                    elif self.Key == "1100":
-                        self.Robot.go(self.Speed, -45)
-                    elif self.Key == "1001":
-                        self.Robot.go(self.Speed, 45)
-                    elif self.Key == "0110":
-                        self.Robot.go(self.Speed, -135)
-                    elif self.Key == "0011":
-                        self.Robot.go(self.Speed, 135)
-                    elif self.Key == "0000":
+                    if direction == "f":
+                        self.Robot.go(speed, 0)
+                    elif direction == "r":
+                        self.Robot.go(speed, 90)
+                    elif direction == "l":
+                        self.Robot.go(speed, -90)
+                    elif direction == "b":
+                        self.Robot.go(speed, 180)
+                    elif direction == "fl":
+                        self.Robot.go(speed, -45)
+                    elif direction == "fr":
+                        self.Robot.go(speed, 45)
+                    elif direction == "bl":
+                        self.Robot.go(speed, -135)
+                    elif direction == "br":
+                        self.Robot.go(speed, 135)
+                    else:  # direction == "stop" or invalid
                         self.Robot.stop()
-                    self.Robot.setLight(self.Light)
-                    self.Robot.setLaser(self.Laser)
-                    self.Robot.changeCam(self.Cam)
+
+                    self.Robot.setLight(self.componentsStatus['light'])
+                    self.Robot.setLaser(self.componentsStatus['laser'])
+                    self.Robot.changeCam(self.componentsStatus['cam'])
                     self.writeLog(
                         "Speed: " + str(self.Speed) + "\nKey: " + self.Key + "\n", "debug")
 
         except KeyboardInterrupt:  # catches Ctrl-C Keyboard-Interrupt
             self.writeLog("Exiting...\n", "info")
 
-        # finally:
-        # final clean-up
-        self.Robot.closeMe()
-        self.serversocket.shutdown(socket.SHUT_RDWR)
-        self.serversocket.close()
-        self.writeLog("Exiting...", "debug")
-        sys.exit(0)
+        finally:
+            # final clean-up
+            self.Robot.closeMe()
+            self.serversocket.shutdown(socket.SHUT_RDWR)
+            self.serversocket.close()
+            self.writeLog("Exiting...", "debug")
+            sys.exit(0)
 
 
 if __name__ == "__main__":
