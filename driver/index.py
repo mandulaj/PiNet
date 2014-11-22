@@ -86,8 +86,7 @@ class NetworkDriver():
         self.Light = 0
         self.Laser = 0
         self.Running = 1
-        self.Robot = PiNet(pinArray[0], pinArray[1], pinArray[2], pinArray[
-                           3], pinArray[4], pinArray[5], pinArray[6], pinArray[7])
+        self.Robot = PiNet(pinArray[0], pinArray[1], pinArray[2], pinArray[3], pinArray[4], pinArray[5], pinArray[6], pinArray[7])
         self.serversocket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)  # sets up the socket
 

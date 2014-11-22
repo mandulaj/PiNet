@@ -3,6 +3,7 @@ var https = require('https'),
   express = require('express'),
   path = require('path'),
   fs = require('fs'),
+  colors = require('colors'),
   favicon = require('serve-favicon'),
   logger = require('morgan'),
   cookieParser = require('cookie-parser'),
@@ -11,7 +12,9 @@ var https = require('https'),
   sqlite3 = require('sqlite3').verbose(),
   session = require('express-session'),
   io = require('socket.io'),
-  config = require('./config/config.json');
+  config = require('./config/config.json'),
+  socketioJwt = require('socketio-jwt'),
+  PiNet = require("./lib/pinet.js");
 
 
 var app = express();
@@ -26,12 +29,24 @@ if (config.ssl) {
 } else {
   server = http.createServer(app).listen(config.port);
 }
-console.log('Express server listening on http' + ((config.ssl) ? ("s") : ("")) + "://127.0.0.1:" + server.address().port);
+console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.ssl) ? ("s".green) : ("")) + "://localhost:".green + server.address().port.toString().green);
 
 var socket = io(server);
 
+socket.use(socketioJwt.authorize({
+  secret: config.secrets.jwt,
+  handshake: true
+}));
+
+
+var Robot = PiNet(socket, {
+  port: 8800
+});
+
 db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
 db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ))");
+
+process.title = 'PiNet.js';
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
