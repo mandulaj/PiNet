@@ -1,7 +1,7 @@
 PiNet
 =========
 
-Partially intelligent autonomic self learning artificial intelligence
+**P**artially **i**ntelligent **N**etwork **e**nabled **t**ractor
 
 ~~The shame of my life XD~~
 
