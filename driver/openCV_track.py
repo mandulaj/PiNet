@@ -7,15 +7,15 @@ import threading
 
 class Src():
 
-    def __init__(self, type="MJPG", host="127.0.0.1", port="8080"):
-        if type == "MJPG":
+    def __init__(self, filetype="MJPG", host="127.0.0.1", port="8080"):
+        if filetype == "MJPG":
             self.SRC = "http://" + host + ":" + \
                 port + "/?action=stream&dummy=mjpg"
-        elif type == "UDP":
+        elif filetype == "UDP":
             self.SRC = "udp://@" + host + ":" + port
-        elif type == "LOCAL":
+        elif filetype == "LOCAL":
             self.SRC = 0
-        elif type == "HTTP":
+        elif filetype == "HTTP":
             self.SRC = "http://" + host + ":" + port
 
 
@@ -28,9 +28,8 @@ class Tracker(threading.Thread):
         threading.Thread.__init__(self)
         self.src = src
         self.cap = cv2.VideoCapture(self.src)
-        if cap.isOpen():
+        if self.cap.isOpen():
             raise
-        else:
 
     def start(self):
         pass
@@ -47,21 +46,20 @@ class Tracker(threading.Thread):
         self.cap = cv2.VideoCapture(self.src)
         self.start()
 
+        print(self.cap.isOpened())
+        while(True):
+            ret, frame = self.cap.read()
+            if not ret:
+                print "Error grabbing frame"
+                break
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(1) == ord('q'):
+                break
 
-print(cap.isOpened())
-while(True):
-    ret, frame = cap.read()
-    if not ret:
-        print "Error grabbing frame"
-        break
-    cv2.imshow('frame', frame)
-    if cv2.waitKey(1) == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
+        self.cap.release()
+        cv2.destroyAllWindows()
 
 
 print ("Hello world")
 
-input()
+end = input()

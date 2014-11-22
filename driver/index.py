@@ -4,7 +4,8 @@ import socket
 import sys
 import traceback
 import time
-from PiControl import *
+import json
+import PiControl
 
 
 SOCKET_PORT = 8800  # Port to which the socket is bonded
@@ -13,14 +14,14 @@ SOCKET_HOST = '127.0.0.1'
 PRINT_TO_CONSOLE = False  # If true prints messages to the console
 DEBUG = False  # If true prints messages marked as 'debug' to console
 PINS = {
-    "rf": 11,
-    "rb": 12,
-    "lf": 13,
-    "lb"15,
-    "light": 23,
-    "laser"19,
-    "servoH": 18,
-    "servoV": 16
+    "RightFront": 11,
+    "RightBack": 12,
+    "LeftFront": 13,
+    "LeftBack": 15,
+    "Light": 23,
+    "Laser": 19,
+    "ServoH": 18,
+    "ServoV": 16
 }
 
 
@@ -81,20 +82,15 @@ class NetworkDriver():
 
     def __init__(self, pinArray, host, port):
         self.componentsStatus = {
-            "key": [0, 0, 0, 0],
+            "keys": [0, 0, 0, 0],
             "cam": "default",
             "speed": 100,
             "light": False,
             "laser": False,
             "running": True
         }
-        #self.Key = "0000"
-        #self.Cam = "default"
-        #self.Speed = 100
-        #self.Light = 0
-        #self.Laser = 0
-        #self.Running = 1
-        self.Robot = PiNet(pinArray)
+
+        self.Robot = PiControl.PiNet(pinArray)
         self.serversocket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)  # sets up the socket
 
@@ -120,37 +116,55 @@ class NetworkDriver():
     # sets the global Key and Speed to the values received from the socket
     def parseData(self, data):
         # print "Data: "+data
+        data = json.loads(data)
 
-        # if data[0] == "0" or data[0] == "1":
-        #     self.writeLog(data, "debug")
-        #     splitArr = data.split(",")
-        #     if len(splitArr) == 5:
-        #         self.Key = splitArr[0]
-        #         self.Speed = int(splitArr[1])
-        #         self.Light = int(splitArr[2])
-        #         self.Laser = int(splitArr[3])
-        #         self.Cam = splitArr[4]
-        #     else:
-        #         self.Key = "0000"
-        #         self.Speed = 100
-        #         self.Light = 0
-        #         self.Laser = 0
-        #         self.Cam = "default"
-        # else:
-        #     if data == "STOPMISSION":
-        #         try:
-        #             self.mRef.stop()
-        #         except AttributeError:
-        #             self.writeLog("No Mission going...", "debug")
-        #     else:
-        #         moves = eval(data)
-        #         mission = Mission(self.Robot)
-        #         mission.new(moves)
-        #         mission.run()
-        #
-        #         return mission
+        if data['message'] == "commands":
+            self.componentsStatus = {
+                "keys": data['keys'],
+                "cam": data['cam'],
+                "speed": data['speed'],
+                "light": data['light'],
+                "laser": data['laser'],
+                "running":   self.componentsStatus['running']
+            }
 
-        # used to write messages to the log file + print them to the screen
+        elif data['message'] == "mission":
+            if data['status'] == "start":
+                self.Robot.startMission(data['moves'])
+            elif data['status'] == "stop":
+                self.Robot.stopMission()
+
+                # if data[0] == "0" or data[0] == "1":
+                #     self.writeLog(data, "debug")
+                #     splitArr = data.split(",")
+                #     if len(splitArr) == 5:
+                #         self.Key = splitArr[0]
+                #         self.Speed = int(splitArr[1])
+                #         self.Light = int(splitArr[2])
+                #         self.Laser = int(splitArr[3])
+                #         self.Cam = splitArr[4]
+                #     else:
+                #         self.Key = "0000"
+                #         self.Speed = 100
+                #         self.Light = 0
+                #         self.Laser = 0
+                #         self.Cam = "default"
+                # else:
+                #     if data == "STOPMISSION":
+                #         try:
+                #             self.mRef.stop()
+                #         except AttributeError:
+                #             self.writeLog("No Mission going...", "debug")
+                #     else:
+                #         moves = eval(data)
+                #         mission = Mission(self.Robot)
+                #         mission.new(moves)
+                #         mission.run()
+                #
+                #         return mission
+
+                # used to write messages to the log file + print them to the
+                # screen
     def writeLog(self, message, mode="info", writeToFile=True):
         string = "Python>>> "
         global PRINT_TO_CONSOLE, DEBUG
@@ -181,21 +195,21 @@ class NetworkDriver():
             a.close()
 
     def direction(self):
-        key = self.componentsStatus["key"]
+        keys = self.componentsStatus["keys"]
 
-        if key == [0, 0, 0, 0]:
+        if keys == [0, 0, 0, 0]:
             return "stop"
 
         direction = ""
 
-        if key[0] == 1:
+        if keys[0] == 1:
             direction += "f"
-        elif key[2] == 1:
+        elif keys[2] == 1:
             direction += "b"
 
-        if key[1] == 1:
+        if keys[1] == 1:
             direction += "l"
-        elif key[3] == 1:
+        elif keys[3] == 1:
             direction += "r"
 
         if direction == "":
@@ -206,11 +220,11 @@ class NetworkDriver():
     def run(self):
         try:
             # Main loop -------------------------------------------------------
-            while self.Running:
+            while self.componentsStatus["running"]:
                 (clientsocket, address) = self.serversocket.accept()
                 while 1:
                     data = clientsocket.recv(8192)
-                    self.mRef = self.parseData(data)  # parse it
+                    self.parseData(data)  # parse it
 
                     if not data:
                         break
@@ -241,8 +255,6 @@ class NetworkDriver():
                     self.Robot.setLight(self.componentsStatus['light'])
                     self.Robot.setLaser(self.componentsStatus['laser'])
                     self.Robot.changeCam(self.componentsStatus['cam'])
-                    self.writeLog(
-                        "Speed: " + str(self.Speed) + "\nKey: " + self.Key + "\n", "debug")
 
         except KeyboardInterrupt:  # catches Ctrl-C Keyboard-Interrupt
             self.writeLog("Exiting...\n", "info")
