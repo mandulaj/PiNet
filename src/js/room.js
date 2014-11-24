@@ -5,15 +5,156 @@ var is_touch_device = 'ontouchstart' in document.documentElement;
 var sideBar = 0;
 var recordings = 0;
 */
-function UIWindow() {
+
+function KeyEventHandler(robot){
+  var self = this;
+  this.robot = robot;
+  this.is_touch_device = 'ontouchstart' in window;
   this.dragging = false;
-  this.is_touch_device = 'ontouchstart' in document.documentElement;
-  this.sideBar = false;
-  this.recording = false;
+  console.log(this.is_touch_device)
+  this.keys = [38,37,40,39,87,65,88,68,83];
+  this.keyStatus = [false,false,false,false,false,false,false,false,false];
+  this.otherComponents = {
+    light: false,
+    laser: false,
+    ai: false
+  }
+  this.keyElements = [
+    $('#upkey'),
+    $('#leftkey'),
+    $('#downkey'),
+    $('#rightkey'),
+    $('#cam_upkey'),
+    $('#cam_leftkey'),
+    $('#cam_downkey'),
+    $('#cam_rightkey'),
+    $('#cam_default')
+  ];
+
+
+  $(document).keydown(function(e){
+    var index = self.keys.indexOf(e.keyCode);
+    self.handleDown(index);
+  });
+  $(document).keyup(function(e){
+    var index = self.keys.indexOf(e.keyCode);
+    self.handleUp(index);
+  });
+
+  for (var i = 0; i < self.keyElements.length; i++) {
+    var element = self.keyElements[i];
+    // If we use touch device only assign the required listeners and vice versa
+    if (self.is_touch_device) {
+      element[0].addEventListener("ontouchstart", function(i){
+        self.handleDown(i);
+      }.bind(null, i));
+      element[0].addEventListener("ontouchend", function(i){
+        self.handleUp(i);
+      }.bind(null, i));
+    } else {
+      element.mousedown(function(i){
+        self.handleDown(i);
+      }.bind(null, i));
+      element.mouseup(function(){
+        // lift all keys only if we are not dragging currently
+        if (!self.dragging) {
+          self.allUp(); // lift all keys because we can be pressing only one when using the mouse
+        };
+      });
+    }
+  };
+
+  // Laser button listeners
+  var laser = $("#laser");
+  if (self.is_touch_device) {
+    laser[0].addEventListener("ontouchstart", function(){
+      if (!self.otherComponents.laser) {
+        self.otherComponents.laser = true;
+        laser.addClass("activated");
+        self.update();
+      }
+    });
+    laser[0].addEventListener("ontouchend", function(){
+      if (self.otherComponents.laser) {
+        self.otherComponents.laser = false;
+        laser.removeClass("activated");
+        self.update();
+      }
+    });
+  } else {
+    laser.mousedown(function(){
+      if (!self.otherComponents.laser) {
+        self.otherComponents.laser = true;
+        laser.addClass("activated");
+        self.update();
+      }
+    });
+    laser.mouseup(function(){
+      if (self.otherComponents.laser) {
+        self.otherComponents.laser = false;
+        laser.removeClass("activated");
+        self.update();
+      }
+    });
+  }
 }
+
+// Presses down the keys with the specified index and triggers and update
+KeyEventHandler.prototype.handleDown = function(index){
+  // only trigger if the index is valid and the key is not already pressed
+  if (index >= 0 && !this.keyStatus[index]) {
+    this.keyStatus[index] = true;
+    this.keyElements[index].addClass("pressedKey");
+    this.update();
+  };
+};
+
+// Lifts the keys with the specified index and triggers and update
+KeyEventHandler.prototype.handleUp = function(index){
+  // only trigger if the index is valid and the key is already pressed
+  if (index >= 0 && this.keyStatus[index]) {
+    this.keyStatus[index] = false;
+    this.keyElements[index].removeClass("pressedKey");
+    this.update();
+  };
+};
+
+
+// Lifts all keys and triggers and update on the robot object
+KeyEventHandler.prototype.allUp = function(){
+  for (var i = this.keyElements.length - 1; i >= 0; i--) {
+    this.keyStatus[i] = false;
+    var element = this.keyElements[i];
+    element.removeClass("pressedKey");
+  };
+  this.update();
+};
+
+
+// Updates the values in the Robot object
+KeyEventHandler.prototype.update = function(){
+  var self = this;
+
+  // set cam to default if the default key is being pressed
+  var cameraKeys;
+  if (self.keyStatus[8]) {
+    cameraKeys = [-1,-1,-1,-1];
+  } else {
+    cameraKeys = self.keyStatus.slice(4, 8);
+  }
+
+  // Update the robot object
+  self.robot.updateUserInput({
+    keys: self.keyStatus.slice(0, 4),
+    cam: cameraKeys
+  });
+};
+
 
 function Robot() {
   var self = this;
+  this.keyEventHandler = new KeyEventHandler(this);
+
   this.componentStatus = {
     keys: [0, 0, 0, 0],
     speed: 100,
@@ -68,6 +209,11 @@ Robot.prototype.updateStatus = function(status) {
   $(".piStats>#stat_load").html(lav.toFixed(2) + "%");
   $(".piStats>#stat_freeRam").html(freeRam.toFixed(2) + "%");
   $(".piStats>#stat_totalRam").html(memory.toFixed(2) + suffix);
+};
+
+Robot.prototype.updateUserInput = function(data) {
+  this.componentStatus.keys = data.keys;
+  this.componentStatus.cam = data.cam;
 };
 
 Robot.prototype.update = function() {
@@ -232,7 +378,7 @@ $(function() {
   });
 });
 
-
+/*
 
 function updateSpeed() {
   var top = slidthing.style.top;
@@ -250,17 +396,17 @@ function updateSpeed() {
     PiNet.componentStatus.speed = percent;
     window.PiNet.update();
   }
-}
+}*/
 
 
 $("#grabthing").mousedown(function() {
   $(window).mousemove(function() {
-    updateSpeed();
+    //updateSpeed();
   });
 });
 
 $(document).ready(function(e) {
-  updateSpeed();
+  //updateSpeed();
 
   $(".showsidebar").click(function() {
     if (sideBar === 0) {
