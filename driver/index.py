@@ -115,7 +115,6 @@ class NetworkDriver():
 
     # sets the global Key and Speed to the values received from the socket
     def parseData(self, data):
-        # print "Data: "+data
         data = json.loads(data)
 
         if data['message'] == "commands":
@@ -133,38 +132,7 @@ class NetworkDriver():
                 self.Robot.startMission(data['moves'])
             elif data['status'] == "stop":
                 self.Robot.stopMission()
-
-                # if data[0] == "0" or data[0] == "1":
-                #     self.writeLog(data, "debug")
-                #     splitArr = data.split(",")
-                #     if len(splitArr) == 5:
-                #         self.Key = splitArr[0]
-                #         self.Speed = int(splitArr[1])
-                #         self.Light = int(splitArr[2])
-                #         self.Laser = int(splitArr[3])
-                #         self.Cam = splitArr[4]
-                #     else:
-                #         self.Key = "0000"
-                #         self.Speed = 100
-                #         self.Light = 0
-                #         self.Laser = 0
-                #         self.Cam = "default"
-                # else:
-                #     if data == "STOPMISSION":
-                #         try:
-                #             self.mRef.stop()
-                #         except AttributeError:
-                #             self.writeLog("No Mission going...", "debug")
-                #     else:
-                #         moves = eval(data)
-                #         mission = Mission(self.Robot)
-                #         mission.new(moves)
-                #         mission.run()
-                #
-                #         return mission
-
-                # used to write messages to the log file + print them to the
-                # screen
+          
     def writeLog(self, message, mode="info", writeToFile=True):
         string = "Python>>> "
         global PRINT_TO_CONSOLE, DEBUG
