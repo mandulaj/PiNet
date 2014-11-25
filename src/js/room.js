@@ -259,7 +259,10 @@ KeyEventHandler.prototype.update = function(){
   self.robot.updateUserInput({
     keys: self.keyStatus.slice(0, 4),
     cam: cameraKeys,
-    speed: self.otherComponents.speed
+    speed: self.otherComponents.speed,
+    light: self.otherComponents.light,
+    laser: self.otherComponents.laser,
+    ai: self.otherComponents.ai
   });
 };
 
@@ -397,17 +400,17 @@ Robot.prototype.update = function() {
 
   if (this.getRecordingStatus()) {
     var command = "STOP";
-    if (equalArray(this.previousCommand.keys, keyMoves)) {
+    if (!equalArray(this.previousCommand.keys, keyMoves)) {
       command = "";
-      if (keyMoves[0] === 1) {
+      if (keyMoves[0]) {
         command += "F";
-      } else if (keyMoves[2] === 1) {
+      } else if (keyMoves[2]) {
         command += "B";
       }
 
-      if (keyMoves[1] === 1) {
+      if (keyMoves[1]) {
         command += "L";
-      } else if (keyMoves[3] === 1) {
+      } else if (keyMoves[3]) {
         command += "R";
       }
 
