@@ -395,6 +395,28 @@ h3 {
 
 }
 
+.component-btn {
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  text-align: center;
+  line-height: 75px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  width: 75px;
+  height: 75px;
+  border-radius: 50px;
+  box-shadow: 0 0 20px #fff;
+  background-color: #111;
+  border: 2px solid #666;
+  transition: @transitionSpeed background-color, @transitionSpeed color;
+  &:hover {
+    color: #999;
+  }
+}
+
 .showsideBar {
   text-align: right;
   padding-right: 5px;
@@ -411,7 +433,7 @@ h3 {
     background-color: #333;
   }
 }
-
+/*
 .lightSwitch {
   cursor: pointer;
   margin-left: auto;
@@ -458,7 +480,7 @@ h3 {
     color: #999;
   }
 }
-
+*/
 .cover {
   z-index: 100;
   position: fixed;
@@ -468,6 +490,7 @@ h3 {
   background-color: #fff;
 
 }
+
 #recIndic {
   width: 20px;
   height: 20px;
@@ -479,6 +502,7 @@ h3 {
   animation: rec 3s infinite;
 
 }
+
 .rec_window {
   text-align: center;
   font-size: 24px;
