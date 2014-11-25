@@ -11,14 +11,14 @@ function KeyEventHandler(robot){
   this.robot = robot;
   this.is_touch_device = 'ontouchstart' in window;
   this.dragging = false;
-  console.log(this.is_touch_device)
   this.keys = [38,37,40,39,87,65,88,68,83];
   this.keyStatus = [false,false,false,false,false,false,false,false,false];
   this.otherComponents = {
-    light: false,
+    light: 0,
     laser: false,
     ai: false,
-    speed: 100
+    speed: 100,
+    recordings_window: false
   }
   this.keyElements = [
     $('#upkey'),
@@ -127,6 +127,88 @@ function KeyEventHandler(robot){
       }, 10);
     }
   });
+
+
+  $(".showsideBar").click(function(){
+    $(this).parent().toggleClass("open");
+  });
+
+  $(".lightSwitch").click(function() {
+    var status = self.otherComponents.light;
+    var text = "Off";
+    var color = "#111";
+    if (status === 0) {
+      status = 1;
+      color = "#FFF";
+      text = "On";
+    } else if (status === 1) {
+      status = 2;
+      color = "rgb(123, 238, 33)";
+      text = "Auto";
+    } else if (status === 2) {
+      status = 0;
+      color = "#111";
+      text = "Off";
+    }
+    self.otherComponents.light = status;
+    self.update();
+    $(".lightSwitch").css("background-color", color);
+    $(".lightSwitch").html(text);
+  });
+
+  $(".ai").click(function() {
+    var text = "Off";
+    var color = "#111";
+    if (!self.otherComponents.ai && !self.robot.getRecordingStatus() && !self.otherComponents.recordings_window) {
+      self.otherComponents.ai = true;
+      color = "rgb(138, 0, 0)";
+      text = "On";
+    } else {
+      self.otherComponents.ai = false;
+      color = "#111";
+      text = "Off";
+    }
+
+    $(".ai").css("background-color", color);
+    $(".ai").html(text);
+    self.update();
+  });
+
+  $(".rec").click(function() {
+    var text = "Off";
+    if (!self.robot.getRecordingStatus() && !self.otherComponents.ai && !self.otherComponents.recordings_window) {
+      self.robot.addNewRecording();
+      text = "On";
+      $(".rec").addClass("active_recording");
+      // TODO: remove the following line of code:
+      $("#recIndic").fadeIn(200);
+
+    } else {
+      self.robot.stopRecording();
+      text = "Off";
+      $(".rec").removeClass("active_recording");
+      $("#recIndic").fadeOut(200);
+    }
+    $(".rec").html(text);
+  });
+
+  $(".rec_view").click(function() {
+    if (!self.robot.getRecordingStatus() && !self.otherComponents.ai && !self.otherComponents.recordings_window) {
+      self.otherComponents.recordings_window = 1;
+      self.robot.drawRecordings();
+      $(".rec_window").fadeIn(500);
+    } else {
+      self.otherComponents.recordings_window = 0;
+      self.robot.stopAllMissions();
+      $(".rec_window").fadeOut(500);
+    }
+  });
+
+  $("#rec_window_close").click(function() {
+    self.otherComponents.recordings_window = 0;
+    $(".rec_window").fadeOut(500);
+    self.robot.stopAllMissions();
+  });
 }
 
 // Presses down the keys with the specified index and triggers and update
@@ -189,7 +271,7 @@ function Robot() {
   this.componentStatus = {
     keys: [0, 0, 0, 0],
     speed: 100,
-    light: false,
+    light: 0,
     laser: false,
     cam: [0, 0, 0, 0],
     ai: false
@@ -199,7 +281,7 @@ function Robot() {
   this.previousCommand = {
     keys: [0, 0, 0, 0],
     speed: 100,
-    light: false,
+    light: 0,
     laser: false
   };
 
@@ -246,6 +328,11 @@ Robot.prototype.updateUserInput = function(data) {
   this.componentStatus.keys = data.keys;
   this.componentStatus.cam = data.cam;
   this.componentStatus.speed = data.speed;
+  this.componentStatus.light = data.light;
+  this.componentStatus.laser = data.laser;
+  this.componentStatus.ai = data.ai;
+
+  this.update();
 };
 
 Robot.prototype.update = function() {
@@ -267,15 +354,15 @@ Robot.prototype.update = function() {
   function sanatizeKeys(keys) {
     var result = keys;
     // Case both left and right arrows are pressed
-    if (keys[1] === 1 && keys[3] === 1) {
-      result[1] = 0;
-      result[3] = 0;
+    if (keys[1] === true && keys[3] === true) {
+      result[1] = false;
+      result[3] = false;
     }
 
     // Case both up and down arrows are pressed
-    if (keys[0] === 1 && keys[2] === 1) {
-      result[0] = 0;
-      result[2] = 0;
+    if (keys[0] === true && keys[2] === true) {
+      result[0] = false;
+      result[2] = false;
     }
     return result;
   }
@@ -301,14 +388,14 @@ Robot.prototype.update = function() {
   // sanatize camera movement keys
   var camMoves = sanatizeKeys(this.componentStatus.cam);
 
-  if (this.camMoves[0] === -1) {
+  if (camMoves[0] === -1) {
     camMoves = "default";
   } else {
     // TODO: implement this on the serverside
     // camMoves = generateNumber(camMoves);
   }
 
-  if (this.recStatus == 1) {
+  if (this.getRecordingStatus()) {
     var command = "STOP";
     if (equalArray(this.previousCommand.keys, keyMoves)) {
       command = "";
@@ -358,12 +445,23 @@ Robot.prototype.update = function() {
 };
 
 Robot.prototype.addNewRecording = function() {
-  var name = new Date().toLocaleTimeString("en-GB");
-  if (this.recordings.length > 5) {
-    this.recordings.shift();
+  if (!this.recStatus) {
+    this.recStatus = true;
+    var name = new Date().toLocaleTimeString("en-GB");
+    if (this.recordings.length > 5) {
+      this.recordings.shift();
+    }
+    this.recordings.push(new Recording(name, this.socket));
   }
-  this.recordings.push(new Recording(name, this.socket));
 };
+
+Robot.prototype.stopRecording = function(){
+  this.recStatus = false;
+}
+
+Robot.prototype.getRecordingStatus = function(){
+  return this.recStatus;
+}
 
 Robot.prototype.drawRecordings = function() {
   if (this.recordings.length === 0) {
@@ -390,95 +488,6 @@ Robot.prototype.stopMissionRecording = function() {
 $(document).ready(function() {
   $(".cover").fadeOut(500);
   window.PiNet = new Robot();
-});
-
-$(document).ready(function(e) {
-
-  $(".showsideBar").click(function(){
-    $(this).parent().toggleClass("open")
-  })
-  $(".lightSwitch").click(function() {
-    if (window.PiNet.lightStatus === 0) {
-      window.PiNet.lightStatus = 1;
-      window.PiNet.update();
-      $(".lightSwitch").css("background-color", "#FFF");
-      $(".lightSwitch").html("On");
-    } else if (window.PiNet.lightStatus == 1) {
-      window.PiNet.lightStatus = 2;
-      window.PiNet.update();
-      $(".lightSwitch").css("background-color", "rgb(123, 238, 33)");
-      $(".lightSwitch").html("Auto");
-    } else if (window.PiNet.lightStatus == 2) {
-      window.PiNet.lightStatus = 0;
-      window.PiNet.update();
-      $(".lightSwitch").css("background-color", "#111");
-      $(".lightSwitch").html("Off");
-    }
-  });
-
-  $(".ai").click(function() {
-    if (window.PiNet.aiStatus === 0 && window.PiNet.recStatus === 0 && recordings === 0) {
-      window.PiNet.aiStatus = 1;
-      window.PiNet.update();
-      $(".ai").css("background-color", "rgb(138, 0, 0)");
-      $(".ai").html("On");
-    } else {
-      window.PiNet.aiStatus = 0;
-      window.PiNet.update();
-      $(".ai").css("background-color", "#111");
-      $(".ai").html("Off");
-    }
-  });
-
-  $(".rec").click(function() {
-    if (window.PiNet.recStatus === 0 && window.PiNet.aiStatus === 0 && recordings === 0) {
-      window.PiNet.addNewRecording();
-      window.PiNet.recStatus = 1;
-      $(".rec").css("background-color", "rgb(255, 40, 40)").css("-webkit-animation", "rec 3s infinite");
-      $(".rec").html("On");
-      $("#recIndic").fadeIn(200);
-
-    } else {
-      window.PiNet.recStatus = 0;
-      $(".rec").css("background-color", "#111").css("-webkit-animation", "none 3s infinite");
-      $(".rec").html("Off");
-      $("#recIndic").fadeOut(200);
-    }
-  });
-
-  $(".rec_view").click(function() {
-    if (window.PiNet.recStatus === 0 && window.PiNet.aiStatus === 0 && recordings === 0) {
-      recordings = 1;
-      window.PiNet.drawRecordings();
-      $(".rec_window").fadeIn(500);
-    } else {
-      recordings = 0;
-      PiNet.stopAllMissions();
-      $(".rec_window").fadeOut(500);
-    }
-  });
-
-  $("#rec_window_close").click(function() {
-    recordings = 0;
-    $(".rec_window").fadeOut(500);
-    PiNet.stopAllMissions();
-  });
-
-
-  $("#laser").mousedown(function() {
-    $("#laser").css("background-color", "rgb(206, 13, 13)");
-    window.PiNet.laser_status = 1;
-    window.PiNet.update();
-
-  });
-
-  $("#laser").mouseup(function() {
-    $("#laser").css("background-color", "");
-    window.PiNet.laser_status = 0;
-    window.PiNet.update();
-  });
-
-
 });
 
 
