@@ -23,8 +23,8 @@ class RunListThread(threading.Thread):
         for index in self.moves:
             if self.stopEvent.is_set():
                 break
-            command = index[0]
-            wait_time = index[1]
+            command = index['command']
+            wait_time = index['time']
             drc = 0
 
             # Comments will be removed (debuging)
@@ -69,8 +69,8 @@ class RunListThread(threading.Thread):
             elif command == "LIGHTOFF":
                 self.robot.setLight(0)
                 # print("LIGHTOFF")
-            elif command[0] == "S":
-                speed = int(command[1:])
+            elif command == "S": # change speed, speed 
+                speed = int(index['speed'])
                 self.robot.go(speed, drc)
 
             self.stopEvent.wait(wait_time / 1000.0)
@@ -91,7 +91,7 @@ class Mission():
     def new(self, comList, defSpeed=90):
         if type(comList) is list:
             self.listOfCommands = comList
-        elif type(comList) is str:
+        elif type(comList) is dict:
             self.parse(comList)
         self.defSpeed = defSpeed
         return True
@@ -100,7 +100,7 @@ class Mission():
         return self.listOfCommands
 
     def parse(self, commands):
-        pass
+        # implement
 
     def append(self, listToAppend):
         pass
@@ -109,7 +109,10 @@ class Mission():
         # Start the FUN in a thread
         self.missionStopEv = threading.Event()
         self.thread = RunListThread(
-            self.listOfCommands, self._Robot, self.defSpeed, self.missionStopEv)
+            self.listOfCommands,
+            self._Robot,
+            self.defSpeed,
+            self.missionStopEv)
         self.thread.start()
 
         if join:
@@ -124,6 +127,7 @@ class PiNet:
     """A class for interacting with the Raspberry Pi Robot"""
 
     def __init__(self, pins, freq=50, board=G.BOARD):
+
         G.setmode(board)  # initialization of GPIO ports
         G.setup(pins['RightFront'], G.OUT)
         G.setup(pins['RightBack'], G.OUT)
@@ -135,36 +139,32 @@ class PiNet:
 
         G.setup(pins['ServoH'], G.OUT)
         G.setup(pins['ServoV'], G.OUT)
-
+        
+        # set up pin refs
         self.pins = pins
         self.frequency = freq
-
-        # old variables
-        # self.RightFront = rf
-        # self.RightBack = rb
-        # self.LeftFront = lf
-        # self.LeftBack = lb
-        # self.LIGHT = light
-        # self.LASER = laser
-        # self.ServoHor = servoHor
-        # self.ServoVer = servoVer
-
+        
+        # keep track of the status of the components
         self.component = {
             "light": False,
             "laser": False
         }
-
+        
+        # The X, Y times for servos
         self.ServoTimesHV = [1.35, 1.35]
 
+        # The time range for servos
         self.ServoRange = [0.68, 1.95]
-
+        
+        # array of pins
         self.pinArray = {
             "RightFront": G.PWM(self.pins["RightFront"], self.frequency),
             "RightBack": G.PWM(self.pins["RightBack"], self.frequency),
             "LeftFront": G.PWM(self.pins["LeftFront"], self.frequency),
             "LeftBack": G.PWM(self.pins["LeftBack"], self.frequency)
         }
-
+    
+    # update the speen and direction of the robot
     def go(self, speed, direction):
         rightM = 0
         leftM = 0
@@ -210,31 +210,39 @@ class PiNet:
         else:
             self.pinArray["LeftFront"].stop()
             self.pinArray["LeftBack"].start(abs(leftM))
-
+    
+    # Stop the robot
     def stop(self):
         for key in self.pinArray:
-            self.pinArray[key].stop()
-
+            self.pinArray[key].stop() # Stop the PWM on each output pins
+    
+    # Set the light to a given state
     def setLight(self, state):
         self.component["light"] = state
         G.output(self.pins["Light"], int(state))
 
+    # get the status of the light
     def getLight(self):
         return self.component["light"]
-
+    
+    # Set the laser to a state
     def setLaser(self, state):
         self.component["laser"] = state
         G.output(self.pins["Laser"], int(state))
-
+    
+    # get the status of the laser
     def getLaser(self):
         return self.component["laser"]
-
+    
+    # start a mission
     def startMission(self):
         pass
 
+    # stop a mission
     def stopMission(self):
         pass
-
+    
+    # change the cam to a new state
     def changeCam(self, state):
 
         if not state == [0, 0, 0, 0]:
@@ -264,13 +272,15 @@ class PiNet:
 
                 self.changeServo(self.pins["ServoH"], msH)
                 self.changeServo(self.pins["ServoV"], msV)
-
+    
+    # Update the servos
     def changeServo(self, servo, ms):
         # TODO: Must run in a separate thread
         G.output(servo, 1)
         time.sleep(ms / 1000)
         G.output(servo, 0)
-
+    
+    # clean up
     def closeMe(self):
         G.cleanup()
 
