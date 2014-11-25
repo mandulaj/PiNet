@@ -315,22 +315,29 @@ h3 {
   box-shadow: 1px 1px 5px #2e2e2e;
   z-index: 2;
   cursor: n-resize;
-  transition: @transitionSpeed background-color;
-
+  transition: @transitionSpeed background-color, top 0.2s;
+  border-radius: 3px;
   &:hover {
     background-color: #d3d3d3;
   }
 
+  p {
+    text-align: center;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    color: black;
+    transition: 0.4s color;
+    &.highSpeed {
+      color: red;
+    }
+  }
+
+
 }
 
-#speedVal {
-  text-align: center;
-  vertical-align: middle;
-  margin: 0;
-  padding: 0;
-  font-weight: bold;
 
-}
 
 #logout {
   color: white;
@@ -381,9 +388,14 @@ h3 {
   left: -105px;
   text-align: center;
   z-index: 50;
+  transition: 0.5s left;
+  &.open{
+    left: 10px;
+  }
 
 }
-.showsidebar {
+
+.showsideBar {
   text-align: right;
   padding-right: 5px;
   width: 120px;

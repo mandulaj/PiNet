@@ -17,7 +17,8 @@ function KeyEventHandler(robot){
   this.otherComponents = {
     light: false,
     laser: false,
-    ai: false
+    ai: false,
+    speed: 100
   }
   this.keyElements = [
     $('#upkey'),
@@ -97,6 +98,35 @@ function KeyEventHandler(robot){
       }
     });
   }
+
+
+  $("#grabthing").draggable({
+    axis: "y",
+    containment: 'parent',
+    grid: [0, 20],
+    drag: function(event, ui) {
+      var dist = (400 - ui.position.top) / 4;
+      var child = $(this).children('p')
+      child.html(dist + "%");
+      if (dist >= 85) {
+        child.addClass("highSpeed");
+      } else {
+        child.removeClass("highSpeed");
+      }
+      if (self.otherComponents.speed !== dist) {
+        self.otherComponents.speed = dist;
+        self.update();
+      };
+    },
+    start: function(event, ui) {
+      self.dragging = true;
+    },
+    stop: function(event, ui) {
+      setTimeout(function() {
+        self.dragging = false;
+      }, 10);
+    }
+  });
 }
 
 // Presses down the keys with the specified index and triggers and update
@@ -146,7 +176,8 @@ KeyEventHandler.prototype.update = function(){
   // Update the robot object
   self.robot.updateUserInput({
     keys: self.keyStatus.slice(0, 4),
-    cam: cameraKeys
+    cam: cameraKeys,
+    speed: self.otherComponents.speed
   });
 };
 
@@ -214,6 +245,7 @@ Robot.prototype.updateStatus = function(status) {
 Robot.prototype.updateUserInput = function(data) {
   this.componentStatus.keys = data.keys;
   this.componentStatus.cam = data.cam;
+  this.componentStatus.speed = data.speed;
 };
 
 Robot.prototype.update = function() {
@@ -352,6 +384,7 @@ Robot.prototype.stopAllMissions = function() {
 
 Robot.prototype.stopMissionRecording = function() {
   this.recordings[this.recordings.length - 1].stopLastRecord();
+
 };
 
 $(document).ready(function() {
@@ -359,74 +392,11 @@ $(document).ready(function() {
   window.PiNet = new Robot();
 });
 
-$(function() {
-  $("#grabthing").draggable({
-    axis: "y",
-    containment: 'parent',
-    grid: [0, 20],
-    drag: function(event, ui) {
-      updateSpeed();
-    },
-    start: function(event, ui) {
-      Dragging = true;
-    },
-    stop: function(event, ui) {
-      setTimeout(function() {
-        Dragging = false;
-      }, 10);
-    }
-  });
-});
-
-/*
-
-function updateSpeed() {
-  var top = slidthing.style.top;
-  top = top.replace("px", "");
-  top = 400 - top.valueOf();
-  var percent = 100 * (top / 400);
-  percent = Math.floor(percent + 0.5);
-  if (percent >= 90) {
-    slidthing.childNodes[0].style.color = "#F00";
-  } else {
-    slidthing.childNodes[0].style.color = "#000";
-  }
-  slidthing.childNodes[0].innerHTML = percent + "%";
-  if (PiNet.componentStatus.speed != percent) {
-    PiNet.componentStatus.speed = percent;
-    window.PiNet.update();
-  }
-}*/
-
-
-$("#grabthing").mousedown(function() {
-  $(window).mousemove(function() {
-    //updateSpeed();
-  });
-});
-
 $(document).ready(function(e) {
-  //updateSpeed();
 
-  $(".showsidebar").click(function() {
-    if (sideBar === 0) {
-      $(".sideBar").animate({
-        left: "+=110"
-      }, 1000, function() {
-        $(".showsidebar>span").html("&lt;");
-      });
-      sideBar = 1;
-    } else {
-      $(".sideBar").animate({
-        left: "-=110"
-
-      }, 1000, function() {
-        $(".showsidebar>span").html("&gt;");
-      });
-      sideBar = 0;
-    }
-  });
-
+  $(".showsideBar").click(function(){
+    $(this).parent().toggleClass("open")
+  })
   $(".lightSwitch").click(function() {
     if (window.PiNet.lightStatus === 0) {
       window.PiNet.lightStatus = 1;
