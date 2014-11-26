@@ -1,18 +1,30 @@
 #!/usr/bin/python
 
+# Network driver used to route commands from the network to the robot
+#
+# class NetworkDriver
+#
+
 import socket
 import sys
 import traceback
 import time
 import json
-import PiControl
+import PiControl # TODO: will be moved to the main file
 
 
+# The following variables will be removed
+#########################################################
 SOCKET_PORT = 8800  # Port to which the socket is bonded
 # Host on which the Socket is running (should be local-host by default)
 SOCKET_HOST = '127.0.0.1'
 PRINT_TO_CONSOLE = False  # If true prints messages to the console
 DEBUG = False  # If true prints messages marked as 'debug' to console
+#########################################################
+
+# Term colors setup
+# TODO: move to a new file
+#########################################################
 PINS = {
     "RightFront": 11,
     "RightBack": 12,
@@ -23,7 +35,6 @@ PINS = {
     "ServoH": 18,
     "ServoV": 16
 }
-
 
 CODE = {  # object setting up the colors used to print to terminal
     'ENDC': 0,
@@ -68,25 +79,26 @@ CODE = {  # object setting up the colors used to print to terminal
     'BLACK': 30,
 }
 
-
 def termcode(num):  # formats the color-string
     return '\033[%sm' % num
-
 
 # appends the color-code to the string to be printed
 def colorstr(astr, color):
     return termcode(CODE[color]) + astr + termcode(CODE['ENDC'])
-
+#########################################################
 
 class NetworkDriver():
+    "Network driver responsible for receiving and parsing external data and forwarding them to the robot"
 
     def __init__(self, pinArray, host, port):
+        # TODO: this should be removed - the driver should just forward network traffic
         self.componentsStatus = {
             "keys": [0, 0, 0, 0],
             "cam": "default",
             "speed": 100,
             "light": False,
             "laser": False,
+            "ai": False,
             "running": True
         }
 
@@ -113,8 +125,8 @@ class NetworkDriver():
                       ":" +
                       str(self.SOCKET_PORT), "debug")
 
-    # sets the global Key and Speed to the values received from the socket
     def parseData(self, data):
+        "function parsing the json commands and directing them to the robot"
         data = json.loads(data)
 
         if data['message'] == "commands":
@@ -124,6 +136,7 @@ class NetworkDriver():
                 "speed": data['speed'],
                 "light": data['light'],
                 "laser": data['laser'],
+                "ai": data['ai'],
                 "running":   self.componentsStatus['running']
             }
 
@@ -132,8 +145,9 @@ class NetworkDriver():
                 self.Robot.startMission(data['moves'])
             elif data['status'] == "stop":
                 self.Robot.stopMission()
-          
+
     def writeLog(self, message, mode="info", writeToFile=True):
+        "debug function for logging warnings"
         string = "Python>>> "
         global PRINT_TO_CONSOLE, DEBUG
         if(PRINT_TO_CONSOLE):
@@ -163,6 +177,7 @@ class NetworkDriver():
             a.close()
 
     def direction(self):
+        "find the direction from the key configuration"
         keys = self.componentsStatus["keys"]
 
         if keys == [0, 0, 0, 0]:
@@ -185,7 +200,9 @@ class NetworkDriver():
         else:
             return direction
 
+    # TODO: this must run in a separate thread!!!!
     def run(self):
+        "main loop for listening on a socket and reading its data input"
         try:
             # Main loop -------------------------------------------------------
             while self.componentsStatus["running"]:
@@ -199,8 +216,7 @@ class NetworkDriver():
 
                     direction = self.direction()
                     speed = self.componentsStatus['speed']
-                    # I KNOW I COULD USE JUST ONE NUMBER INSTEAD BUT IT IS
-                    # EASIER TO READ WHEN I SEE THE NUMBERS VISUALLY
+
                     if direction == "f":
                         self.Robot.go(speed, 0)
                     elif direction == "r":
@@ -237,5 +253,6 @@ class NetworkDriver():
 
 
 if __name__ == "__main__":
+    # TODO: this call will move to the main file
     network = NetworkDriver(PINS, SOCKET_HOST, SOCKET_PORT)
     network.run()
