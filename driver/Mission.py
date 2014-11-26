@@ -1,15 +1,12 @@
 # Mission driver
 #
-# class RunListThread
-#
-# class PiNet
+# class MissionThread
 #
 # class Mission
 #
 
 
-# TODO: rename to a more descriptive name
-class RunListThread(threading.Thread):
+class MissionThread(threading.Thread):
 
     """Class for running the list of instructions independent of all the other code in a thread"""
 
@@ -78,9 +75,7 @@ class RunListThread(threading.Thread):
             self.stopEvent.wait(wait_time / 1000.0)
         #print("Mission Done...")
 
-# TODO: Shall be moved to separate file
 class Mission():
-
     """Class for recording missions"""
 
     def __init__(self, parentRobot):
@@ -110,7 +105,7 @@ class Mission():
     def run(self, join=False):
         # Start the FUN in a thread
         self.missionStopEv = threading.Event()
-        self.thread = RunListThread(
+        self.thread = MissionThread(
             self.listOfCommands,
             self._Robot,
             self.defSpeed,

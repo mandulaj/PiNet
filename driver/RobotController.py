@@ -2,7 +2,7 @@
 #
 # class RunListThread
 #
-# class PiNet
+# class Robot
 #
 # class Mission
 #
@@ -15,8 +15,8 @@ import time
 def isPositive(num):
     return abs(num) == num
 
-# TODO: rename to Robot
-class PiNet:
+
+class Robot:
 
     """A class for interacting with the Raspberry Pi Robot"""
 
@@ -180,24 +180,4 @@ class PiNet:
         G.cleanup()
 
 if __name__ == "__main__":
-
-    # TODO: this will be removed
-    PINS = {
-        "RightFront": 11,
-        "RightBack": 12,
-        "LeftFront": 13,
-        "LeftBack": 15,
-        "Light": 23,
-        "Laser": 19,
-        "ServoH": 18,
-        "ServoV": 16
-    }
-    robot = PiNet(PINS)
-    robot.changeCam("default")
-
-    #mission = Mission(robot)
-    #mission.new([("F", 2000),("F",500),("STOP",1000),("LIGHTON",0),("F",5000),("F",5000),("LIGHTOFF",2000),("R",3000)])
-    # mission.run(True)
-
-    #print("About to close")
-    robot.closeMe()
+    pass
