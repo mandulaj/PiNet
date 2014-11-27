@@ -101,6 +101,7 @@ class Mission():
 
     def parse(self, commands):
         # implement
+        pass
 
     def append(self, listToAppend):
         pass
