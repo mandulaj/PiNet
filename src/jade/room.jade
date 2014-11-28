@@ -22,17 +22,16 @@ html
     .content
       .sideBar
         .showsideBar
-          span &gt;
-        .lightSwitch
+        .component-btn.lightSwitch
           | Off
         span Lights
-        .ai
+        .component-btn.ai
           | Off
         span AI
-        .rec
+        .component-btn.rec
           | Off
         span REC
-        .rec_view
+        .component-btn.rec_view
           | View
         span All Recordings
 
@@ -61,7 +60,7 @@ html
       #slider
         #track
         #grabthing
-          p#speedVal 100%
+          p.highSpeed 100%
 
       #arrows
         table
@@ -98,20 +97,8 @@ html
             td
               #cam_downkey.cam_arrowkey
             td
-      script(type='text/javascript').
-        var upkey = document.getElementById("upkey");
-        var downkey = document.getElementById("downkey");
-        var leftkey = document.getElementById("leftkey");
-        var rightkey = document.getElementById("rightkey");
-        var cam_upkey = document.getElementById("cam_upkey");
-        var cam_downkey = document.getElementById("cam_downkey");
-        var cam_leftkey = document.getElementById("cam_leftkey");
-        var cam_rightkey = document.getElementById("cam_rightkey");
-        var cam_default = document.getElementById("cam_default");
-        var slidthing = document.getElementById("grabthing");
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
   script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')
-  script(type='text/javascript', src='/static/js/room.js')
   script(type='text/javascript', src='/static/modules/socket.io-client/socket.io.js')
-  script(type='text/javascript', src='/static/js/key.js')
+  script(type='text/javascript', src='/static/js/room.js')

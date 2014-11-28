@@ -27,13 +27,18 @@ body {
   margin: 0;
   font-family: Chivo, snas-serif;
 }
+
+// Main Buttons
+#arrows {
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5px;
+
+}
+
 .arrowkey {
   // Check these
-  /*
-  -webkit-user-drag: none;
-  -webkit-user-modify: none;
-  -webkit-highlight: none;
-  -webkit-touch-callout: none;*/
   user-drag: none;
   user-modify: none;
   highlight: none;
@@ -52,47 +57,48 @@ body {
   transition: @transitionSpeed background;
   cursor: pointer;
 
+  &:hover {
+    background: #999;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+  // A key that is pressed
+  &.pressedKey {
+    background-color: #454545;
+  }
 }
-.arrowkey:hover {
-  background: #999;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
+
+
+// Camera Buttons
+
+#cam_arrows {
+  &:extend(#arrows);
+  width: 150px;
 
 }
+
 .cam_arrowkey {
-  // Check these
-  /*
-  -webkit-user-drag: none;
-  -webkit-user-modify: none;
-  -webkit-highlight: none;
-  -webkit-touch-callout: none;*/
-  user-drag: none;
-  user-modify: none;
-  highlight: none;
-  touch-callout: none;
+  &:extend(.arrowkey);
 
-  user-select: none;
   width: 50px;
   height: 50px;
-  background: #b3b1b2;
-  margin: 3px;
-  border-radius: 10px;
-  box-shadow: 0 5px 8px #333;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  transition: @transitionSpeed background;
-  cursor: pointer;
 
+  &:hover {
+    background: #999;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+  }
+  // A key that is pressed
+   &.pressedKey {
+    background-color: #454545;
+  }
 }
-.cam_arrowkey:hover {
-  background: #999;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
 
-}
+
+
+
 h3 {
   text-align: center;
   font-family: Verdana, Geneva, sans-serif;
@@ -102,6 +108,7 @@ h3 {
   margin-bottom: 5px;
 
 }
+
 #top {
   position: absolute;
   padding: 0;
@@ -113,20 +120,7 @@ h3 {
   box-shadow: 5px 0 15px #1e1e1e;
 
 }
-#arrows {
-  width: 300px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 5px;
 
-}
-#cam_arrows {
-  width: 150px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 5px;
-
-}
 #stream {
   margin-top: 65px;
   width: 644px;
@@ -207,6 +201,9 @@ h3 {
   }
 
 }
+
+
+
 #upkey {
   background-image: url("../images/arrowUp.png");
 
@@ -243,6 +240,22 @@ h3 {
   background-image: url("../images/cam_default.png");
 
 }
+
+
+// 'Live' box
+@keyframes rec {
+  0% {
+    background-color: rgba(153, 0, 0, 1);
+  }
+  50% {
+    background-color: rgba(153, 0, 0, 0);
+  }
+  100% {
+    background-color: rgba(153, 0, 0, 1);
+  }
+
+}
+
 #live {
   position: absolute;
   margin-top: 10px;
@@ -256,31 +269,21 @@ h3 {
   height: 25px;
   z-index: 20;
 
-}
-@keyframes rec {
-  0% {
-    background-color: rgba(153, 0, 0, 1);
-  }
-  50% {
-    background-color: rgba(153, 0, 0, 0);
-  }
-  100% {
-    background-color: rgba(153, 0, 0, 1);
-  }
+  div {
+    position: absolute;
+    left: 65px;
+    top: 3px;
+    background-color: #900;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    filter: blur(1px);
+    animation: rec 1.5s infinite;
 
+  }
 }
-#live>div {
-  position: absolute;
-  left: 65px;
-  top: 3px;
-  background-color: #900;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  filter: blur(1px);
-  animation: rec 1.5s infinite;
 
-}
+
 #slider {
   position: absolute;
   float: left;
@@ -312,47 +315,54 @@ h3 {
   box-shadow: 1px 1px 5px #2e2e2e;
   z-index: 2;
   cursor: n-resize;
-  transition: @transitionSpeed background-color;
+  transition: @transitionSpeed background-color, top 0.2s;
+  border-radius: 3px;
+  &:hover {
+    background-color: #d3d3d3;
+  }
+
+  p {
+    text-align: center;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    color: black;
+    transition: 0.4s color;
+    &.highSpeed {
+      color: red;
+    }
+  }
+
 
 }
-#grabthing:hover {
-  background-color: #d3d3d3;
 
-}
-#speedVal {
-  text-align: center;
-  vertical-align: middle;
-  margin: 0;
-  padding: 0;
-  font-weight: bold;
 
-}
+
 #logout {
   color: white;
   text-decoration: none;
   float: right;
   margin-top: -27px;
   margin-right: 15px;
-
+  &:hover {
+    font-weight: bold;
+    margin-right: 13px;
+  }
 }
-#logout:hover {
-  font-weight: bold;
-  margin-right: 13px;
 
-}
 #chpassword {
   color: white;
   text-decoration: none;
   float: left;
   margin-top: -27px;
   margin-left: 15px;
-
+  &:hover {
+    font-weight: bold;
+    margin-left: 13px;
+  }
 }
-#chpassword:hover {
-  font-weight: bold;
-  margin-left: 13px;
 
-}
 .piStats {
   text-align: center;
   position: absolute;
@@ -378,9 +388,36 @@ h3 {
   left: -105px;
   text-align: center;
   z-index: 50;
+  transition: 0.5s left;
+  &.open{
+    left: 10px;
+  }
 
 }
-.showsidebar {
+
+.component-btn {
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+  text-align: center;
+  line-height: 75px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  width: 75px;
+  height: 75px;
+  border-radius: 50px;
+  box-shadow: 0 0 20px #fff;
+  background-color: #111;
+  border: 2px solid #666;
+  transition: @transitionSpeed background-color, @transitionSpeed color;
+  &:hover {
+    color: #999;
+  }
+}
+
+.showsideBar {
   text-align: right;
   padding-right: 5px;
   width: 120px;
@@ -392,61 +429,16 @@ h3 {
   font-weight: bold;
   transition: @transitionSpeed background-color;
 
+  &:hover {
+    background-color: #333;
+  }
 }
-.showsidebar:hover {
-  background-color: #333;
 
+.active_recording {
+  background-color: rgb(255, 40, 40);
+  animation: rec 3s infinite;
 }
-.lightSwitch {
-  cursor: pointer;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  text-align: center;
-  line-height: 75px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  width: 75px;
-  height: 75px;
-  border-radius: 50px;
-  box-shadow: 0 0 20px #fff;
-  background-color: #111;
-  border: 2px solid #666;
-  transition: @transitionSpeed background-color, @transitionSpeed color;
 
-}
-.lightSwitch:hover {
-  color: #999;
-
-}
-.ai,
-.rec,
-.rec_view {
-  cursor: pointer;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  text-align: center;
-  line-height: 75px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  width: 75px;
-  height: 75px;
-  border-radius: 50px;
-  box-shadow: 0 0 20px #fff;
-  background-color: #111;
-  border: 2px solid #666;
-  transition: @transitionSpeed background-color, @transitionSpeed color;
-
-}
-.ai:hover,
-.rec:hover,
-.rec_view:hover {
-  color: #999;
-
-}
 .cover {
   z-index: 100;
   position: fixed;
@@ -456,6 +448,7 @@ h3 {
   background-color: #fff;
 
 }
+
 #recIndic {
   width: 20px;
   height: 20px;
@@ -467,6 +460,7 @@ h3 {
   animation: rec 3s infinite;
 
 }
+
 .rec_window {
   text-align: center;
   font-size: 24px;
@@ -480,26 +474,25 @@ h3 {
   background-color: #999;
   border-radius: 10px;
   box-shadow: 5px 5px 20px #000;
-
+  #rec_window_close {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    background-color: #444;
+    position: absolute;
+    border-radius: 15px;
+    top: 7px;
+    left: 583px;
+    transition: @transitionSpeed background-color;
+    background-image: url("../images/cross.png");
+    background-size: contain;
+    &:hover {
+      background-color: #232323;
+    }
+  }
 }
-.rec_window>#rec_window_close {
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  background-color: #444;
-  position: absolute;
-  border-radius: 15px;
-  top: 7px;
-  left: 583px;
-  transition: @transitionSpeed background-color;
-  background-image: url("../images/cross.png");
-  background-size: contain;
 
-}
-.rec_window>#rec_window_close:hover {
-  background-color: #232323;
 
-}
 #rec_window_content>div {
   margin-top: 25px;
 
@@ -516,12 +509,11 @@ h3 {
   left: -168px;
   top: -9px;
   transition: @transitionSpeed background-color, @transitionSpeed color;
-
+  &:hover {
+    background-color: #333;
+  }
 }
-#rec_startstop:hover {
-  background-color: #333;
 
-}
 #laser {
   position: absolute;
   right: 10px;
@@ -535,13 +527,14 @@ h3 {
   border-radius: 50px;
 
   transition: @transitionSpeed background-color;
-
+  &:hover {
+    background-color: rgb(216, 130, 0);
+  }
+  &.activated {
+    background-color: rgb(206, 13, 13);
+  }
 }
-#laser:hover {
 
-  background-color: rgb(216, 130, 0);
-
-}
 .stat_title {
   font-weight: bold;
 

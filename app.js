@@ -34,14 +34,14 @@ console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.s
 var socket = io(server);
 
 socket.use(socketioJwt.authorize({
-  secret: config.secrets.jwt,
-  handshake: true
+   secret: config.secrets.jwt,
+   handshake: true
 }));
 
 //
-// var Robot = PiNet(socket, {
-//   port: 8800
-// });
+var Robot = PiNet(socket, {
+   port: 8800
+});
 
 db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
 db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ))");

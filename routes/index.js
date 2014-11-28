@@ -2,6 +2,7 @@ var jwt = require('jsonwebtoken');
 var express = require('express');
 var indexRouter = express.Router();
 var userRouter = express.Router();
+var config = require('../config/config.json');
 
 /* GET home page. */
 module.exports = function(app, passport) {
@@ -31,7 +32,7 @@ module.exports = function(app, passport) {
 
         var token = jwt.sign({
           name: user.id
-        }, "apple-pi-fusion", {
+        }, config.secrets.jwt, {
           expiresInMinutes: 24 * 60
         });
 
