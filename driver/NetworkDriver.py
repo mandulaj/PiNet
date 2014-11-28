@@ -7,15 +7,13 @@
 
 import socket
 import sys
-import traceback
-import time
 import json
 import threading
 import RobotHelper
 
 
 class NetworkDriver():
-    "Network driver responsible for receiving and parsing external data and forwarding them to the robot"
+    """Network driver responsible for receiving and parsing external data and forwarding them to the robot"""
 
     def __init__(self, host, port, robot):
         self.Robot = robot
@@ -36,7 +34,7 @@ class NetworkDriver():
         print("Server running on: " + str(host) + ":" + str(port))
 
     def parseData(self, data):
-        "function parsing the json commands and directing them to the robot"
+        """function parsing the json commands and directing them to the robot"""
         data = json.loads(data)
 
         if data['message'] == "commands":
@@ -57,7 +55,7 @@ class NetworkDriver():
                 self.Robot.stopMission()
 
     def getDirection(self, keys):
-        "find the direction from the key configuration"
+        """find the direction from the key configuration"""
 
         if keys == [0, 0, 0, 0]:
             return None
@@ -76,9 +74,8 @@ class NetworkDriver():
 
         return RobotHelper.getDirection(direction)
 
-    # TODO: this must run in a separate thread!!!!
     def acceptRequests(self):
-        "main loop for listening on a socket and reading its data input"
+        """main loop for listening on a socket and reading its data input"""
         try:
             while not self.serverThreadExitEv.is_set():
                 (conn, address) = self.server.accept()
@@ -106,7 +103,7 @@ class NetworkDriver():
             sys.exit(0)
 
     def sendCommands(self, commands):
-        "write commands to the underlying robot"
+        """write commands to the underlying robot"""
 
         direction = self.getDirection(commands['keys'])
         speed = commands['speed']
@@ -122,9 +119,11 @@ class NetworkDriver():
         self.Robot.changeCam(commands['cam'])
 
     def start(self):
+        """start the server"""
         self.serverThread.start()
 
     def stop(self):
+        """stop the server"""
         self.serverThreadExitEv.set()
 
 

@@ -1,7 +1,7 @@
 # Helper functions for the PiNet
 
 def getDirection(cmd):
-    "get the angle direction from the command"
+    """get the angle direction from the command"""
     if cmd == "F":
         return 0
     elif cmd == "R":
@@ -22,5 +22,5 @@ def getDirection(cmd):
         return None
 
 def isPositive(num):
-    "test if num is positive"
+    """test if num is positive"""
     return abs(num) == num
