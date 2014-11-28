@@ -13,18 +13,19 @@ import RobotHelper
 
 
 class NetworkDriver():
+
     """Network driver responsible for receiving and parsing external data and forwarding them to the robot"""
 
     def __init__(self, host, port, robot):
         self.Robot = robot
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # sets up the socket
-        self.serverThread = threading.Thread(target=self.acceptRequests) # the server runs in it's own thread
-        self.serverThreadExitEv = threading.Event() # event used to quit the server
+        self.serverThread = threading.Thread(target=self.acceptRequests)  # the server runs in it's own thread
+        self.serverThreadExitEv = threading.Event()  # event used to quit the server
 
         try:
             # binds the port and host to the socket
             self.server.bind((host, port))
-            ## Only except in case of socket errors
+            # Only except in case of socket errors
         except():  # error handling for the bind
             print("Error making Socket!")
             sys.exit(1)
@@ -125,7 +126,6 @@ class NetworkDriver():
     def stop(self):
         """stop the server"""
         self.serverThreadExitEv.set()
-
 
 
 if __name__ == "__main__":

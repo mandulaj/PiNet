@@ -54,9 +54,12 @@ CODE = {  # object setting up the colors used to print to terminal
     'BLACK': 30,
 }
 
+
 def termcode(num):  # formats the color-string
     return '\033[%sm' % num
 
 # appends the color-code to the string to be printed
+
+
 def colorstr(astr, color):
     return termcode(CODE[color]) + astr + termcode(CODE['ENDC'])

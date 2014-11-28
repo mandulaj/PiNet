@@ -1,21 +1,25 @@
 # Robot controller
 #
-# class RunListThread
+# class ServoController
 #
 # class Robot
 #
-# class Mission
 #
 
 import RPi.GPIO as G
 import threading
+import Mission
+import RobotHelper
+
 
 class ServoController():
+
     """A class used to asynchronously control the servo motors"""
-    def __init__(self, pin, state = 0.5, timeRange = (1.0, 2.0)):
-        self.pin = pin # pin on which the servo lives
-        self.timeRange = timeRange # the time bounds for the servo
-        self.state = state # the percentage state
+
+    def __init__(self, pin, state=0.5, timeRange=(1.0, 2.0)):
+        self.pin = pin  # pin on which the servo lives
+        self.timeRange = timeRange  # the time bounds for the servo
+        self.state = state  # the percentage state
         self.servoThread = threading.Thread()
         self.servoStopEvent = threading.Event()
 
@@ -25,9 +29,9 @@ class ServoController():
         self.servoStopEvent.wait(wait_time)
         G.output(self.pin, 0)
 
-    def updateServo():
+    def updateServo(self):
         if not self.servoThread.isAlive():
-            self.servoThread = threading.Thread(target = self.sendSignal)
+            self.servoThread = threading.Thread(target=self.sendSignal)
             self.servoThread.start()
 
 
@@ -114,7 +118,7 @@ class Robot():
         rightM = rightM * speed
         leftM = leftM * speed
 
-        self.pinsTL.acquire() # acquire a Thread Lock
+        self.pinsTL.acquire()  # acquire a Thread Lock
         if RobotHelper.isPositive(rightM):
             self.pinArray["RightBack"].stop()
             self.pinArray["RightFront"].start(rightM)
@@ -128,13 +132,13 @@ class Robot():
         else:
             self.pinArray["LeftFront"].stop()
             self.pinArray["LeftBack"].start(abs(leftM))
-        self.pinsTL.release() # release the Thread Lock
+        self.pinsTL.release()  # release the Thread Lock
 
     def stop(self):
         """stop the robot"""
         self.pinsTL.acquire()
         for key in self.pinArray:
-            self.pinArray[key].stop() # Stop the PWM on each output pins
+            self.pinArray[key].stop()  # Stop the PWM on each output pins
         self.pinsTL.release()
 
     def setLight(self, state):
@@ -162,13 +166,13 @@ class Robot():
     def startMission(self, moves):
         """start a mission"""
         if self.mission == None:
-            self.mission = new Mission(self, moves);
+            self.mission = Mission.Mission(self, moves)
             self.mission.start()
 
     def stopMission(self):
         """stop a mission"""
         if self.mission:
-            self.mission.stop();
+            self.mission.stop()
             self.mission = None
 
     def changeCam(self, state):
