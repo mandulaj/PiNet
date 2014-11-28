@@ -10,23 +10,9 @@ import sys
 import traceback
 import time
 import json
-import PiControl # TODO: will be moved to the main file
+import threading
+import RobotHelper
 
-
-# The following variables will be removed
-#########################################################
-SOCKET_PORT = 8800  # Port to which the socket is bonded
-# Host on which the Socket is running (should be local-host by default)
-SOCKET_HOST = '127.0.0.1'
-PRINT_TO_CONSOLE = False  # If true prints messages to the console
-DEBUG = False  # If true prints messages marked as 'debug' to console
-#########################################################
-
-# Term colors setup
-# TODO: move to a new file
-#########################################################
-
-#########################################################
 
 class NetworkDriver():
     "Network driver responsible for receiving and parsing external data and forwarding them to the robot"
@@ -34,8 +20,9 @@ class NetworkDriver():
     def __init__(self, host, port, robot):
         self.Robot = robot
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # sets up the socket
-        
-        self.running = True
+        self.serverThread = threading.Thread(target=self.acceptRequests) # the server runs in it's own thread
+        self.serverThreadExitEv = threading.Event() # event used to quit the server
+
         try:
             # binds the port and host to the socket
             self.server.bind((host, port))
@@ -69,11 +56,11 @@ class NetworkDriver():
             elif data['status'] == "stop":
                 self.Robot.stopMission()
 
-    def direction(self, keys):
+    def getDirection(self, keys):
         "find the direction from the key configuration"
 
         if keys == [0, 0, 0, 0]:
-            return "STOP"
+            return None
 
         direction = ""
 
@@ -87,27 +74,26 @@ class NetworkDriver():
         elif keys[3] == 1:
             direction += "R"
 
-        if direction == "":
-            return "STOP"
-        else:
-            return direction
+        return RobotHelper.getDirection(direction)
 
     # TODO: this must run in a separate thread!!!!
-    def run(self):
+    def acceptRequests(self):
         "main loop for listening on a socket and reading its data input"
         try:
-            while self.running:
+            while not self.serverThreadExitEv.is_set():
                 (conn, address) = self.server.accept()
                 while True:
                     data = conn.recv(8192)
 
+                    if self.serverThreadExitEv.is_set():
+                        return
                     if not data:
                         break
 
                     self.parseData(data)  # parse it
-                
+
                 conn.close()
-        
+
         except KeyboardInterrupt:  # catches Ctrl-C Keyboard-Interrupt
             print("Exiting...\n")
 
@@ -122,31 +108,24 @@ class NetworkDriver():
     def sendCommands(self, commands):
         "write commands to the underlying robot"
 
-        direction = self.direction(commands['keys'])
+        direction = self.getDirection(commands['keys'])
         speed = commands['speed']
 
-        if direction == "F":
-            self.Robot.go(speed, 0)
-        elif direction == "R":
-            self.Robot.go(speed, 90)
-        elif direction == "L":
-            self.Robot.go(speed, -90)
-        elif direction == "B":
-            self.Robot.go(speed, 180)
-        elif direction == "FL":
-            self.Robot.go(speed, -45)
-        elif direction == "FR":
-            self.Robot.go(speed, 45)
-        elif direction == "BL":
-            self.Robot.go(speed, -135)
-        elif direction == "BR":
-            self.Robot.go(speed, 135)
-        else:  # direction == "stop" or invalid
+        # direction is none when we want to stop
+        if direction == None:
             self.Robot.stop()
-    
+        else:
+            self.Robot.go(speed, direction)
+
         self.Robot.setLight(commands['light'])
         self.Robot.setLaser(commands['laser'])
         self.Robot.changeCam(commands['cam'])
+
+    def start(self):
+        self.serverThread.start()
+
+    def stop(self):
+        self.serverThreadExitEv.set()
 
 
 
