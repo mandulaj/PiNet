@@ -1,5 +1,6 @@
 PiNet
 =========
+[![Build Status](https://travis-ci.org/zpiman/PiNet.svg)](https://travis-ci.org/zpiman/PiNet)
 
 **P** artially **i** ntelligent **N** etwork **e** nabled **t** ractor
 
