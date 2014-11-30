@@ -29,7 +29,7 @@ if (config.ssl) {
 } else {
   server = http.createServer(app).listen(config.port);
 }
-console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.ssl) ? ("s".green) : ("")) + "://localhost:".green + server.address().port.toString().green);
+console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.ssl) ? ("s".green) : ("")) + "://localhost:".green + config.port.toString().green);
 
 var socket = io(server);
 
