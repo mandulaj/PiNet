@@ -1,1 +1,2 @@
-repo_token: GYGr66bm7H7cBsqNswALpYzwyXQR5swIB
+service_name: travis-ci
+service_job_id: zpiman/wake-cli
