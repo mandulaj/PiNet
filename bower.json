@@ -20,8 +20,5 @@
     "jquery": "~2.1.1",
     "jquery-ui": "1.x",
     "socket.io-client": "~1.1.0"
-  },
-  "resolutions": {
-    "bootstrap": "~3.3.1"
   }
 }
