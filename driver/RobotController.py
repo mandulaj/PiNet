@@ -25,6 +25,7 @@ class ServoController():
 
     def _sendSignal(self):
         wait_time = (self.timeRange[0] + self.state * (self.timeRange[1] - self.timeRange[0])) / 1000.0
+        print 'wait time', wait_time
         G.output(self.pin, 1)
         self.servoStopEvent.wait(wait_time)
         G.output(self.pin, 0)
@@ -33,6 +34,7 @@ class ServoController():
         return state <= 1.0 and state >= 0.0
 
     def updateServo(self):
+        print 'state', self.state
         if not self.servoThread.isAlive():
             if self._checkRange(self.state):
                 # We must make the thread newly because you can't restart threads in python
