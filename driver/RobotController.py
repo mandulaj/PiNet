@@ -117,7 +117,7 @@ class Robot():
         speed = speed / 100.0
         rightM = rightM * speed
         leftM = leftM * speed
-
+        print rightM, leftM
         self.pinsTL.acquire()  # acquire a Thread Lock
         if RobotHelper.isPositive(rightM):
             self.pinArray["RightBack"].stop()

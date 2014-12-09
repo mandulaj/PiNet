@@ -22,7 +22,13 @@ network = NetworkDriver.NetworkDriver("127.0.0.1", 8800, robot)
 
 network.start()
 
+
 while 1:
     i = input()
+    if not i =='exit':
+        continue
+    print 'hele'
     network.stop()
     robot.closeMe()
+
+print 'hello'

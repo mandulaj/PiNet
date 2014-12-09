@@ -42,7 +42,7 @@ class Mission():
             if self.missionStopEv.is_set():
                 return
             command = move['command']
-            wait_time = move['time']
+            wait_time = move['delay']
 
             # deal with the special commands
             if command == "LIGHTON":
