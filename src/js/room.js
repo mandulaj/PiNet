@@ -209,6 +209,20 @@ function KeyEventHandler(robot) {
     $(".rec_window").fadeOut(500);
     self.robot.stopAllMissions();
   });
+
+  var stream = $("#imageStream")[0];
+  var url = document.URL.split(":");
+  var schema = url[0];
+  var host = url[1].replace(/\//g, "");
+
+  var streamPath = schema + "://" + host + ":8080/?action=stream";
+  //streamPath = "http://10.0.0.3:8080/?action=stream";
+  console.log(streamPath);
+  stream.addEventListener('error', function(e) {
+    $('#live').hide();
+    stream.setAttribute("src", "/static/images/offline.jpg");
+  });
+  stream.setAttribute("src", streamPath);
 }
 
 // Presses down the keys with the specified index and triggers and update
