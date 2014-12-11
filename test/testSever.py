@@ -8,6 +8,8 @@ while True:
     (clientsocket, address) = sock.accept()
     while 1:
         data = clientsocket.recv(8192)
+        if data == "":
+          break
         print data
-
+    print "Close"
 
