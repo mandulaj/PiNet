@@ -2,7 +2,7 @@ var crypto = require('crypto'),
   config = require("../config.json"),
   bcrypt = require("bcrypt");
 
-function User(db, conn) {
+function User(db) {
   this.db = db;
 }
 
@@ -147,6 +147,7 @@ User.prototype.reportFailedLogin = function(ip, cb) {
   self.db.serialize(function() {
     var stm = self.db.prepare("SELECT id, lastDate, threat FROM logins WHERE id = (?)");
     stm.get(id, function(err, data) {
+      if (err) return cb(err);
       if (!data) {
         stm = self.db.prepare("INSERT INTO logins (id, ip, lastDate) VALUES((?), (?), (?))");
         stm.run(id, ip, now, function(err, data) {
@@ -154,11 +155,13 @@ User.prototype.reportFailedLogin = function(ip, cb) {
         });
       } else {
         var threat = data.threat;
+        var banned = 0;
         if (((now - data.lastDate) / 1000) < 3) {
           threat += 1;
         }
-        stm = self.db.prepare("UPDATE logins SET accessed = accessed + 1, lastDate = (?), threat = (?) WHERE id = (?)");
-        stm.run(now, threat, id, function(err, data) {
+        if(threat > 50) banned = 1;
+        stm = self.db.prepare("UPDATE logins SET accessed = accessed + 1, lastDate = (?), threat = (?), banned = (?) WHERE id = (?)");
+        stm.run(now, threat, banned, id, function(err, data) {
           return cb(err);
         });
       }
@@ -184,7 +187,18 @@ User.prototype.getAccessStatus = function(id, cb) {
 // Is the user and admin
 User.prototype.isAdmin = function(id, cb) {
   this.getAccessStatus(id, function(status) {
-    return cb(status === 4);
+    return cb(status === 5);
+  });
+};
+
+User.prototype.isIpBlocked = function(ip, cb) {
+  var self = this;
+  self.db.serialize(function(){
+    var stm = self.db.prepare("SELECT banned FROM logins WHERE ip = (?)");
+    stm.get(ip, function(err, data){
+      if (err) return cb(err, null);
+      return cb(null, data.banned === 1);
+    });
   });
 };
 

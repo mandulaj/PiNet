@@ -65,9 +65,9 @@ module.exports = function(passport, db) {
     function(req, username, password, done) {
       // Check if we even have a username and password
       if (!username)
-        done(null, false); // No, return false to user
+        return done(null, false); // No, return false to user
       if (!password)
-        done(null, false); // No, return false to user
+        return done(null, false); // No, return false to user
 
       // Lets try to get the usr id from our database
       User.getIdFromUsername(username, function(err, id) {
