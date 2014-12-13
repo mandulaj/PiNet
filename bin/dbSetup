@@ -1,0 +1,104 @@
+#!/usr/bin/env node
+
+var sqlite3 = require('sqlite3').verbose(),
+  crypto = require('crypto'),
+  prompt = require('prompt'),
+  User = require('../config/models/user.js'),
+  config = require('../config/config.json');
+
+
+
+var db = new sqlite3.Database(config.db);
+
+var UserDB = new User(db);
+
+db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
+db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
+
+prompt.start();
+
+var superuser = {
+  properties: {
+    username: {
+      description: "Superuser Username",
+      type: "string",
+      pattern: /^\w+$/,
+      message: 'Username must be letters',
+      hidden: false,
+      default: 'root',
+      required: true
+    },
+    password: {
+      description: "Password",
+      type: "string",
+      pattern: /^.{6,}$/,
+      message: 'Password must be at least 6 letters',
+      hidden: true,
+      required: true
+    },
+    passwordAgain: {
+      description: "Password Again",
+      type: "string",
+      pattern: /^.{6,}$/,
+      message: 'Passwords don\'t match',
+      hidden: true,
+      required: true,
+      conform: function(passwordAgain) {
+        var password = prompt.history('password').value;
+        return password === passwordAgain;
+      }
+    },
+    accessLevel: {
+      description: "Access Level",
+      type: "string",
+      pattern: /^[0-5]$/,
+      message: 'Access Level can be only between 0 and 5',
+      required: true,
+      default: 0
+    }
+  }
+}
+
+prompt.get(superuser, function (err, result) {
+  if (err) {
+    return onErr(err);
+  }
+  UserDB.numUsers(result.username, function(err, num){
+    if (err) {
+      return onErr(err);
+    }
+    if (num !== 0) {
+      console.log("Username already exists");
+      return onErr(err);
+    }
+    UserDB.createPassword(result.password, function(err, hash){
+      if(err) {
+        console.log("Error Hashing password")
+        return onErr(err);
+      }
+
+      var idHash = crypto.createHash(config.hash.name);
+      idHash.update(result.username);
+      idHash.update(hash);
+
+      db.serialize(function() {
+        var now = new Date().valueOf();
+        var stm = db.prepare("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))");
+        var now = new Date().valueOf();
+        stm.run(idHash.digest(config.hash.encoding), result.username, hash, parseInt(result.accessLevel), now, function(err) {
+          if (err) {
+            return onErr(err);
+          }
+          console.log("Superuser Created!");
+          return 0;
+        });
+        stm.finalize();
+      });
+    });
+  });
+});
+
+function onErr(err) {
+  console.log(err);
+  return 1;
+}
