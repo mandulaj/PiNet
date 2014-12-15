@@ -22,8 +22,7 @@ module.exports = function(app, passport, db) {
   indexRouter.post('/login', function(req, res, next) {
 
     passport.authenticate('local-login', function(err, user, info) {
-      if (err)
-        return next(err);
+      if (err) return next(err);
       if (!user) {
         return res.send({
           login: false
@@ -34,7 +33,7 @@ module.exports = function(app, passport, db) {
           return next(err);
 
         var token = jwt.sign({
-          name: user.id
+          name: user.getId()
         }, config.secrets.jwt, {
           expiresInMinutes: 24 * 60
         });

@@ -73,7 +73,7 @@ module.exports = function(passport, db) {
         return done(null, false); // No, return false to user
 
       // Lets try to get the usr id from our database
-      UserModel(username, function(err, user) {
+      UserModel(username, db, function(err, user) {
         if (err) return done(err, false);
         // If the user does not exist, log him and return false to the user
         if (!user) {
@@ -91,9 +91,7 @@ module.exports = function(passport, db) {
               // Send the user his id
               if (err) return done(err, false);
 
-              return done(null, {
-                id: user.getId()
-              });
+              return done(null, user);
             });
           } else {
             // The verification failed so we just report the users ip and return false to gim

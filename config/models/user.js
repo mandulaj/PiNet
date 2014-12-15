@@ -2,12 +2,12 @@ var config = require("../config.json"),
   Db = require("../../lib/dbReader.js");
 // User abstraction object used to interact with the user in the database
 function User(user, db) {
-  
+
   // Set up the main artefacts about the user
   this.id = user.id;
   this.password = user.password;
   this.username = user.username;
-  
+
   // Reference to a DB wrapper used to communicate with the database
   this._db = db;
 }
@@ -62,7 +62,7 @@ module.exports = function(id, database, cb) {
     if (err) return cb(err, null);
     if (user) return cb(null, user); // If we find a user right away, return him in the callback
     // We have not found the user yet, search the usernames
-    db.getIdFromUsername(username, function(err, foundId) {
+    db.getIdFromUsername(id, function(err, foundId) {
       if (err) return cb(err, null);
       if (foundId) {
         // Use the found ID to get the user object
