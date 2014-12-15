@@ -1,11 +1,14 @@
 var config = require("../config.json"),
   Db = require("../../lib/dbReader.js");
-
+// User abstraction object used to interact with the user in the database
 function User(user, db) {
+  
+  // Set up the main artefacts about the user
   this.id = user.id;
   this.password = user.password;
   this.username = user.username;
-
+  
+  // Reference to a DB wrapper used to communicate with the database
   this._db = db;
 }
 
@@ -14,64 +17,73 @@ User.prototype.getId = function() {
   return this.id;
 };
 
-// verify a user using his id and password
-// return error and success in callback
+// Verify the password against the db record
+// cb(err, match)
 User.prototype.verify = function(password, cb) {
   return this._db.verify(this.password, password, cb);
 };
 
-// Update the last login date in the database (called on a successful login)
+// Update the last login date in the database (called on a successful login) for this user
 User.prototype.updateLogin = function(cb) {
   return this._db.updateLogin(this.id, cb);
 };
 
-// Change the password of a user (must have id, old password, and new password)
+// Change the password this user (provide old password for authentication and new password to change the db record)
 // return error and success in callback
 User.prototype.changePassword = function(oldPassword, newPassword, cb) {
   return this._db.changePassword(this.id, oldPassword, newPassword, cb);
 };
 
-// Get the power of a user
+// Get the access power of a user
 User.prototype.getAccessStatus = function(cb) {
   return this._db.getAccessStatus(this.id, cb);
 };
 
-// Is the user and admin
+// Is the user an admin
 User.prototype.isAdmin = function(cb) {
   return this._db.isAdmin(this.id, cb);
 };
 
-// set the power of a user to the new power
+// set the power of a user to the new power (This should only be called from a sudo user)
 User.prototype.updateAdminPower = function(power, cb) {
   return this._db.updateAdminPower(this.id, power, cb);
 };
 
-
-module.exports = function(username, database, cb) {
-  // Create the database abstraction object =
-  var db = new Db(database);
-
-  // TODO: check the ID first for efficiency!!!!
-  db.getIdFromUsername(username, function(err, foundId) {
+// export function to create a user object on demand User([id|username], database, callback)
+module.exports = function(id, database, cb) {
+  var db = database;
+  // Create the database abstraction object if it is not already
+  // TODO: check if the object is a database wrapper
+  if (true) {
+    db = new Db(database);
+  }
+  // Try creating the user form the id provided
+  createUserById(id, db, function(err, user){
     if (err) return cb(err, null);
-    if (foundId) {
-      // Use the found ID
-      createUserById(foundId, db, cb);
-    } else {
-      // Try the username as an id
-      createUserById(username, db, cb);
-    }
+    if (user) return cb(null, user); // If we find a user right away, return him in the callback
+    // We have not found the user yet, search the usernames
+    db.getIdFromUsername(username, function(err, foundId) {
+      if (err) return cb(err, null);
+      if (foundId) {
+        // Use the found ID to get the user object
+        createUserById(foundId, db, cb);
+      } else {
+        // The username does not exist
+        return cb(null, null);
+      }
+    });
   });
 };
 
-// create the user object
+// create the user object using the given id
 function createUserById(id, db, cb) {
+  // Find the user by it's id in the database
   db.findById(id, function(err, user) {
     if (err) return cb(err, null);
     if (!user) {
-      return cb(new Error("404"), null);
+      return cb(null, null); // We have no user, return null without an error
     } else {
-      return cb(null, new User(user, db));
+      return cb(null, new User(user, db)); // We have a user, return an user wrapper object in the callback, no error
     }
   });
 }
