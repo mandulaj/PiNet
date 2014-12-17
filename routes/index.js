@@ -3,12 +3,12 @@ var express = require('express');
 var indexRouter = express.Router();
 var userRouter = express.Router();
 var config = require('../config/config.json');
-var UserModel = require('../config/models/user.js');
+var Db = require('../lib/dbReader.js');
 
 /* GET home page. */
 module.exports = function(app, passport, db) {
 
-  var User = new UserModel(db);
+  var database = new Db(db);
 
   // Index
   indexRouter.get('/', function(req, res) {
@@ -22,8 +22,7 @@ module.exports = function(app, passport, db) {
   indexRouter.post('/login', function(req, res, next) {
 
     passport.authenticate('local-login', function(err, user, info) {
-      if (err)
-        return next(err);
+      if (err) return next(err);
       if (!user) {
         return res.send({
           login: false
@@ -34,7 +33,7 @@ module.exports = function(app, passport, db) {
           return next(err);
 
         var token = jwt.sign({
-          name: user.id
+          name: user.getId()
         }, config.secrets.jwt, {
           expiresInMinutes: 24 * 60
         });
@@ -83,8 +82,8 @@ module.exports = function(app, passport, db) {
   });
 
   // Check if the IP is not banned
-  app.use(function(req, res, next){
-    User.isIpBlocked(req.ip, function(err, blocked){
+  app.use(function(req, res, next) {
+    database.isIpBlocked(req.ip, function(err, blocked) {
       if (err) return res.status(500).end("Error");
       if (blocked) return res.status(403).end("403: You were banned! Try hacking into something dumber than PiNet :D");
       next();

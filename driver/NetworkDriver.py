@@ -55,7 +55,7 @@ class NetworkDriver():
                 self.Robot.startMission(data['moves'])
             elif data['status'] == "stop":
                 self.Robot.stopMission()
-        
+
     def getDirection(self, keys):
         """find the direction from the key configuration"""
 
@@ -87,7 +87,7 @@ class NetworkDriver():
                         return
                     if not data:
                         break
-                        
+
                     self.parseData(data)  # parse it
                 conn.close()
                 print 'close'

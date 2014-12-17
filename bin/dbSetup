@@ -3,17 +3,17 @@
 var sqlite3 = require('sqlite3').verbose(),
   crypto = require('crypto'),
   prompt = require('prompt'),
-  User = require('../config/models/user.js'),
+  DB = require("../lib/dbReader.js"),
   config = require('../config/config.json');
 
 
 
-var db = new sqlite3.Database(config.db);
+var database = new sqlite3.Database(config.db);
 
-var UserDB = new User(db);
+var db = new DB(database);
 
-db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
-db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
+database.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
+database.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
 
 prompt.start();
 
@@ -26,7 +26,10 @@ var superuser = {
       message: 'Username must be letters',
       hidden: false,
       default: 'root',
-      required: true
+      required: true,
+      conform: function(username, cb) {
+        // TODO: check usename in the databases
+      }
     },
     password: {
       description: "Password",
@@ -57,43 +60,27 @@ var superuser = {
       default: 0
     }
   }
-}
+};
 
-prompt.get(superuser, function (err, result) {
+prompt.get(superuser, function(err, result) {
   if (err) {
     return onErr(err);
   }
-  UserDB.numUsers(result.username, function(err, num){
+  db.doesExist(result.username, function(err, exist) {
     if (err) {
       return onErr(err);
     }
-    if (num !== 0) {
+    if (exist) {
       console.log("Username already exists");
       return onErr(err);
     }
-    UserDB.createPassword(result.password, function(err, hash){
-      if(err) {
-        console.log("Error Hashing password")
-        return onErr(err);
-      }
-
-      var idHash = crypto.createHash(config.hash.name);
-      idHash.update(result.username);
-      idHash.update(hash);
-
-      db.serialize(function() {
-        var now = new Date().valueOf();
-        var stm = db.prepare("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))");
-        var now = new Date().valueOf();
-        stm.run(idHash.digest(config.hash.encoding), result.username, hash, parseInt(result.accessLevel), now, function(err) {
-          if (err) {
-            return onErr(err);
-          }
-          console.log("Superuser Created!");
-          return 0;
-        });
-        stm.finalize();
-      });
+    db.createNewUser({
+      username: result.username,
+      password: result.password,
+      access: result.accessLevel
+    }, function(err, data) {
+      if (err) return onErr(err);
+      console.log("User " + result.username + " created!");
     });
   });
 });
