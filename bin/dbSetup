@@ -29,6 +29,7 @@ var superuser = {
       required: true,
       conform: function(username, cb) {
         // TODO: check usename in the databases
+        return true;
       }
     },
     password: {
