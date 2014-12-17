@@ -9,7 +9,6 @@ while True:
     while 1:
         data = clientsocket.recv(8192)
         if data == "":
-          break
+            break
         print data
     print "Close"
-

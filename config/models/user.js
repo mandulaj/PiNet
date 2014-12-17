@@ -58,7 +58,7 @@ module.exports = function(id, database, cb) {
     db = new Db(database);
   }
   // Try creating the user form the id provided
-  createUserById(id, db, function(err, user){
+  createUserById(id, db, function(err, user) {
     if (err) return cb(err, null);
     if (user) return cb(null, user); // If we find a user right away, return him in the callback
     // We have not found the user yet, search the usernames

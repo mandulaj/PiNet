@@ -8,7 +8,7 @@ router.get('/', function(req, res) {
 
 router.get('/sudo', function(req, res) {
   // TODO: redo user object
-  if(user.isAdmin()){
+  if (user.isAdmin()) {
 
   }
   // TODO: sudo terminalmonly for admin users

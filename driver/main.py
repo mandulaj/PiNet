@@ -27,7 +27,7 @@ network.start()
 
 while 1:
     i = input()
-    if not i =='exit':
+    if not i == 'exit':
         continue
     print 'hele'
     network.stop()
