@@ -31,7 +31,11 @@ if (config.ssl) {
 }
 console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.ssl) ? ("s".green) : ("")) + "://localhost:".green + config.port.toString().green);
 
-var socket = io(server);
+var socket = io(server, {
+  'close timeout': 10,
+  'heartbeat timeout': 10,
+  'heartbeat interval': 5
+});
 
 socket.use(socketioJwt.authorize({
    secret: config.secrets.jwt,
@@ -44,7 +48,7 @@ var Robot = PiNet(socket, {
 });
 
 db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
-db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ))");
+db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
 
 process.title = 'PiNet.js';
 // view engine setup
@@ -67,8 +71,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-require("./config/passport.js")(passport, db);
-require('./routes/index')(app, passport);
+require("./config/passport.js")(passport, db); // Passport setup
+require('./routes/index')(app, passport, db); // main routs setup
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

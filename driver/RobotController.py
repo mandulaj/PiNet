@@ -23,16 +23,40 @@ class ServoController():
         self.servoThread = threading.Thread()
         self.servoStopEvent = threading.Event()
 
-    def sendSignal(self):
+    def _sendSignal(self):
         wait_time = (self.timeRange[0] + self.state * (self.timeRange[1] - self.timeRange[0])) / 1000.0
+        print 'wait time', wait_time
         G.output(self.pin, 1)
         self.servoStopEvent.wait(wait_time)
         G.output(self.pin, 0)
 
+    def _checkRange(self, state):
+        return state <= 1.0 and state >= 0.0
+
     def updateServo(self):
+        print 'state', self.state
         if not self.servoThread.isAlive():
-            self.servoThread = threading.Thread(target=self.sendSignal)
-            self.servoThread.start()
+            if self._checkRange(self.state):
+                # We must make the thread newly because you can't restart threads in python
+                self.servoThread = threading.Thread(target=self._sendSignal)
+                self.servoThread.start()
+
+    def incr(self, value=0.05):
+        state = self.state + value
+        if self._checkRange(state):
+            self.state = state
+            self.updateServo()
+
+    def decr(self, value=0.05):
+        state = self.state - value
+        if self._checkRange(state):
+            self.state = state
+            self.updateServo()
+
+    def setState(self, state=0.5):
+        if self._checkRange(state):
+            self.state = state
+            self.updateServo()
 
 
 class Robot():
@@ -66,11 +90,12 @@ class Robot():
         # the current mission in progress
         self.mission = None
 
-        # The X, Y times for servos
-        self.ServoTimesHV = (1.35, 1.35)
-
         # The time range for servos
-        self.ServoRange = (0.68, 1.95)
+        servoRange = (0.68, 1.95)
+        self.servoControlles = [
+            ServoController(pins['ServoH'], 0.5, servoRange),
+            ServoController(pins['ServoV'], 0.5, servoRange)
+        ]
 
         # array of pins
         self.pinArray = {
@@ -117,7 +142,7 @@ class Robot():
         speed = speed / 100.0
         rightM = rightM * speed
         leftM = leftM * speed
-
+        print rightM, leftM
         self.pinsTL.acquire()  # acquire a Thread Lock
         if RobotHelper.isPositive(rightM):
             self.pinArray["RightBack"].stop()
@@ -179,36 +204,22 @@ class Robot():
         """change the cam to a new state"""
 
         if not state == [0, 0, 0, 0]:
-
-            msH = 0
-            msV = 0
             if len(state) == 4:
-                if state[0] == "1" and self.ServoTimesHV[1] >= self.ServoRange[0]:
-                    self.ServoTimesHV[1] -= 0.05
-                    self.changeServo(self.pins["ServoV"], self.ServoTimesHV[1])
+                if state[0]:
+                    self.servoControlles[1].decr()
 
-                if state[1] == "1" and self.ServoTimesHV[0] <= self.ServoRange[1]:
-                    self.ServoTimesHV[0] += 0.05
-                    self.changeServo(self.pins["ServoH"], self.ServoTimesHV[0])
+                if state[1]:
+                    self.servoControlles[0].incr()
 
-                if state[2] == "1" and self.ServoTimesHV[1] <= self.ServoRange[1]:
-                    self.ServoTimesHV[1] += 0.05
-                    self.changeServo(self.pins["ServoV"], self.ServoTimesHV[1])
+                if state[2]:
+                    self.servoControlles[1].incr()
 
-                if state[3] == "1" and self.ServoTimesHV[0] >= self.ServoRange[0]:
-                    self.ServoTimesHV[0] -= 0.05
-                    self.changeServo(self.pins["ServoH"], self.ServoTimesHV[0])
+                if state[3]:
+                    self.servoControlles[0].decr()
 
             else:
-                msH = 1.3
-                msV = 1.3
-
-                self.changeServo(self.pins["ServoH"], msH)
-                self.changeServo(self.pins["ServoV"], msV)
-
-    def changeServo(self, servo, ms):
-        """Update the servos"""
-        pass
+                self.servoControlles[0].setState(0.5)
+                self.servoControlles[1].setState(0.5)
 
     def closeMe(self):
         """clean up"""

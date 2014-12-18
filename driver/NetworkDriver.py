@@ -37,12 +37,13 @@ class NetworkDriver():
     def parseData(self, data):
         """function parsing the json commands and directing them to the robot"""
         data = json.loads(data)
-
+        print data
         if data['message'] == "commands":
             # send the data to the robot
+            data = data['commands'] # TODO: do this for mission too!!!
             self.sendCommands({
                 "keys": data['keys'],
-                "cam": data['cam'],
+                "cam": data['camMove'],
                 "speed": data['speed'],
                 "light": data['light'],
                 "laser": data['laser'],
@@ -82,26 +83,25 @@ class NetworkDriver():
                 (conn, address) = self.server.accept()
                 while True:
                     data = conn.recv(8192)
-
                     if self.serverThreadExitEv.is_set():
                         return
                     if not data:
                         break
 
                     self.parseData(data)  # parse it
-
                 conn.close()
+                print 'close'
 
         except KeyboardInterrupt:  # catches Ctrl-C Keyboard-Interrupt
             print("Exiting...\n")
-
-        finally:
+        #finally:
             # final clean-up
-            self.Robot.closeMe()
-            self.server.shutdown(socket.SHUT_RDWR)
-            self.server.close()
-            print("Exiting...")
-            sys.exit(0)
+        #    self.Robot.closeMe()
+        #    self.server.shutdown(socket.SHUT_RDWR)
+        #    self.server.close()
+        #    print("Exiting...")
+        #    print('dead')
+        #    sys.exit(0)
 
     def sendCommands(self, commands):
         """write commands to the underlying robot"""
