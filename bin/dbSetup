@@ -1,0 +1,92 @@
+#!/usr/bin/env node
+
+var sqlite3 = require('sqlite3').verbose(),
+  crypto = require('crypto'),
+  prompt = require('prompt'),
+  DB = require("../lib/dbReader.js"),
+  config = require('../config/config.json');
+
+
+
+var database = new sqlite3.Database(config.db);
+
+var db = new DB(database);
+
+database.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
+database.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
+
+prompt.start();
+
+var superuser = {
+  properties: {
+    username: {
+      description: "Superuser Username",
+      type: "string",
+      pattern: /^\w+$/,
+      message: 'Username must be letters',
+      hidden: false,
+      default: 'root',
+      required: true,
+      conform: function(username, cb) {
+        // TODO: check usename in the databases
+        return true;
+      }
+    },
+    password: {
+      description: "Password",
+      type: "string",
+      pattern: /^.{6,}$/,
+      message: 'Password must be at least 6 letters',
+      hidden: true,
+      required: true
+    },
+    passwordAgain: {
+      description: "Password Again",
+      type: "string",
+      pattern: /^.{6,}$/,
+      message: 'Passwords don\'t match',
+      hidden: true,
+      required: true,
+      conform: function(passwordAgain) {
+        var password = prompt.history('password').value;
+        return password === passwordAgain;
+      }
+    },
+    accessLevel: {
+      description: "Access Level",
+      type: "string",
+      pattern: /^[0-5]$/,
+      message: 'Access Level can be only between 0 and 5',
+      required: true,
+      default: 0
+    }
+  }
+};
+
+prompt.get(superuser, function(err, result) {
+  if (err) {
+    return onErr(err);
+  }
+  db.doesExist(result.username, function(err, exist) {
+    if (err) {
+      return onErr(err);
+    }
+    if (exist) {
+      console.log("Username already exists");
+      return onErr(err);
+    }
+    db.createNewUser({
+      username: result.username,
+      password: result.password,
+      access: result.accessLevel
+    }, function(err, data) {
+      if (err) return onErr(err);
+      console.log("User " + result.username + " created!");
+    });
+  });
+});
+
+function onErr(err) {
+  console.log(err);
+  return 1;
+}

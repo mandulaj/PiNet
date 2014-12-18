@@ -6,20 +6,20 @@ var sideBar = 0;
 var recordings = 0;
 */
 
-function KeyEventHandler(robot){
+function KeyEventHandler(robot) {
   var self = this;
   this.robot = robot;
   this.is_touch_device = 'ontouchstart' in window;
   this.dragging = false;
-  this.keys = [38,37,40,39,87,65,88,68,83];
-  this.keyStatus = [false,false,false,false,false,false,false,false,false];
+  this.keys = [38, 37, 40, 39, 87, 65, 88, 68, 83];
+  this.keyStatus = [false, false, false, false, false, false, false, false, false];
   this.otherComponents = {
     light: 0,
     laser: false,
     ai: false,
     speed: 100,
     recordings_window: false
-  }
+  };
   this.keyElements = [
     $('#upkey'),
     $('#leftkey'),
@@ -33,11 +33,11 @@ function KeyEventHandler(robot){
   ];
 
 
-  $(document).keydown(function(e){
+  $(document).keydown(function(e) {
     var index = self.keys.indexOf(e.keyCode);
     self.handleDown(index);
   });
-  $(document).keyup(function(e){
+  $(document).keyup(function(e) {
     var index = self.keys.indexOf(e.keyCode);
     self.handleUp(index);
   });
@@ -46,36 +46,36 @@ function KeyEventHandler(robot){
     var element = self.keyElements[i];
     // If we use touch device only assign the required listeners and vice versa
     if (self.is_touch_device) {
-      element[0].addEventListener("ontouchstart", function(i){
+      element[0].addEventListener("touchstart", function(i) {
         self.handleDown(i);
       }.bind(null, i));
-      element[0].addEventListener("ontouchend", function(i){
+      element[0].addEventListener("touchend", function(i) {
         self.handleUp(i);
       }.bind(null, i));
     } else {
-      element.mousedown(function(i){
+      element.mousedown(function(i) {
         self.handleDown(i);
       }.bind(null, i));
-      element.mouseup(function(){
+      element.mouseup(function() {
         // lift all keys only if we are not dragging currently
         if (!self.dragging) {
           self.allUp(); // lift all keys because we can be pressing only one when using the mouse
-        };
+        }
       });
     }
-  };
+  }
 
   // Laser button listeners
   var laser = $("#laser");
   if (self.is_touch_device) {
-    laser[0].addEventListener("ontouchstart", function(){
+    laser[0].addEventListener("ontouchstart", function() {
       if (!self.otherComponents.laser) {
         self.otherComponents.laser = true;
         laser.addClass("activated");
         self.update();
       }
     });
-    laser[0].addEventListener("ontouchend", function(){
+    laser[0].addEventListener("ontouchend", function() {
       if (self.otherComponents.laser) {
         self.otherComponents.laser = false;
         laser.removeClass("activated");
@@ -83,14 +83,14 @@ function KeyEventHandler(robot){
       }
     });
   } else {
-    laser.mousedown(function(){
+    laser.mousedown(function() {
       if (!self.otherComponents.laser) {
         self.otherComponents.laser = true;
         laser.addClass("activated");
         self.update();
       }
     });
-    laser.mouseup(function(){
+    laser.mouseup(function() {
       if (self.otherComponents.laser) {
         self.otherComponents.laser = false;
         laser.removeClass("activated");
@@ -106,7 +106,7 @@ function KeyEventHandler(robot){
     grid: [0, 20],
     drag: function(event, ui) {
       var dist = (400 - ui.position.top) / 4;
-      var child = $(this).children('p')
+      var child = $(this).children('p');
       child.html(dist + "%");
       if (dist >= 85) {
         child.addClass("highSpeed");
@@ -116,7 +116,7 @@ function KeyEventHandler(robot){
       if (self.otherComponents.speed !== dist) {
         self.otherComponents.speed = dist;
         self.update();
-      };
+      }
     },
     start: function(event, ui) {
       self.dragging = true;
@@ -129,7 +129,7 @@ function KeyEventHandler(robot){
   });
 
 
-  $(".showsideBar").click(function(){
+  $(".showsideBar").click(function() {
     $(this).parent().toggleClass("open");
   });
 
@@ -209,48 +209,62 @@ function KeyEventHandler(robot){
     $(".rec_window").fadeOut(500);
     self.robot.stopAllMissions();
   });
+
+  var stream = $("#imageStream")[0];
+  var url = document.URL.split(":");
+  var schema = url[0];
+  var host = url[1].replace(/\//g, "");
+
+  var streamPath = "http://" + host + ":8080/?action=stream";
+  //streamPath = "http://10.0.0.3:8080/?action=stream";
+  console.log(streamPath);
+  stream.addEventListener('error', function(e) {
+    $('#live').hide();
+    stream.setAttribute("src", "/static/images/offline.jpg");
+  });
+  stream.setAttribute("src", streamPath);
 }
 
 // Presses down the keys with the specified index and triggers and update
-KeyEventHandler.prototype.handleDown = function(index){
+KeyEventHandler.prototype.handleDown = function(index) {
   // only trigger if the index is valid and the key is not already pressed
   if (index >= 0 && !this.keyStatus[index]) {
     this.keyStatus[index] = true;
     this.keyElements[index].addClass("pressedKey");
     this.update();
-  };
+  }
 };
 
 // Lifts the keys with the specified index and triggers and update
-KeyEventHandler.prototype.handleUp = function(index){
+KeyEventHandler.prototype.handleUp = function(index) {
   // only trigger if the index is valid and the key is already pressed
   if (index >= 0 && this.keyStatus[index]) {
     this.keyStatus[index] = false;
     this.keyElements[index].removeClass("pressedKey");
     this.update();
-  };
+  }
 };
 
 
 // Lifts all keys and triggers and update on the robot object
-KeyEventHandler.prototype.allUp = function(){
+KeyEventHandler.prototype.allUp = function() {
   for (var i = this.keyElements.length - 1; i >= 0; i--) {
     this.keyStatus[i] = false;
     var element = this.keyElements[i];
     element.removeClass("pressedKey");
-  };
+  }
   this.update();
 };
 
 
 // Updates the values in the Robot object
-KeyEventHandler.prototype.update = function(){
+KeyEventHandler.prototype.update = function() {
   var self = this;
 
   // set cam to default if the default key is being pressed
   var cameraKeys;
   if (self.keyStatus[8]) {
-    cameraKeys = [-1,-1,-1,-1];
+    cameraKeys = [-1, -1, -1, -1];
   } else {
     cameraKeys = self.keyStatus.slice(4, 8);
   }
@@ -458,13 +472,13 @@ Robot.prototype.addNewRecording = function() {
   }
 };
 
-Robot.prototype.stopRecording = function(){
+Robot.prototype.stopRecording = function() {
   this.recStatus = false;
-}
+};
 
-Robot.prototype.getRecordingStatus = function(){
+Robot.prototype.getRecordingStatus = function() {
   return this.recStatus;
-}
+};
 
 Robot.prototype.drawRecordings = function() {
   if (this.recordings.length === 0) {

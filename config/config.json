@@ -5,7 +5,7 @@
     "key": "./keys/server.key",
     "cert": "./keys/server.crt"
   },
-  "port": 3000,
+  "port": 3001,
   "db": "userdb.db",
   "secrets": {
     "generateRandom": false,

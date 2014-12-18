@@ -1,20 +1,22 @@
 var LocalStrategy = require('passport-local').Strategy,
-  UserModel = require('./models/user.js');
+  UserModel = require('./models/user.js'),
+  Db = require("../lib/dbReader.js");
 
 
 
 module.exports = function(passport, db) {
-  var User = new UserModel(db);
+  var database = new Db(db);
   passport.serializeUser(function(user, done) {
-    done(null, user.id);
+    return done(null, user.getId());
   });
 
   passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
-      done(null, user);
+    // Create a new User Schema Object
+    UserModel(id, db, function(err, user) {
+      if (err) return done(err, null);
+      return done(null, user);
     });
   });
-
 
   passport.use('local-signup', new LocalStrategy({
       usernameField: 'username',
@@ -22,13 +24,14 @@ module.exports = function(passport, db) {
       passReqToCallback: true
     },
     function(req, username, password, done) {
-
+      var clientUser = req.user;
       // is the user logged on
-      if (!req.user.id) {
+      if (!clientUser.id) {
         return done(null, false);
       }
+
       // is he an admin
-      User.isAdmin(req.user.id, function(admin) {
+      clientUser.isAdmin(function(admin) {
         if (!admin) {
           // No, return false
           return done(null, false);
@@ -37,20 +40,20 @@ module.exports = function(passport, db) {
         var newData = req.body;
 
         //Check if the data is ok
-        if (!User.checkFormData(newData)) {
+        if (!database.checkFormData(newData)) {
           return done(null, false);
         }
 
         // Does the user already exist
-        User.numUsers(username, function(err, num) {
-          if (err || num) {
-            done(err, false);
-          } else {
-            // All is good, make the new user
-            User.createNewUser(newData, function(err, user) {
-              done(err, user);
-            });
-          }
+        database.doesExist(username, function(err, exist) {
+          if (err) return done(err, false);
+          if (exist) return done(null, false);
+
+          // All is good, make the new user
+          database.createNewUser(newData, function(err, user) {
+            if (err) return done(err, false);
+            return done(err, true);
+          });
         });
       });
     }
@@ -65,41 +68,39 @@ module.exports = function(passport, db) {
     function(req, username, password, done) {
       // Check if we even have a username and password
       if (!username)
-        done(null, false); // No, return false to user
+        return done(null, false); // No, return false to user
       if (!password)
-        done(null, false); // No, return false to user
+        return done(null, false); // No, return false to user
 
       // Lets try to get the usr id from our database
-      User.getIdFromUsername(username, function(err, id) {
+      UserModel(username, db, function(err, user) {
+        if (err) return done(err, false);
         // If the user does not exist, log him and return false to the user
-        if (!id) {
-          return User.reportFailedLogin(req.ip, function(err) {
+        if (!user) {
+          return database.reportFailedLogin(req.ip, function(err) {
             return done(err, false);
           });
         }
 
         // Try to verify the user with the password
-        User.verify(id, password, function(err, success) {
+        user.verify(password, function(err, success) {
           // If there was no error and we have a success, update the user login status and send him his signed token
-          if (!err && success) {
-            User.updateLogin(id, function(err) {
+          if (err) return done(err, false);
+          if (success) {
+            user.updateLogin(function(err) {
               // Send the user his id
-              if (err) {
-                return done(err, false);
-              }
-              done(null, {
-                id: id
-              });
+              if (err) return done(err, false);
+
+              return done(null, user);
             });
           } else {
             // The verification failed so we just report the users ip and return false to gim
-            User.reportFailedLogin(req.ip, function(err) {
-              done(err, false);
+            database.reportFailedLogin(req.ip, function(err) {
+              return done(err, false);
             });
           }
         });
       });
     }
   ));
-
 };
