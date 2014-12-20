@@ -1,7 +1,7 @@
 import socket
 import os
 
-SOCKET = "test.sock"
+SOCKET = "robot.sock"
 
 if os.path.exists(SOCKET):
     os.remove(SOCKET)

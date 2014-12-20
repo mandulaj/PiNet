@@ -44,7 +44,7 @@ socket.use(socketioJwt.authorize({
 
 //
 var Robot = PiNet(socket, {
-   port: "test.sock"
+   port: "robot.sock"
 });
 
 db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
