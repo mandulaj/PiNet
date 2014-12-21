@@ -33,7 +33,7 @@ module.exports = function(app, passport, db) {
           return next(err);
 
         var token = jwt.sign({
-          name: user.getId()
+          id: user.getId()
         }, config.secrets.jwt, {
           expiresInMinutes: 24 * 60
         });
