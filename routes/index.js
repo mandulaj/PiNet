@@ -75,8 +75,7 @@ module.exports = function(app, passport, db) {
   // User
   userRouter.use(isAuthenticated);
   userRouter.get("/", function(req, res) {
-    req.user.isAdmin(function(err, admin){
-      if (err) return res.status(500).end("error");
+    req.user.isAdmin(function(admin){
       res.render("room", {
         username: req.user.username,
         admin: admin
