@@ -75,7 +75,13 @@ module.exports = function(app, passport, db) {
   // User
   userRouter.use(isAuthenticated);
   userRouter.get("/", function(req, res) {
-    res.render("room", {username: req.user.username});
+    req.user.isAdmin(function(err, admin){
+      if (err) return res.status(500).end("error");
+      res.render("room", {
+        username: req.user.username,
+        admin: admin
+      });
+    });
   });
 
   userRouter.get("/changepassword", function(req, res) {

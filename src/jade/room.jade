@@ -7,12 +7,33 @@ html
     link(type='text/css', rel='stylesheet', href='/static/modules/bootstrap/dist/css/bootstrap.min.css')
 
   body(unselectable='on')
-    #top
-      h3 Welcome to PiNet control room
-      a#chpassword(href='/user/changepassword') Change Password
-      #recIndic(style='display: none;')
-      span#username <%= username %>
-      a#logout(href='/logout') Logout
+    div(class="navbar navbar-default navbar-static-top", role="navigation")
+      div.container
+        div.navbar-header
+          button(type="button", class="navbar-toggle", data-toggle="collapse", data-target=".navbar-collapse")
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a(class="navbar-brand" href="#") PiNet
+        div(class="navbar-collapse collapse")
+          ul(class="nav navbar-nav")
+            li
+              a Test
+          ul(class="nav navbar-nav navbar-right")
+            li.dropdown
+              a(href="#" class="dropdown-toggle" data-toggle="dropdown")
+                strong User: <%= username %>
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href='/user/changepassword') Change Password
+                <% if (admin) { %>
+                li
+                  a(href='/user/admin') Admin
+                <% } %>
+            li
+              a(href='/logout') Logout
 
     .cover
     .rec_window
@@ -101,5 +122,6 @@ html
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
   script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')
+  script(type='text/javascript', src='/static/modules/bootstrap/dist/js/bootstrap.min.js')
   script(type='text/javascript', src='/static/modules/socket.io-client/socket.io.js')
   script(type='text/javascript', src='/static/js/room.js')
