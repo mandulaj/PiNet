@@ -112,8 +112,7 @@ module.exports = function(app, passport, db) {
   }
 
   function isAdmin(req, res, next) {
-    req.user.isAdmin(function(err, admin){
-      if (err) return res.status(500).end("Error");
+    req.user.isAdmin(function(admin){
       if (admin) {
         return next();
       } else {
