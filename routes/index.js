@@ -75,10 +75,14 @@ module.exports = function(app, passport, db) {
   // User
   userRouter.use(isAuthenticated);
   userRouter.get("/", function(req, res) {
-    res.render("room", {});
+    res.render("room", {username: req.user.username});
   });
+
   userRouter.get("/changepassword", function(req, res) {
     res.render("passChange", {});
+  });
+
+  userRouter.get("/admin", isAdmin, function(req, res) {
   });
 
   // Check if the IP is not banned
@@ -99,5 +103,16 @@ module.exports = function(app, passport, db) {
     } else {
       res.redirect("/"); // send the user to the landing page if he is not logged in...
     }
+  }
+
+  function isAdmin(req, res, next) {
+    req.user.isAdmin(function(err, admin){
+      if (err) return res.status(500).end("Error");
+      if (admin) {
+        return next();
+      } else {
+        res.redirect("/user");
+      }
+    });
   }
 };
