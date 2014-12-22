@@ -15,11 +15,12 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a(class="navbar-brand" href="#") PiNet
+          a(class="navbar-brand" href="#") PiNet - Controller Room
+            #recIndic(style='display: ;')
         div(class="navbar-collapse collapse")
           ul(class="nav navbar-nav")
             li
-              a Test
+
           ul(class="nav navbar-nav navbar-right")
             li.dropdown
               a(href="#" class="dropdown-toggle" data-toggle="dropdown")
@@ -34,28 +35,33 @@ html
                 <% } %>
             li
               a(href='/logout') Logout
-
     .cover
     .rec_window
       | The Recordings
       #rec_window_close
       #rec_window_content
 
-    .content
-      .sideBar
-        .showsideBar
-        .component-btn.lightSwitch
-          | Off
-        span Lights
-        .component-btn.ai
-          | Off
-        span AI
-        .component-btn.rec
-          | Off
-        span REC
-        .component-btn.rec_view
-          | View
-        span All Recordings
+    .sideBar
+      .showsideBar
+      .component-btn.lightSwitch
+        | Off
+      span Lights
+      .component-btn.ai
+        | Off
+      span AI
+      .component-btn.rec
+        | Off
+      span REC
+      .component-btn.rec_view
+        | View
+      span All Recordings
+
+    #slider
+      #track
+      #grabthing
+        p.highSpeed 100%
+
+    div.container
 
       .piStats.visible-sm.visible-md.visible-lg
         h4 Pi Stats
@@ -74,51 +80,38 @@ html
         span#stat_totalRam.stat_val 0GB
         br
 
-      #stream
-        #live LIVE
-          div
-        img#imageStream
 
-      #slider
-        #track
-        #grabthing
-          p.highSpeed 100%
+      .row
+        .col-md-8.col-md-offset-2
+          #live LIVE
+            div
+          img.img-responsive#imageStream
 
-      #arrows
-        table
-          tr
-            td
-            td
-              #upkey.arrowkey
-            td
-          tr
-            td
-              #leftkey.arrowkey
-            td
-              #downkey.arrowkey
-            td
-              #rightkey.arrowkey
+      .row
+        .col-xs-4.col-xs-offset-4
+          .row
+            .col-xs-4.col-xs-offset-4
+              img(src='/static/images/arrowUp.png')
+          .row
+            .col-xs-4
+              img(src='/static/images/arrowLeft.png')
+            .col-xs-4
+              img(src='/static/images/arrowDown.png')
+            .col-xs-4
+              img(src='/static/images/arrowRight.png')
+      .row
+        .col-xs-4.col-xs-offset-4
+          .row
+            .col-xs-4.col-xs-offset-4
+              img(src='/static/images/arrowUp.png')
+          .row
+            .col-xs-4
+              img(src='/static/images/arrowLeft.png')
+            .col-xs-4
+              img(src='/static/images/arrowDown.png')
+            .col-xs-4
+              img(src='/static/images/arrowRight.png')
 
-      #cam_arrows
-        table
-          tr
-            td
-            td
-              #cam_upkey.cam_arrowkey
-            td
-              #laser
-          tr
-            td
-              #cam_leftkey.cam_arrowkey
-            td
-              #cam_default.cam_arrowkey
-            td
-              #cam_rightkey.cam_arrowkey
-          tr
-            td
-            td
-              #cam_downkey.cam_arrowkey
-            td
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
   script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')
