@@ -15,7 +15,7 @@ module.exports = function(app, passport, db) {
     if (req.isAuthenticated()) {
       res.redirect("/user");
     } else {
-      res.render('index', {});
+      res.render('login', {});
     }
   });
 
@@ -75,7 +75,7 @@ module.exports = function(app, passport, db) {
   // User
   userRouter.use(isAuthenticated);
   userRouter.get("/", function(req, res) {
-    req.user.isAdmin(function(admin){
+    req.user.isAdmin(function(admin) {
       res.render("room", {
         username: req.user.username,
         admin: admin
@@ -87,8 +87,7 @@ module.exports = function(app, passport, db) {
     res.render("passChange", {});
   });
 
-  userRouter.get("/admin", isAdmin, function(req, res) {
-  });
+  userRouter.get("/admin", isAdmin, function(req, res) {});
 
   // Check if the IP is not banned
   app.use(function(req, res, next) {
@@ -111,7 +110,7 @@ module.exports = function(app, passport, db) {
   }
 
   function isAdmin(req, res, next) {
-    req.user.isAdmin(function(admin){
+    req.user.isAdmin(function(admin) {
       if (admin) {
         return next();
       } else {
