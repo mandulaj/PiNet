@@ -6,13 +6,24 @@ $(document).ready(function() {
   $("#submitbutton").click(submitValues);
 });
 
-function submitEnter(e) {
-  if (e.keyCode == 13) {
-    submitValues();
+function nameEnter(e) {
+  if (e.keyCode === 13) {
+    e.preventDefault();
+    var input = $("#inputName");
+    if (input.val()) {
+      $("#inputPass").focus();
+    }
   }
 }
 
-var submitValues = function() {
+function submitEnter(e) {
+  if (e.keyCode == 13) {
+    submitValues(e);
+  }
+}
+
+var submitValues = function(event) {
+  if (event) event.preventDefault();
   var errorMsg = "";
   var errorbox = $("#Error");
   var username = $("#inputName").val();

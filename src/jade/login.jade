@@ -3,23 +3,29 @@ doctype html
 html
   head
     title PiNet
-    link(type='text/css', rel='stylesheet', href='/static/css/style.css')
+    link(type='text/css', rel='stylesheet', href='/static/modules/bootstrap/dist/css/bootstrap.min.css')
     link(type='text/css', rel='stylesheet', href='/static/css/login.css')
     link(rel='shortcut icon', type='image/x-icon', href='/favicon.ico')
 
   body(unselectable='on')
-    #top
-      h3 Welcome to PiNet control room
+    div(class="navbar navbar-default navbar-static-top")
+      div.container
+        div.navbar-header
+          h3 Welcome to PiNet control room
 
-    .maincontent
-      #loginbox.loginbox
-        h2  Login
-
-        form(method='post')
-          input#inputName.input(type='text', name='username', placeholder='Username')
-          input#inputPass.input(type='password', name='password', onkeypress='submitEnter(event)', placeholder='Password')
-          input#submitbutton(type='button', value='Sign In')
-        #Error
+    .container
+      .row
+        .col-sm-4.col-sm-offset-4
+          h2 Login
+          form(method='post', role="form")
+            .form-group
+              label(for='username') Username
+              input#inputName.form-control(type='text', name='username', onkeypress='nameEnter(event)' placeholder='Enter Username')
+            .form-group
+              label(for='username') Password
+              input#inputPass.form-control(type='password', name='password', onkeypress='submitEnter(event)', placeholder='Enter Password')
+            button#submitbutton(class='btn btn-default') Sign In
+          #Error
 
     script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
     script(type='text/javascript', src='/static/js/login.js')
