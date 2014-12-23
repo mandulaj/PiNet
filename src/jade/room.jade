@@ -69,17 +69,21 @@ html
           img.img-responsive#imageStream
       br
       .row
-        .col-xs-4.col-xs-offset-4
-          .row.keyRowSpacing
-            .col-xs-4.col-xs-offset-4
-              img.arrow#upkey(src='/static/images/arrowUp.png')
-          .row
-            .col-xs-4
-              img.arrow#leftkey(src='/static/images/arrowLeft.png')
-            .col-xs-4
-              img.arrow#downkey(src='/static/images/arrowDown.png')
-            .col-xs-4
-              img.arrow#rightkey(src='/static/images/arrowRight.png')
+        .col-xs-4.col-xs-offset-4.arrowTable
+          table
+            tr
+              td
+              td
+                #upkey.arrow
+              td
+                #laser
+            tr
+              td
+                #leftkey.arrow
+              td
+                #downkey.arrow
+              td
+                #rightkey.arrow
         
         .col-sm-3.col-md-2.col-sm-offset-1.piStats.visible-sm.visible-md.visible-lg
           h4 Pi Stats
@@ -100,20 +104,24 @@ html
       br
       .row
         .col-xs-4.col-xs-offset-4
-          .row.keyRowSpacing
-            .col-xs-4.col-xs-offset-4
-              img.arrow#cam_upkey(src='/static/images/cam_arrowUp.png')
-          .row.keyRowSpacing
-            .col-xs-4
-              img.arrow#cam_leftkey(src='/static/images/cam_arrowLeft.png')
-            .col-xs-4
-              img.arrow#cam_downkey(src='/static/images/cam_arrowDown.png')
-            .col-xs-4
-              img.arrow#cam_rightkey(src='/static/images/cam_arrowRight.png')
-          .row
-            .col-xs-4.col-xs-offset-4
-              img.arrow#cam_default(src='/static/images/cam_default.png')
-
+          table
+            tr
+              td
+              td
+                #cam_upkey.arrow
+              td
+            tr
+              td
+                #cam_leftkey.arrow
+              td
+                #cam_downkey.arrow
+              td
+                #cam_rightkey.arrow
+            tr
+              td
+              td
+                #cam_default.arrow
+              td
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
   script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')

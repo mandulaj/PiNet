@@ -41,14 +41,16 @@ function KeyEventHandler(robot) {
     var index = self.keys.indexOf(e.keyCode);
     self.handleUp(index);
   });
+  console.log(this.is_touch_device)
 
   function registerEvents(self, element, i) {
     // If we use touch device only assign the required listeners and vice versa
+    console.log(element)
     if (self.is_touch_device) {
-      element[0].addEventListener("touchstart", function() {
+      element.on("touchstart", function() {
         self.handleDown(i);
       });
-      element[0].addEventListener("touchend", function() {
+      element.on("touchend", function() {
         self.handleUp(i);
       });
     } else {
@@ -65,6 +67,7 @@ function KeyEventHandler(robot) {
   }
   for (var i = 0; i < self.keyElements.length; i++) {
     var element = self.keyElements[i];
+
     registerEvents(this, element, i);
   }
 
@@ -220,7 +223,7 @@ function KeyEventHandler(robot) {
 
   var streamPath = "http://" + host + ":8080/?action=stream";
   //streamPath = "http://10.0.0.3:8080/?action=stream";
-  console.log(streamPath);
+  console.log(streamPath, stream);
   stream.addEventListener('error', function(e) {
     $('#live').hide();
     stream.setAttribute("src", "/static/images/offline.jpg");
