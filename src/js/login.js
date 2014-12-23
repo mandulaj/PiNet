@@ -28,11 +28,16 @@ var submitValues = function(event) {
   var errorbox = $("#Error");
   var username = $("#inputName").val();
   var password = $("#inputPass").val();
-  var form = document.getElementsByTagName("form");
+
+  $("#inputName").parent().removeClass("has-error");
+  $("#inputPass").parent().removeClass("has-error");
+
   if (!username) {
+    $("#inputName").parent().addClass("has-error");
     errorMsg += "You forgot the username!<br />";
   }
   if (!password) {
+    $("#inputPass").parent().addClass("has-error");
     errorMsg += "You forgot the password!<br />";
   }
   if (errorMsg) {
@@ -53,6 +58,8 @@ var submitValues = function(event) {
       }
     }).done(function(data) {
       if (!data.login) {
+        $("#inputName").parent().addClass("has-error");
+        $("#inputPass").parent().addClass("has-error");
         errorbox.html("No such user-password combination!");
         errorbox.addClass("loginError");
       } else {
