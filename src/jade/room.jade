@@ -62,25 +62,6 @@ html
         p.highSpeed 100%
 
     div.container
-
-      .piStats.visible-sm.visible-md.visible-lg
-        h4 Pi Stats
-        h5 CPU
-        span.stat_title Boot time:
-        span#stat_boot.stat_val -
-        br
-        span.stat_title CPU Load:
-        span#stat_load.stat_val 0%
-        br
-        h5 RAM
-        span.stat_title Free RAM:
-        span#stat_freeRam.stat_val 0%
-        br
-        span.stat_title Total RAM:
-        span#stat_totalRam.stat_val 0GB
-        br
-
-
       .row
         .col-md-8.col-md-offset-2
           #live LIVE
@@ -99,6 +80,24 @@ html
               img(src='/static/images/arrowDown.png')
             .col-xs-4
               img(src='/static/images/arrowRight.png')
+        
+        .col-sm-3.col-md-2.col-sm-offset-1.piStats.visible-sm.visible-md.visible-lg
+          h4 Pi Stats
+          h5 CPU
+          span.stat_title Boot time:
+          span#stat_boot.stat_val -
+          br
+          span.stat_title CPU Load:
+          span#stat_load.stat_val 0%
+          br
+          h5 RAM
+          span.stat_title Free RAM:
+          span#stat_freeRam.stat_val 0%
+          br
+          span.stat_title Total RAM:
+          span#stat_totalRam.stat_val 0GB
+          br
+      
       .row
         .col-xs-4.col-xs-offset-4
           .row
