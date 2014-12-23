@@ -84,10 +84,20 @@ module.exports = function(app, passport, db) {
   });
 
   userRouter.get("/changepassword", function(req, res) {
-    res.render("passChange", {});
+    res.render("passChange", {
+      username: req.user.username
+    });
   });
 
-  userRouter.get("/admin", isAdmin, function(req, res) {});
+  userRouter.post("/changepassword", function(req, res) {
+    console.log(req.body)
+  });
+
+  userRouter.get("/admin", isAdmin, function(req, res) {
+    res.render("admin", {
+      username: req.user.username
+    });
+  });
 
   // Check if the IP is not banned
   app.use(function(req, res, next) {
