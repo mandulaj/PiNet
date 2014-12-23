@@ -11,7 +11,7 @@ function KeyEventHandler(robot) {
   this.robot = robot;
   this.is_touch_device = 'ontouchstart' in window;
   this.dragging = false;
-  this.keys = [38, 37, 40, 39, 87, 65, 88, 68, 83];
+  this.keys = [38, 37, 40, 39, 87, 65, 83, 68, 88];
   this.keyStatus = [false, false, false, false, false, false, false, false, false];
   this.otherComponents = {
     light: 0,
