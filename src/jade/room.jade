@@ -24,7 +24,7 @@ html
           ul(class="nav navbar-nav navbar-right")
             li.dropdown
               a(href="#" class="dropdown-toggle" data-toggle="dropdown")
-                strong User: <%= username %>
+                strong <%= username %>
                 b.caret
               ul.dropdown-menu
                 li
@@ -80,7 +80,7 @@ html
               img.arrow#downkey(src='/static/images/arrowDown.png')
             .col-xs-4
               img.arrow#rightkey(src='/static/images/arrowRight.png')
-        
+
         .col-sm-3.col-md-2.col-sm-offset-1.piStats.visible-sm.visible-md.visible-lg
           h4 Pi Stats
           h5 CPU
