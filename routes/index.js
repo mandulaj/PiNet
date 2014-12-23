@@ -89,8 +89,22 @@ module.exports = function(app, passport, db) {
     });
   });
 
-  userRouter.post("/changepassword", function(req, res) {
-    console.log(req.body)
+  userRouter.post("/changepassword", function(req, res, next) {
+    req.user.changePassword(req.body.oldPassword, req.body.newPassword, function(err, data) {
+
+      if (err) return res.status(500);
+      if (data) {
+        res.send({
+          success: true
+        });
+        return next();
+      } else {
+        res.send({
+          success: false
+        });
+        return next();
+      }
+    });
   });
 
   userRouter.get("/admin", isAdmin, function(req, res) {
@@ -102,8 +116,8 @@ module.exports = function(app, passport, db) {
   // Check if the IP is not banned
   app.use(function(req, res, next) {
     database.isIpBlocked(req.ip, function(err, blocked) {
-      if (err) return res.status(500).end("Error");
-      if (blocked) return res.status(403).end("403: You were banned! Try hacking into something dumber than PiNet :D");
+      if (err) return res.status(500).send("Error");
+      if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
       next();
     });
   });
