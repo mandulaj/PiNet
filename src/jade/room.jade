@@ -67,19 +67,19 @@ html
           #live LIVE
             div
           img.img-responsive#imageStream
-
+      br
       .row
         .col-xs-4.col-xs-offset-4
-          .row
+          .row.keyRowSpacing
             .col-xs-4.col-xs-offset-4
-              img(src='/static/images/arrowUp.png')
+              img.arrow#upkey(src='/static/images/arrowUp.png')
           .row
             .col-xs-4
-              img(src='/static/images/arrowLeft.png')
+              img.arrow#leftkey(src='/static/images/arrowLeft.png')
             .col-xs-4
-              img(src='/static/images/arrowDown.png')
+              img.arrow#downkey(src='/static/images/arrowDown.png')
             .col-xs-4
-              img(src='/static/images/arrowRight.png')
+              img.arrow#rightkey(src='/static/images/arrowRight.png')
         
         .col-sm-3.col-md-2.col-sm-offset-1.piStats.visible-sm.visible-md.visible-lg
           h4 Pi Stats
@@ -97,19 +97,22 @@ html
           span.stat_title Total RAM:
           span#stat_totalRam.stat_val 0GB
           br
-      
+      br
       .row
         .col-xs-4.col-xs-offset-4
+          .row.keyRowSpacing
+            .col-xs-4.col-xs-offset-4
+              img.arrow#cam_upkey(src='/static/images/cam_arrowUp.png')
+          .row.keyRowSpacing
+            .col-xs-4
+              img.arrow#cam_leftkey(src='/static/images/cam_arrowLeft.png')
+            .col-xs-4
+              img.arrow#cam_downkey(src='/static/images/cam_arrowDown.png')
+            .col-xs-4
+              img.arrow#cam_rightkey(src='/static/images/cam_arrowRight.png')
           .row
             .col-xs-4.col-xs-offset-4
-              img(src='/static/images/arrowUp.png')
-          .row
-            .col-xs-4
-              img(src='/static/images/arrowLeft.png')
-            .col-xs-4
-              img(src='/static/images/arrowDown.png')
-            .col-xs-4
-              img(src='/static/images/arrowRight.png')
+              img.arrow#cam_default(src='/static/images/cam_default.png')
 
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')

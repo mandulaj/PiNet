@@ -13,29 +13,20 @@ body {
 
 }
 // Main Buttons
-.arrows {
-  
-
-}
-.arrowkey {
-  // Check these
+.arrow {
   user-drag: none;
   user-modify: none;
   highlight: none;
   touch-callout: none;
-
   user-select: none;
-  width: 100px;
-  height: 100px;
   background: #b3b1b2;
-  margin: 3px;
+
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
+  background: #b3b1b2;
   box-shadow: 0 5px 8px #333;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
   transition: @transitionSpeed background;
-  cursor: pointer;
 
   &:hover {
     background: #999;
@@ -48,6 +39,10 @@ body {
   &.pressedKey {
     background-color: #454545;
   }
+
+}
+.keyRowSpacing {
+  margin-bottom: 10px;
 
 }
 // Camera Buttons
