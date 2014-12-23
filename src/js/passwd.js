@@ -1,5 +1,14 @@
 // JavaScript Document
 
+
+$(document).ready(function(){
+  $("#submitbutton").click(function(e){
+    e.preventDefault();
+    submitForm();
+  });
+});
+
+/*
 window.onload = function() {
   var errorbox = document.getElementById("Error");
   if (valErr) {
@@ -11,42 +20,93 @@ window.onload = function() {
     errorbox.setAttribute("class", "dataError");
 
   }
-};
+};*/
+
+function submitForm(){
+  var errors = getErrors();
+
+  if(errors) {
+    $("#Error").addClass("loginError");
+    $("#Error").html(errors);
+    return;
+  } else {
+    $("#Error").removeClass("loginError");
+    $("#Error").html("");
+  }
+
+  var oldp = $("#oldPassword").val();
+  var newp = $("#newPassword").val();
+  var newp2 = $("#newPasswordAgain").val();
+
+  $.ajax({
+    url: "/user/changepassword",
+    type: "POST",
+    cache: false,
+
+    dataType: "json",
+    data: {
+      oldPassword: oldp,
+      newPassword: newp
+    }
+  }).done(function(data) {
+    if (!data.login) {
+      $("#Error").html("No such user-password combination!");
+      $("#Error").addClass("loginError");
+    } else {
+      //window.location.replace("/user");
+    }
+  });
+}
+
+function checkOldPassword(password){
+  $.ajax({
+    url: "/api/checkPassword",
+    type: "POST",
+    cache: false,
+
+    dataType: "json",
+    data: {
+      password: password
+    }
+  }).done(function(data) {
+    console.log(data)
+  });
+}
 
 
-function vlalidate() {
+function getErrors() {
   var error = "";
-  var errorbox = document.getElementById("Error");
-  var oldp = document.getElementById("oldPassword");
-  var newp = document.getElementById("newPassword");
-  var newp2 = document.getElementById("newPasswordAgain");
-  var form = document.getElementsByTagName("form");
-  if (oldp.value === "") {
+
+  var oldp = $("#oldPassword");
+  var newp = $("#newPassword");
+  var newp2 = $("#newPasswordAgain");
+
+  oldp.parent().removeClass("has-error");
+  newp.parent().removeClass("has-error");
+  newp2.parent().removeClass("has-error");
+
+
+  if (oldp.val() === "") {
+    oldp.parent().addClass("has-error");
     error += "Enter the old password!<br />";
   }
 
-  if (newp.value === "") {
+  if (newp.val() === "") {
+    newp.parent().addClass("has-error");
     error += "Enter the new password!<br />";
   }
 
-  if (newp2.value === "") {
+  if (newp2.val() === "") {
+    newp2.parent().addClass("has-error");
     error += "Retype the new password!<br />";
   }
 
   if (error === "") {
-    if (newp.value == newp2.value) {
-      if (errorbox.className == "dataError") {
-        errorbox.removeAttribute("class");
-        errorbox.innerHTML = "";
-      }
-      form[0].submit();
-
-    } else {
-      error += "The new password don't match!";
+    if (newp.val() != newp2.val()) {
+      newp.parent().addClass("has-error");
+      newp2.parent().addClass("has-error");
+      error += "The new passwords don't match!";
     }
   }
-  if (error) {
-    errorbox.innerHTML = error;
-    errorbox.setAttribute("class", "dataError");
-  }
+  return error;
 }
