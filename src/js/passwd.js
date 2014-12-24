@@ -49,11 +49,13 @@ function submitForm(){
       newPassword: newp
     }
   }).done(function(data) {
-    if (!data.login) {
-      $("#Error").html("No such user-password combination!");
-      $("#Error").addClass("loginError");
+    if (data.success) {
+      $("#Success").html("The Password has been successfully changed!");
+      $("#Success").addClass("passSuccess");
     } else {
-      //window.location.replace("/user");
+      $("#Error").html("Wrong password");
+      $("#oldPassword").parent().addClass("has-error");
+      $("#Error").addClass("loginError");
     }
   });
 }
@@ -76,6 +78,8 @@ function checkOldPassword(password){
 
 function getErrors() {
   var error = "";
+  $("#Success").html("");
+  $("#Success").removeClass("passSuccess");
 
   var oldp = $("#oldPassword");
   var newp = $("#newPassword");
