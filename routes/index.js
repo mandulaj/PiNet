@@ -1,9 +1,11 @@
 var jwt = require('jsonwebtoken');
 var express = require('express');
-var indexRouter = express.Router();
-var userRouter = express.Router();
 var config = require('../config/config.json');
 var Db = require('../lib/dbReader.js');
+
+
+var indexRouter = express.Router();
+var userRouter = require("./users.js");
 
 /* GET home page. */
 module.exports = function(app, passport, db) {
@@ -11,7 +13,7 @@ module.exports = function(app, passport, db) {
   var database = new Db(db);
 
   // Index
-  indexRouter.get('/', function(req, res) {
+  indexRouter.get('/', function(req, res, next) {
     if (req.isAuthenticated()) {
       res.redirect("/user");
     } else {
@@ -29,8 +31,7 @@ module.exports = function(app, passport, db) {
         });
       }
       req.login(user, function(err) {
-        if (err)
-          return next(err);
+        if (err) return next(err);
 
         var token = jwt.sign({
           id: user.getId()
@@ -49,11 +50,7 @@ module.exports = function(app, passport, db) {
 
   indexRouter.post('/signup', function(req, res, next) {
     passport.authenticate('local-signup', function(err, user, info) {
-      if (err) {
-        return res.send({
-          signup: false
-        });
-      }
+      if (err) return next(err);
       if (user) {
         return res.send({
           signup: true
@@ -66,80 +63,36 @@ module.exports = function(app, passport, db) {
     })(req, res, next);
   });
 
-  indexRouter.get("/logout", function(req, res) {
+  indexRouter.get("/logout", function(req, res, next) {
     req.logout();
     res.redirect("/");
   });
 
 
-  // User
-  userRouter.use(isAuthenticated);
-  userRouter.get("/", function(req, res) {
-    req.user.isAdmin(function(admin) {
-      res.render("room", {
-        username: req.user.username,
-        admin: admin
-      });
-    });
-  });
-
-  userRouter.get("/changepassword", function(req, res) {
-    res.render("passChange", {
-      username: req.user.username
-    });
-  });
-
-  userRouter.post("/changepassword", function(req, res, next) {
-    req.user.changePassword(req.body.oldPassword, req.body.newPassword, function(err, data) {
-
-      if (err) return res.status(500);
-      if (data) {
-        res.send({
-          success: true
-        });
-        return next();
-      } else {
-        res.send({
-          success: false
-        });
-        return next();
-      }
-    });
-  });
-
-  userRouter.get("/admin", isAdmin, function(req, res) {
-    res.render("admin", {
-      username: req.user.username
-    });
-  });
+  // Middleware:
 
   // Check if the IP is not banned
   app.use(function(req, res, next) {
     database.isIpBlocked(req.ip, function(err, blocked) {
-      if (err) return res.status(500).send("Error");
+      if (err) return next(err);
       if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
-      next();
     });
   });
 
+  // Register the routers
   app.use('/user', userRouter);
   app.use('/', indexRouter);
-
-  function isAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-      return next();
-    } else {
-      res.redirect("/"); // send the user to the landing page if he is not logged in...
-    }
-  }
-
-  function isAdmin(req, res, next) {
-    req.user.isAdmin(function(admin) {
-      if (admin) {
-        return next();
-      } else {
-        res.redirect("/user");
-      }
-    });
-  }
 };
+
+
+
+function isAuthenticated(req, res, next) {
+  console.log("called")
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    res.redirect("/"); // send the user to the landing page if he is not logged in...
+  }
+}
+
+
