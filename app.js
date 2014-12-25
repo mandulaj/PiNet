@@ -1,16 +1,10 @@
 var https = require('https'),
   http = require('http'),
   express = require('express'),
-  path = require('path'),
   fs = require('fs'),
   colors = require('colors'),
-  favicon = require('serve-favicon'),
-  logger = require('morgan'),
-  cookieParser = require('cookie-parser'),
-  bodyParser = require('body-parser'),
   passport = require('passport'),
   sqlite3 = require('sqlite3').verbose(),
-  session = require('express-session'),
   io = require('socket.io'),
   config = require('./config/config.json'),
   PiNet = require("./lib/pinet.js"),
@@ -57,30 +51,12 @@ require("./config/db.js")(db);
 process.title = 'PiNet.js';
 
 // Setup of the app
-// TODO: this should go the a setup file
 
-// View engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+require("./config/app.js")(app, config, {
+  dirname: __dirname,
+  favicon: false // XXX: this in only temporary...
+});
 
-// Static files
-app.use("/static", express.static(path.join(__dirname, 'public')));
-// Favicon
-//app.use(favicon(__dirname + '/public/favicon.ico'));
-
-// Logger
-app.use(logger('dev'));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
-app.use(cookieParser());
-app.use(session({
-  saveUninitialized: true,
-  resave: true,
-  secret: config.secrets.cookie,
-}));
 
 // Passport initialization
 app.use(passport.initialize());
