@@ -39,17 +39,12 @@ if (config.ssl) {
 console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.ssl) ? ("s".green) : ("")) + "://localhost:".green + config.port.toString().green);
 
 // Setup socket
-// TODO: put this in a separate file
 socket = io(server, {
   'close timeout': 10,
   'heartbeat timeout': 10,
   'heartbeat interval': 5
 });
-
-socket.use(socketioJwt.authorize({
-   secret: config.secrets.jwt,
-   handshake: true
-}));
+require("./config/socketio.js")(socket, config);
 
 // Setup robot
 var Robot = PiNet(socket, db, {
