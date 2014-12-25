@@ -13,7 +13,6 @@ var https = require('https'),
   session = require('express-session'),
   io = require('socket.io'),
   config = require('./config/config.json'),
-  socketioJwt = require('socketio-jwt'),
   PiNet = require("./lib/pinet.js"),
 
   app,
@@ -51,12 +50,9 @@ var Robot = PiNet(socket, db, {
    port: 8800
 });
 
-// Setup db tables
-// TODO: put this in a separate file
-db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER  PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT, banned  BOOLEAN  DEFAULT( 0 ))");
-db.run("CREATE TABLE IF NOT EXISTS logins (id INTEGER  PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
-db.run("CREATE TABLE IF NOT EXISTS sockets (id TEXT  PRIMARY KEY  NOT NULL  UNIQUE, userId INTEGER)");
-db.run("DELETE FROM sockets"); // Clear the sockets database
+// Setup db
+require("./config/db.js")(db);
+
 
 process.title = 'PiNet.js';
 
