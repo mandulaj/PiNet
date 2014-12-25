@@ -14,12 +14,19 @@ var https = require('https'),
   io = require('socket.io'),
   config = require('./config/config.json'),
   socketioJwt = require('socketio-jwt'),
-  PiNet = require("./lib/pinet.js");
+  PiNet = require("./lib/pinet.js"),
 
+  app,
+  db,
+  server,
+  socket;
 
-var app = express();
-var db = new sqlite3.Database(config.db);
-var server;
+// Create the app
+app = express();
+// Setup database
+db = new sqlite3.Database(config.db);
+
+// Setup the server
 if (config.ssl) {
   var options = {
     key: fs.readFileSync(config.keys.key),
@@ -31,7 +38,9 @@ if (config.ssl) {
 }
 console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.ssl) ? ("s".green) : ("")) + "://localhost:".green + config.port.toString().green);
 
-var socket = io(server, {
+// Setup socket
+// TODO: put this in a separate file
+socket = io(server, {
   'close timeout': 10,
   'heartbeat timeout': 10,
   'heartbeat interval': 5
@@ -42,24 +51,35 @@ socket.use(socketioJwt.authorize({
    handshake: true
 }));
 
-//
+// Setup robot
 var Robot = PiNet(socket, db, {
    port: 8800
 });
 
+// Setup db tables
+// TODO: put this in a separate file
 db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER  PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT, banned  BOOLEAN  DEFAULT( 0 ))");
 db.run("CREATE TABLE IF NOT EXISTS logins (id INTEGER  PRIMARY KEY  AUTOINCREMENT  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
 db.run("CREATE TABLE IF NOT EXISTS sockets (id TEXT  PRIMARY KEY  NOT NULL  UNIQUE, userId INTEGER)");
 db.run("DELETE FROM sockets"); // Clear the sockets database
 
 process.title = 'PiNet.js';
-// view engine setup
+
+// Setup of the app
+// TODO: this should go the a setup file
+
+// View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// Static files
 app.use("/static", express.static(path.join(__dirname, 'public')));
+// Favicon
 //app.use(favicon(__dirname + '/public/favicon.ico'));
+
+// Logger
 app.use(logger('dev'));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
@@ -70,37 +90,30 @@ app.use(session({
   resave: true,
   secret: config.secrets.cookie,
 }));
+
+// Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
-
 require("./config/passport.js")(passport, db); // Passport setup
-require('./routes/index')(app, passport, db); // main routs setup
+
+// Main Routes file
+require('./routes/index')(app, passport, db);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  res.status(404);
+  // TODO: make a not found page
+  res.send("Not found");
+  //res.render("notfound", req.path)
 });
 
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
+// Error handlers:
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
+  res.status(500);
+  console.error(err.stack)
   res.render('error', {
     message: err.message,
     error: {}
@@ -110,9 +123,13 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
+
+// App clean-up
+
+// TODO: clean this up:
 function exitHandler(options, err) {
   if (options.cleanup) {
-    //TODO: cleanup
+    // TODO: add any clean up here
     db.close(function() {
       console.log("Exit Success!");
       process.exit(0);
