@@ -15,7 +15,7 @@ module.exports = function(app, passport, db) {
     if (req.isAuthenticated()) {
       res.redirect("/user");
     } else {
-      res.render('index', {});
+      res.render('login', {});
     }
   });
 
@@ -75,21 +75,49 @@ module.exports = function(app, passport, db) {
   // User
   userRouter.use(isAuthenticated);
   userRouter.get("/", function(req, res) {
-    res.render("room", {username: req.user.username});
+    req.user.isAdmin(function(admin) {
+      res.render("room", {
+        username: req.user.username,
+        admin: admin
+      });
+    });
   });
 
   userRouter.get("/changepassword", function(req, res) {
-    res.render("passChange", {});
+    res.render("passChange", {
+      username: req.user.username
+    });
+  });
+
+  userRouter.post("/changepassword", function(req, res, next) {
+    req.user.changePassword(req.body.oldPassword, req.body.newPassword, function(err, data) {
+
+      if (err) return res.status(500);
+      if (data) {
+        res.send({
+          success: true
+        });
+        return next();
+      } else {
+        res.send({
+          success: false
+        });
+        return next();
+      }
+    });
   });
 
   userRouter.get("/admin", isAdmin, function(req, res) {
+    res.render("admin", {
+      username: req.user.username
+    });
   });
 
   // Check if the IP is not banned
   app.use(function(req, res, next) {
     database.isIpBlocked(req.ip, function(err, blocked) {
-      if (err) return res.status(500).end("Error");
-      if (blocked) return res.status(403).end("403: You were banned! Try hacking into something dumber than PiNet :D");
+      if (err) return res.status(500).send("Error");
+      if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
       next();
     });
   });
@@ -106,7 +134,7 @@ module.exports = function(app, passport, db) {
   }
 
   function isAdmin(req, res, next) {
-    req.user.isAdmin(function(admin){
+    req.user.isAdmin(function(admin) {
       if (admin) {
         return next();
       } else {

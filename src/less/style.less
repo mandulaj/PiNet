@@ -1,85 +1,59 @@
 /* CSS Document */
 @transitionSpeed: 0.2s;
 
-@font-face {
-  font-family: 'Chivo';
-  font-style: normal;
-  font-weight: 400;
-  src: url("/static/fonts/Chivo-Regular.ttf");
-}
-@font-face {
-  font-family: 'Chivo';
-  font-style: normal;
-  font-weight: 900;
-  src: url("/static/fonts/Chivo-Black.ttf");
-}
-@font-face {
-  font-family: 'Chivo';
-  font-style: italic;
-  font-weight: 900;
-  src: url("/static/fonts/Chivo-Italic.ttf");
-
-}
 body {
   user-select: none;
   background: #fefefe;
   padding: 0;
   margin: 0;
-  font-family: Chivo, snas-serif;
-}
 
+}
+#imageStream {
+  width: 100%;
+
+}
 // Main Buttons
-#arrows {
-  width: 300px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 5px;
-
-}
-
-.arrowkey {
-  // Check these
+.arrow {
   user-drag: none;
   user-modify: none;
   highlight: none;
   touch-callout: none;
-
   user-select: none;
-  width: 100px;
-  height: 100px;
   background: #b3b1b2;
-  margin: 3px;
+
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
+  background: #b3b1b2;
   box-shadow: 0 5px 8px #333;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
   transition: @transitionSpeed background;
-  cursor: pointer;
 
   &:hover {
     background: #999;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+
   }
   // A key that is pressed
   &.pressedKey {
     background-color: #454545;
   }
+
 }
+.keyRowSpacing {
+  margin-bottom: 10px;
 
-
+}
 // Camera Buttons
-
+/*
 #cam_arrows {
-  &:extend(#arrows);
+  &: extend(#arrows);
   width: 150px;
 
 }
-
 .cam_arrowkey {
-  &:extend(.arrowkey);
+  &: extend(.arrowkey);
 
   width: 50px;
   height: 50px;
@@ -89,40 +63,16 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+
   }
   // A key that is pressed
-   &.pressedKey {
+  &.pressedKey {
     background-color: #454545;
   }
-}
-
-
-
-
-h3 {
-  text-align: center;
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 20px;
-  color: #fff;
-  margin-top: 5px;
-  margin-bottom: 5px;
 
 }
-
-#top {
-  position: absolute;
-  padding: 0;
-  top: 0;
-  left: 0;
-  margin: 0;
-  width: 100%;
-  background: #242424;
-  box-shadow: 5px 0 15px #1e1e1e;
-
-}
-
+/*
 #stream {
-  margin-top: 65px;
   width: 644px;
   height: 484px;
   margin-left: auto;
@@ -203,7 +153,6 @@ h3 {
 }
 
 
-
 #upkey {
   background-image: url("../images/arrowUp.png");
 
@@ -241,7 +190,7 @@ h3 {
 
 }
 
-
+*/
 // 'Live' box
 @keyframes rec {
   0% {
@@ -255,7 +204,6 @@ h3 {
   }
 
 }
-
 #live {
   position: absolute;
   margin-top: 10px;
@@ -279,11 +227,9 @@ h3 {
     border-radius: 10px;
     filter: blur(1px);
     animation: rec 1.5s infinite;
-
   }
+
 }
-
-
 #slider {
   position: absolute;
   float: left;
@@ -319,8 +265,8 @@ h3 {
   border-radius: 3px;
   &:hover {
     background-color: #d3d3d3;
-  }
 
+  }
   p {
     text-align: center;
     vertical-align: middle;
@@ -334,42 +280,14 @@ h3 {
     }
   }
 
-
 }
-
-
-
-#logout {
-  color: white;
-  text-decoration: none;
-  float: right;
-  margin-top: -27px;
-  margin-right: 15px;
-  &:hover {
-    font-weight: bold;
-    margin-right: 13px;
-  }
-}
-
-#chpassword {
-  color: white;
-  text-decoration: none;
-  float: left;
-  margin-top: -27px;
-  margin-left: 15px;
-  &:hover {
-    font-weight: bold;
-    margin-left: 13px;
-  }
-}
-
 .piStats {
   text-align: center;
-  position: absolute;
-  top: 580px;
-  right: 10px;
-  width: 180px;
-  height: 230px;
+  //position: absolute;
+  //top: 580px;
+  //right: 10px;
+  //width: 180px;
+  //height: 230px;
   background-color: #ccc;
   border-radius: 5px;
   z-index: 1;
@@ -389,12 +307,11 @@ h3 {
   text-align: center;
   z-index: 50;
   transition: 0.5s left;
-  &.open{
+  &.open {
     left: 10px;
   }
 
 }
-
 .component-btn {
   cursor: pointer;
   margin-left: auto;
@@ -415,8 +332,8 @@ h3 {
   &:hover {
     color: #999;
   }
-}
 
+}
 .showsideBar {
   text-align: right;
   padding-right: 5px;
@@ -432,13 +349,13 @@ h3 {
   &:hover {
     background-color: #333;
   }
-}
 
+}
 .active_recording {
   background-color: rgb(255, 40, 40);
   animation: rec 3s infinite;
-}
 
+}
 .cover {
   z-index: 100;
   position: fixed;
@@ -448,19 +365,17 @@ h3 {
   background-color: #fff;
 
 }
-
 #recIndic {
   width: 20px;
   height: 20px;
+  margin-left: 5px;
+  vertical-align: middle;
+  display: inline-block;
   background-color: red;
-  position: absolute;
-  top: 8px;
-  left: 163px;
   border-radius: 10px;
   animation: rec 3s infinite;
 
 }
-
 .rec_window {
   text-align: center;
   font-size: 24px;
@@ -490,9 +405,8 @@ h3 {
       background-color: #232323;
     }
   }
+
 }
-
-
 #rec_window_content>div {
   margin-top: 25px;
 
@@ -512,8 +426,8 @@ h3 {
   &:hover {
     background-color: #333;
   }
-}
 
+}
 #laser {
   position: absolute;
   right: 10px;
@@ -533,8 +447,8 @@ h3 {
   &.activated {
     background-color: rgb(206, 13, 13);
   }
-}
 
+}
 .stat_title {
   font-weight: bold;
 

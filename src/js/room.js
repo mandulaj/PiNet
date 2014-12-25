@@ -11,7 +11,7 @@ function KeyEventHandler(robot) {
   this.robot = robot;
   this.is_touch_device = 'ontouchstart' in window;
   this.dragging = false;
-  this.keys = [38, 37, 40, 39, 87, 65, 88, 68, 83];
+  this.keys = [38, 37, 40, 39, 87, 65, 83, 68, 88];
   this.keyStatus = [false, false, false, false, false, false, false, false, false];
   this.otherComponents = {
     light: 0,
@@ -42,20 +42,19 @@ function KeyEventHandler(robot) {
     self.handleUp(index);
   });
 
-  for (var i = 0; i < self.keyElements.length; i++) {
-    var element = self.keyElements[i];
+  function registerEvents(self, element, i) {
     // If we use touch device only assign the required listeners and vice versa
     if (self.is_touch_device) {
-      element[0].addEventListener("touchstart", function(i) {
+      element[0].addEventListener("touchstart", function() {
         self.handleDown(i);
-      }.bind(null, i));
-      element[0].addEventListener("touchend", function(i) {
+      });
+      element[0].addEventListener("touchend", function() {
         self.handleUp(i);
-      }.bind(null, i));
+      });
     } else {
-      element.mousedown(function(i) {
+      element.mousedown(function() {
         self.handleDown(i);
-      }.bind(null, i));
+      });
       element.mouseup(function() {
         // lift all keys only if we are not dragging currently
         if (!self.dragging) {
@@ -63,6 +62,10 @@ function KeyEventHandler(robot) {
         }
       });
     }
+  }
+  for (var i = 0; i < self.keyElements.length; i++) {
+    var element = self.keyElements[i];
+    registerEvents(this, element, i);
   }
 
   // Laser button listeners
