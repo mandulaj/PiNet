@@ -19,10 +19,10 @@ html
           h2 Login
           form(method='post', role="form")
             .form-group
-              label(for='username') Username
+              label.control-label(for='username') Username
               input#inputName.form-control(type='text', name='username', onkeypress='nameEnter(event)' placeholder='Enter Username')
             .form-group
-              label(for='username') Password
+              label.control-label(for='password') Password
               input#inputPass.form-control(type='password', name='password', onkeypress='submitEnter(event)', placeholder='Enter Password')
             button#submitbutton(class='btn btn-default') Sign In
           #Error

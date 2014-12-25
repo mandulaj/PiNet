@@ -3,8 +3,7 @@ doctype html
 html
   head
     title PiNet
-    link(type='text/css', rel='stylesheet', href='/static/css/passwd.css')
-    link(type='text/css', rel='stylesheet', href='/static/css/login.css')
+    link(type='text/css', rel='stylesheet', href='/static/css/admin.css')
     link(type='text/css', rel='stylesheet', href='/static/modules/bootstrap/dist/css/bootstrap.min.css')
 
   body(unselectable='on')
@@ -36,30 +35,10 @@ html
               a(href='/logout') Logout
 
     div.container
-      .row
-        .col-sm-4.col-sm-offset-4
-          h2 Change Password
-
-          form(method='post', role="form")
-            .form-group
-              label.control-label(for='oldPassword') Old Password
-              input#oldPassword.form-control(type='password', name='oldPassword', onkeypress='nameEnter(event)' placeholder='Enter Old Password')
-            .form-group
-              label.control-label(for='newPassword') New Password
-              input#newPassword.form-control(type='password', name='newPassword', onkeypress='submitEnter(event)', placeholder='Enter New Password')
-            .form-group
-              label.control-label(for='newPasswordAgain') Retype new Password again
-              input#newPasswordAgain.form-control(type='password', name='newPasswordAgain', onkeypress='submitEnter(event)', placeholder='Enter New Password again')
-
-            button#submitbutton(class='btn btn-default') Confirm
-          #Error
-          #Success
+      h1 Admin Corner
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
   script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')
   script(type='text/javascript', src='/static/modules/bootstrap/dist/js/bootstrap.min.js')
   script(type='text/javascript', src='/static/modules/socket.io-client/socket.io.js')
-  script(type='text/javascript', src='/static/js/passwd.js')
-
-
-
+  script(type='text/javascript', src='/static/js/admin.js')
