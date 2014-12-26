@@ -23,7 +23,7 @@ var paths = {
 
 
 gulp.task('test', function(cb) {
-  gulp.src(['lib/**/*.js', 'app.js'])
+  gulp.src(['lib/**/*.js', 'config/lib/**/*.js'])
     .pipe(istanbul()) // Covering files
     .on('finish', function() {
       gulp.src(['test/*.js'])
