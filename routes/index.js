@@ -83,12 +83,18 @@ module.exports = function(app, passport, db) {
   // Register the routers
   app.use('/user', userRouter);
   app.use('/', indexRouter);
+
+  // Error handlers:
+  // 404
+  app.use(notFound);
+
+  app.use(errorLogger);
+  // 500
+  app.use(errorHandler);
 };
 
 
-
 function isAuthenticated(req, res, next) {
-  console.log("called")
   if (req.isAuthenticated()) {
     return next();
   } else {
@@ -96,4 +102,27 @@ function isAuthenticated(req, res, next) {
   }
 }
 
+// Catch 404 and forward to error handler
+function notFound(err, req, res, next) {
+  if (err) return next(err);
 
+  res.status(404);
+  // TODO: make a not found page
+  res.send("Not found");
+  //res.render("notfound", req.path)
+}
+
+// Log errors
+function errorLogger(err, req, res, next) {
+  console.error(err.stack);
+  next(err);
+}
+
+// 500 errors
+function errorHandler(err, req, res, next) {
+  res.status(500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+}

@@ -57,7 +57,6 @@ function isAdmin(req, res, next) {
 // TODO: this function should be moved or passed from one source
 // XXX: code duplicate in ./index.js
 function isAuthenticated(req, res, next) {
-  console.log("called")
   if (req.isAuthenticated()) {
     return next();
   } else {

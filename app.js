@@ -9,6 +9,7 @@ var https = require('https'),
   config = require('./config/config.json'),
   PiNet = require("./lib/pinet.js"),
 
+  // App variables
   app,
   db,
   server,
@@ -65,27 +66,6 @@ require("./config/passport.js")(passport, db); // Passport setup
 
 // Main Routes file
 require('./routes/index')(app, passport, db);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  res.status(404);
-  // TODO: make a not found page
-  res.send("Not found");
-  //res.render("notfound", req.path)
-});
-
-// Error handlers:
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(500);
-  console.error(err.stack)
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
 
 
 module.exports = app;
