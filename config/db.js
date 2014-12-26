@@ -1,4 +1,6 @@
 /* Configuration file for the database */
+var merge_options = require("./lib/configUtil.js").merge_options;
+
 
 var defaultOptions = {
   clearSockets: true
@@ -15,22 +17,4 @@ module.exports = function(db, opts){
   if (opts.clearSockets) {
     db.run("DELETE FROM sockets"); // Clear the sockets database
   }
-}
-
-
-function merge_options(options, defaults){
-
-  var options_final = {};
-  for (var attrname in defaults) {
-    options_final[attrname] = defaults[attrname];
-  }
-
-  if(!options) {
-    return options_final;
-  }
-
-  for (var attrname in options) {
-    options_final[attrname] = options[attrname];
-  }
-  return options_final;
 }

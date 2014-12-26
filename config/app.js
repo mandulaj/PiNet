@@ -7,6 +7,7 @@ var path = require("path"),
   session = require('express-session'),
   optimus = require('connect-image-optimus');
 
+var merge_options = require("./lib/configUtil.js").merge_options;
 
 var defaultOpts = {
   dirname: __dirname,
@@ -47,21 +48,3 @@ module.exports = function(app, config, opts){
 
 }
 
-
-// XXX: put this in a common file, duplicate in ./db.js
-function merge_options(options, defaults){
-
-  var options_final = {};
-  for (var attrname in defaults) {
-    options_final[attrname] = defaults[attrname];
-  }
-
-  if(!options) {
-    return options_final;
-  }
-
-  for (var attrname in options) {
-    options_final[attrname] = options[attrname];
-  }
-  return options_final;
-}
