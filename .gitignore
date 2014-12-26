@@ -20,3 +20,6 @@ keys
 
 # Database file
 *.db
+
+#Coverage
+coverage
