@@ -2,41 +2,11 @@ var expect = require("expect.js");
 var dbReader = require("../lib/dbReader.js")
 
 var sqlite3 = require('sqlite3').verbose();
+var database = new sqlite3.Database(":memory:");
+require("../config/db.js")(database);
+database.serialize();
+populateDB(database);
 
-
-// Add tests for some main libs
-describe("DB Wrapper", function(){
-  var database = new sqlite3.Database(":memory:");
-  require("../config/db.js")(database);
-
-  var db = new dbReader(database);
-  describe("#constructor", function(){
-    it("should return an object", function(){
-      expect(db).to.be.an("object");
-    });
-    it("should have all the methods", function(){
-      expect(db.findById).to.be.a("function");
-      expect(db.getIdFromUsername).to.be.a("function");
-      expect(db.numUsers).to.be.a("function");
-      expect(db.doesExist).to.be.a("function");
-      expect(db.createNewUser).to.be.a("function");
-      expect(db.verify).to.be.a("function");
-      expect(db.verifyUser).to.be.a("function");
-      expect(db.updateLogin).to.be.a("function");
-      expect(db.changePassword).to.be.a("function");
-      expect(db.reportFailedLogin).to.be.a("function");
-      expect(db.getAccessStatus).to.be.a("function");
-      expect(db.isAdmin).to.be.a("function");
-      expect(db.isIpBlocked).to.be.a("function");
-      expect(db.updateAdminPower).to.be.a("function");
-      expect(db.checkFormData).to.be.a("function");
-      expect(db.addSocket).to.be.a("function");
-      expect(db.removeSocket).to.be.a("function");
-      expect(db.isSocketBanned).to.be.a("function");
-      expect(db.socketUserId).to.be.a("function");
-    });
-  });
-});
 
 describe("PiStat", function(){
   var Stat = require("../lib/pistat.js");
@@ -245,3 +215,77 @@ describe("ConfigUtil", function(){
     });
   });
 });
+
+
+// Add tests for some main libs
+describe("DB Wrapper", function(){
+
+  var db = new dbReader(database);
+
+  describe("#constructor", function(){
+    it("should return an object", function(){
+      expect(db).to.be.an("object");
+    });
+    it("should have all the methods", function(){
+      expect(db.findById).to.be.a("function");
+      expect(db.getIdFromUsername).to.be.a("function");
+      expect(db.doesExist).to.be.a("function");
+      expect(db.createNewUser).to.be.a("function");
+      expect(db.verify).to.be.a("function");
+      expect(db.verifyUser).to.be.a("function");
+      expect(db.updateLogin).to.be.a("function");
+      expect(db.changePassword).to.be.a("function");
+      expect(db.reportFailedLogin).to.be.a("function");
+      expect(db.getAccessStatus).to.be.a("function");
+      expect(db.isAdmin).to.be.a("function");
+      expect(db.isIpBlocked).to.be.a("function");
+      expect(db.updateAdminPower).to.be.a("function");
+      expect(db.checkFormData).to.be.a("function");
+      expect(db.addSocket).to.be.a("function");
+      expect(db.removeSocket).to.be.a("function");
+      expect(db.isSocketBanned).to.be.a("function");
+      expect(db.socketUserId).to.be.a("function");
+    });
+  });
+  describe("#findById", function(){
+    it("should find the right user", function(done) {
+      db.findById(1, function(err, user){
+        expect(err).to.be(null);
+        expect(user.username).to.be("root");
+        expect(user.access).to.be(5);
+        done();
+      });
+    });
+    it("should return null when user does not exist", function(done){
+      db.findById(99999999, function(err, user){
+        expect(err).to.be(null);
+        expect(user).to.be(null);
+        done();
+      });
+    });
+  });
+  describe("#getIdFromUsername", function(){
+    it("should return the id for usernames that exist", function(done){
+      db.getIdFromUsername("user1", function(err, id){
+        expect(err).to.be(null);
+        expect(id).to.be(2);
+        done();
+      });
+    });
+    it("should return null for username that don't exist", function(done){
+      db.getIdFromUsername("username_does_not_ever_exist", function(err, id){
+        expect(err).to.be(null);
+        expect(id).to.be(null);
+        done();
+      });
+    });
+  });
+});
+
+
+function populateDB(db) {
+  db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  1, "root", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 5, Date.now());
+  db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  2, "user1", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 0, Date.now());
+  db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  3, "user2", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 2, Date.now());
+  db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  4, "user3", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 1, Date.now());
+}
