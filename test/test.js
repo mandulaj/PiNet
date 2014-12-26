@@ -1,10 +1,41 @@
 var expect = require("expect.js");
+var dbReader = require("../lib/dbReader.js")
 
+var sqlite3 = require('sqlite3').verbose();
 
 
 // Add tests for some main libs
 describe("DB Wrapper", function(){
+  var database = new sqlite3.Database(":memory:");
+  require("../config/db.js")(database);
 
+  var db = new dbReader(database);
+  describe("#constructor", function(){
+    it("should return an object", function(){
+      expect(db).to.be.an("object");
+    });
+    it("should have all the methods", function(){
+      expect(db.findById).to.be.a("function");
+      expect(db.getIdFromUsername).to.be.a("function");
+      expect(db.numUsers).to.be.a("function");
+      expect(db.doesExist).to.be.a("function");
+      expect(db.createNewUser).to.be.a("function");
+      expect(db.verify).to.be.a("function");
+      expect(db.verifyUser).to.be.a("function");
+      expect(db.updateLogin).to.be.a("function");
+      expect(db.changePassword).to.be.a("function");
+      expect(db.reportFailedLogin).to.be.a("function");
+      expect(db.getAccessStatus).to.be.a("function");
+      expect(db.isAdmin).to.be.a("function");
+      expect(db.isIpBlocked).to.be.a("function");
+      expect(db.updateAdminPower).to.be.a("function");
+      expect(db.checkFormData).to.be.a("function");
+      expect(db.addSocket).to.be.a("function");
+      expect(db.removeSocket).to.be.a("function");
+      expect(db.isSocketBanned).to.be.a("function");
+      expect(db.socketUserId).to.be.a("function");
+    });
+  });
 });
 
 describe("PiStat", function(){
