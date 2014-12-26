@@ -76,6 +76,7 @@ module.exports = function(app, passport, db) {
     database.isIpBlocked(req.ip, function(err, blocked) {
       if (err) return next(err);
       if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
+      next();
     });
   });
 
