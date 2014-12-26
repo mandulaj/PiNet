@@ -470,11 +470,145 @@ describe("DB Wrapper", function(){
       });
     });
   });
-  describe("#reportFailedLogin", function(){});
-  describe("#getAccessStatus", function(){});
-  describe("#isAdmin", function(){});
-  describe("#isIpBlocked", function(){});
-  describe("#updateAdminPower", function(){});
+  describe("#reportFailedLogin", function(){
+    it("should create a new row if ip does not exist yet" , function(done){
+      db.reportFailedLogin("192.168.0.1", function(err) {
+        expect(err).to.be(null);
+        database.get("SELECT COUNT(ip) AS num, threat, accessed FROM logins WHERE ip = '192.168.0.1'", function(err, data){
+          if (err) done(err);
+          expect(data.num).to.be(1);
+          expect(data.threat).to.be(1);
+          expect(data.accessed).to.be(1);
+          done();
+        });
+      });
+    });
+    it("should not create a new row if ip does exist" , function(done){
+      db.reportFailedLogin("192.168.0.1", function(err) {
+        expect(err).to.be(null);
+        database.get("SELECT COUNT(ip) AS num, threat FROM logins WHERE ip = '192.168.0.1'", function(err, data){
+          if (err) done(err);
+          expect(data.num).to.be(1);
+          expect(data.threat).to.be(2)
+          done();
+        });
+      });
+    });
+    it("should increment number of accesses", function(done){
+      database.get("SELECT accessed, threat FROM logins WHERE ip = '192.168.0.1'", function(err, data){
+        if(err) done(err);
+        expect(data.accessed).to.be(2);
+        expect(data.threat).to.be(2);
+        done();
+      });
+    });
+    it("should not increment threat if delay exceeds 3 seconds", function(done){
+      // Todo: find a way to implement this
+      done();
+      setTimeout(function(){
+
+      }, 3000)
+    });
+    it("should return any errors", function(done){
+      errdb.reportFailedLogin("127.0.0.1", function(err) {
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        done();
+      });
+    });
+  });
+  describe("#getAccessStatus", function(){
+    it("should return the access status of the give id_user", function(done){
+      db.getAccessStatus(1, function(err, status){
+        expect(err).to.be(null);
+        expect(status).to.be(5);
+
+        db.getAccessStatus(3, function(err, status){
+          expect(err).to.be(null);
+          expect(status).to.be(2);
+          done();
+        });
+      });
+    });
+    it("should return the -1 on unknown id", function(done){
+      db.getAccessStatus(999999, function(err, status){
+        expect(err).to.be(null);
+        expect(status).to.be(-1);
+
+        db.getAccessStatus(12312312, function(err, status){
+          expect(err).to.be(null);
+          expect(status).to.be(-1);
+          done();
+        });
+      });
+    });
+    it("should return any error", function(done){
+      errdb.getAccessStatus(1, function(err, status){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        expect(status).to.be(null);
+        done();
+      });
+    });
+  });
+  describe("#isAdmin", function(){
+    it("should return true if a user is admin", function(done){
+      db.isAdmin(1, function(err, admin){
+        if (err) return done(err);
+        expect(admin).to.be(true);
+        done();
+      });
+    });
+    it("should return false if a user is not an admin", function(done){
+      db.isAdmin(2, function(err, admin){
+        if (err) return done(err);
+        expect(admin).to.be(false);
+        done();
+      });
+    });
+    it("should return any errors", function(done){
+      errdb.isAdmin(1, function(err, admin){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(admin).to.be(false);
+        expect(err).to.be.an(Error);
+        done();
+      });
+    });
+  });
+  describe("#isIpBlocked", function(){
+    it("should return false if ip is not blocked", function(done){
+      db.isIpBlocked("192.168.0.1", function(err, blocked){
+        if (err) return done(err);
+        expect(blocked).to.be(false);
+        done();
+      });
+    });
+    it("should return false if ip is not on the list", function(done){
+      db.isIpBlocked("0.0.0.0", function(err, blocked){
+        if (err) return done(err);
+        expect(blocked).to.be(false);
+        done();
+      });
+    });
+    it("should return true if ip is blocked", function(done){
+      db.isIpBlocked("555.555.555.555", function(err, blocked){
+        if (err) return done(err);
+        expect(blocked).to.be(true);
+        done();
+      });
+    });
+    it("should return any errors and blocked should be null in any case", function(done){
+      errdb.isIpBlocked("192.168.0.1", function(err, blocked){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        expect(blocked).to.be(null);
+        done();
+      });
+    });
+  });
+  describe("#updateAdminPower", function(){
+
+  });
   describe("#checkFormData", function(){});
   describe("#addSocket", function(){});
   describe("#removeSocket", function(){});
@@ -489,4 +623,6 @@ function populateDB(db) {
   db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  2, "user1", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 0, Date.now());
   db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  3, "user2", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 2, Date.now());
   db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  4, "user3", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 1, Date.now());
+
+  db.run("INSERT INTO logins (id, ip, accessed, banned) VALUES ((?), (?), (?), (?))",  1, "555.555.555.555", 45, 1);
 }
