@@ -4,7 +4,8 @@ var path = require("path"),
   logger = require('morgan'),
   cookieParser = require('cookie-parser'),
   bodyParser = require('body-parser'),
-  session = require('express-session');
+  session = require('express-session'),
+  optimus = require('connect-image-optimus');
 
 
 var defaultOpts = {
@@ -20,7 +21,9 @@ module.exports = function(app, config, opts){
   app.set('view engine', 'ejs');
 
   // Static files
-  app.use("/static", express.static(path.join(opts.dirname, 'public'), {
+  var staticPath = path.join(opts.dirname, "public");
+  app.use("/static", optimus(staticPath));
+  app.use("/static", express.static(staticPath, {
     maxAge: '1d'
   }));
   // Favicon
