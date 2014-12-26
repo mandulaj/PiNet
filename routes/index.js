@@ -73,13 +73,7 @@ module.exports = function(app, passport, db) {
   // Middleware:
 
   // Check if the IP is not banned
-  app.use(function(req, res, next) {
-    database.isIpBlocked(req.ip, function(err, blocked) {
-      if (err) return next(err);
-      if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
-      next();
-    });
-  });
+  app.use(checkIp);
 
   // Register the routers
   app.use('/user', userRouter);
@@ -92,6 +86,15 @@ module.exports = function(app, passport, db) {
   app.use(errorLogger);
   // 500
   app.use(errorHandler);
+
+
+  function checkIp(req, res, next) {
+    database.isIpBlocked(req.ip, function(err, blocked) {
+      if (err) return next(err);
+      if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
+      next();
+    });
+  }
 };
 
 
