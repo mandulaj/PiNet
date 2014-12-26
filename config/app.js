@@ -20,7 +20,9 @@ module.exports = function(app, config, opts){
   app.set('view engine', 'ejs');
 
   // Static files
-  app.use("/static", express.static(path.join(opts.dirname, 'public')));
+  app.use("/static", express.static(path.join(opts.dirname, 'public'), {
+    maxAge: '1d'
+  }));
   // Favicon
   if(opts.favicon) {
     app.use(favicon(opts.dirname + '/public/favicon.ico'));
