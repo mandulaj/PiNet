@@ -1,5 +1,6 @@
 var express = require('express');
 var userRouter = express.Router();
+var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 
 userRouter.use(isAuthenticated)
 
@@ -51,15 +52,4 @@ function isAdmin(req, res, next) {
       res.redirect("/user");
     }
   });
-}
-
-
-// TODO: this function should be moved or passed from one source
-// XXX: code duplicate in ./index.js
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  } else {
-    res.redirect("/"); // send the user to the landing page if he is not logged in...
-  }
 }

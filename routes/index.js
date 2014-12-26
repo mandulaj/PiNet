@@ -2,6 +2,7 @@ var jwt = require('jsonwebtoken');
 var express = require('express');
 var config = require('../config/config.json');
 var Db = require('../lib/dbReader.js');
+var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 
 
 var indexRouter = express.Router();
@@ -93,14 +94,6 @@ module.exports = function(app, passport, db) {
   app.use(errorHandler);
 };
 
-
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  } else {
-    res.redirect("/"); // send the user to the landing page if he is not logged in...
-  }
-}
 
 // Catch 404 and forward to error handler
 function notFound(err, req, res, next) {
