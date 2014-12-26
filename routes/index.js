@@ -99,13 +99,12 @@ module.exports = function(app, passport, db) {
 
 
 // Catch 404 and forward to error handler
-function notFound(err, req, res, next) {
-  if (err) return next(err);
+function notFound(req, res, next) {
 
   res.status(404);
-  // TODO: make a not found page
-  res.send("Not found");
-  //res.render("notfound", req.path)
+  res.render("404", {
+    path: req.path
+  });
 }
 
 // Log errors
