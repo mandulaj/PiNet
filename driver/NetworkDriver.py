@@ -6,6 +6,7 @@
 #
 
 import socket
+import os
 import sys
 import json
 import threading
@@ -16,15 +17,18 @@ class NetworkDriver():
 
     """Network driver responsible for receiving and parsing external data and forwarding them to the robot"""
 
-    def __init__(self, host, port, robot):
+    def __init__(self, unixSocket, robot):
         self.Robot = robot
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # sets up the socket
+        self.server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)  # sets up the socket
         self.serverThread = threading.Thread(target=self.acceptRequests)  # the server runs in it's own thread
         self.serverThreadExitEv = threading.Event()  # event used to quit the server
 
         try:
+            # clear the unix socket if it exists
+            if os.path.exists(unixSocket):
+                os.remove(unixSocket)
             # binds the port and host to the socket
-            self.server.bind((host, port))
+            self.server.bind(unixSocket)
             # Only except in case of socket errors
         except():  # error handling for the bind
             print("Error making Socket!")
@@ -78,30 +82,46 @@ class NetworkDriver():
 
     def acceptRequests(self):
         """main loop for listening on a socket and reading its data input"""
-        try:
-            while not self.serverThreadExitEv.is_set():
-                (conn, address) = self.server.accept()
+
+        while not self.serverThreadExitEv.is_set():
+            (conn, address) = self.server.accept() # accept new connections
+            incompleteData = "" # chunked data buffer
+            data = "" # full message
+            # loop through messages
+            while True:
+                # get all chunks loop
                 while True:
-                    data = conn.recv(8192)
-                    if self.serverThreadExitEv.is_set():
+                    chunk = conn.recv(8192) # read some bytes from the connection
+                    if chunk == "": # the connection has closed, break out
+                        data = ""
+                        break
+                    if self.serverThreadExitEv.is_set(): # if we request the thread shutdown, exit
                         return
-                    if not data:
+                    delim = chunk.find("&") # find the message delimiter
+                    if delim == -1: # if no delimiter found add chunk to buffer
+                        incompleteData += chunk
+                    else:
+                        data = incompleteData + chunk[:delim] # set data to content of buffer + remaining message
+                        incompleteData = chunk[delim + 1:] # set the beginning of the new buffer to the message after the delimiter
                         break
 
-                    self.parseData(data)  # parse it
-                conn.close()
-                print 'close'
+                # if data is "", connection has closed on us
+                if data == "":
+                    break
+                # we have all the chunks, lets parse the data
+                self.parseData(data)
+            # close the connection and wait for a new one
+            conn.close()
+            print "Close"
 
-        except KeyboardInterrupt:  # catches Ctrl-C Keyboard-Interrupt
-            print("Exiting...\n")
-        #finally:
-            # final clean-up
-        #    self.Robot.closeMe()
-        #    self.server.shutdown(socket.SHUT_RDWR)
-        #    self.server.close()
-        #    print("Exiting...")
-        #    print('dead')
-        #    sys.exit(0)
+        print("Exiting...\n") # we get here only when the socket is to be closed
+        # get the filename of the unix socket
+        filename = self.server.getsockname()
+        # shut down the socket
+        self.server.shutdown(socket.SHUT_RDWR)
+        # remove the sock file
+        if os.path.exists(filename):
+            os.remove(filename)
 
     def sendCommands(self, commands):
         """write commands to the underlying robot"""

@@ -20,7 +20,7 @@ PINS = {
 
 robot = RobotController.Robot(PINS)
 
-network = NetworkDriver.NetworkDriver("127.0.0.1", 8800, robot)
+network = NetworkDriver.NetworkDriver("robot.sock", robot)
 
 network.start()
 
