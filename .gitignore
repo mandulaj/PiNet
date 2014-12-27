@@ -23,3 +23,4 @@ keys
 
 #Coverage
 coverage
+.coveralls.yml
