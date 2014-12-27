@@ -503,11 +503,28 @@ describe("DB Wrapper", function(){
       });
     });
     it("should not increment threat if delay exceeds 3 seconds", function(done){
-      // Todo: find a way to implement this
-      done();
-      setTimeout(function(){
-
-      }, 3000)
+      db.reportFailedLogin("555.555.555.444", function(err){
+        if (err) return done(err);
+        database.get("SELECT accessed, threat, banned FROM logins WHERE ip = '555.555.555.444'", function(err, data){
+          if (err) return done(err);
+          expect(data.accessed).to.be(60);
+          expect(data.threat).to.be(50);
+          expect(data.banned).to.be(0);
+          done();
+        });
+      });
+    });
+    it("should ban user if threat exceeds 50", function(done){
+      db.reportFailedLogin("555.555.555.444", function(err){
+        if (err) return done(err);
+        database.get("SELECT accessed, threat, banned FROM logins WHERE ip = '555.555.555.444'", function(err, data){
+          if (err) return done(err);
+          expect(data.accessed).to.be(61);
+          expect(data.threat).to.be(51);
+          expect(data.banned).to.be(1);
+          done();
+        });
+      });
     });
     it("should return any errors", function(done){
       errdb.reportFailedLogin("127.0.0.1", function(err) {
@@ -854,4 +871,5 @@ function populateDB(db) {
   db.run("INSERT INTO users (id, username, password, access, lastLogin, banned) VALUES ((?), (?), (?), (?), (?), (?))",  5, "user4", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 1, Date.now(), 1);
 
   db.run("INSERT INTO logins (id, ip, accessed, banned) VALUES ((?), (?), (?), (?))",  1, "555.555.555.555", 45, 1);
+  db.run("INSERT INTO logins (id, ip, accessed, threat, lastDate) VALUES ((?), (?), (?), (?), (?))",  2, "555.555.555.444", 59, 50, Date.now() - 4000);
 }
