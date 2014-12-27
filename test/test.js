@@ -607,14 +607,242 @@ describe("DB Wrapper", function(){
     });
   });
   describe("#updateAdminPower", function(){
-
+    it('should update user power to the new power provided', function(done){
+      db.updateAdminPower(2, 5, function(err){
+        if(err) done(err);
+        db.isAdmin(2, function(err, admin){
+          if(err) done(err);
+          expect(admin).to.be(true);
+          done();
+        });
+      });
+    });
+    it('should not update user power if value is below 0', function(done){
+      db.updateAdminPower(3, -3, function(err){
+        expect(err.message).to.match(/Value out of range/);
+        db.getAccessStatus(3, function(err, status){
+          if(err) done(err);
+          expect(status).to.be(2);
+          done();
+        });
+      });
+    });
+    it('should not update user power if value is above 5', function(done){
+      db.updateAdminPower(3, 7, function(err){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err.message).to.match(/Value out of range/);
+        db.getAccessStatus(3, function(err, status){
+          if(err) done(err);
+          expect(status).to.be(2);
+          done();
+        });
+      });
+    });
+    it('should return any db errors', function(done){
+      errdb.updateAdminPower(4, 2, function(err){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err.message).to.not.match(/Value out of range/);
+        expect(err).to.be.an(Error);
+        done();
+      });
+    });
   });
-  describe("#checkFormData", function(){});
-  describe("#addSocket", function(){});
-  describe("#removeSocket", function(){});
-  describe("#isSocketBanned", function(){});
-  describe("#socketUserId", function(){});
+  describe("#checkFormData", function(){
+    it('should pass valid forms', function(done){
+      expect(db.checkFormData({
+        username: "user",
+        password: "password",
+        access: 3
+      })).to.be(true);
+      expect(db.checkFormData({
+        username: "user",
+        password: "password",
+        access: 3,
+        age: 23
+      })).to.be(true);
+      done();
+    });
+    it("should not allow data not white-listed", function(done){
+      expect(db.checkFormData({
+        username: "user",
+        password: "password",
+        access: 3,
+        another: "Hello"
+      })).to.be(false);
+      expect(db.checkFormData({
+        username: "user",
+        password: "password",
+        access: 3,
+        age: 23,
+        hackingData: 42
+      })).to.be(false);
+      done();
+    });
+    it("should return false if missing a required field", function(done){
+      expect(db.checkFormData({
+        username: "user",
+        password: "password",
+      })).to.be(false);
+      expect(db.checkFormData({
+        username: "user",
+        access: 3,
+        age: 23
+      })).to.be(false);
+      expect(db.checkFormData({
+        access: 3,
+        age: 23
+      })).to.be(false);
+      expect(db.checkFormData({
+        age: 23
+      })).to.be(false);
+      done();
+    });
+    it("should not allow empty username", function(done){
+      expect(db.checkFormData({
+        username: "",
+        password: "password",
+        access: 3,
+        age: 23
+      })).to.be(false);
+      done();
+    });
+    it("should not allow empty password", function(done){
+      expect(db.checkFormData({
+        username: "user",
+        password: "",
+        access: 3,
+        age: 23
+      })).to.be(false);
+      done();
+    });
+    it("should allow optional data", function(done){
+      expect(db.checkFormData({
+        username: "user",
+        password: "validPassword",
+        access: 3,
+        age: 16
+      })).to.be(true);
+      done();
+    });
+  });
+  describe("#addSocket", function(){
+    it('should add a new socket to the database', function(done){
+      db.addSocket(1, "Key1", function(err){
+        if (err) return done(err);
+        database.all("SELECT * FROM sockets", function(err, rows){
+          if (err) return done(err);
+          expect(rows).to.have.length(1);
+          expect(rows[0].id).to.be("Key1");
+          expect(rows[0].userId).to.be(1);
 
+          db.addSocket(1, "Key1.1", function(err){
+            if (err) return done(err);
+            database.all("SELECT * FROM sockets", function(err, rows){
+              if (err) return done(err);
+              expect(rows).to.have.length(2);
+              expect(rows[1].id).to.be("Key1.1");
+              expect(rows[1].userId).to.be(1);
+              done();
+            });
+          });
+        });
+      });
+    });
+    it('should add a new socket for banned users', function(done){
+      db.addSocket(5, "Key5", function(err){
+        if (err) return done(err);
+        database.all("SELECT * FROM sockets", function(err, rows){
+          if (err) return done(err);
+          expect(rows).to.have.length(3);
+          expect(rows[2].id).to.be("Key5");
+          expect(rows[2].userId).to.be(5);
+          done();
+        });
+      });
+    });
+    it('should return any errors', function(done){
+      errdb.addSocket(1, "Key1", function(err){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        done();
+      });
+    });
+  });
+  describe("#removeSocket", function(){
+    it('should remove given socket from the database', function(done){
+      db.removeSocket("Key1", function(err){
+        if (err) return done(err);
+        database.all("SELECT * FROM sockets", function(err, rows){
+          if (err) return done(err);
+          expect(rows).to.have.length(2);
+          expect(rows[0].id).to.be("Key1.1");
+          expect(rows[0].userId).to.be(1);
+          done();
+        });
+      });
+    });
+    it('should report any db errors', function(done){
+      errdb.removeSocket("Key1", function(err){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        done();
+      });
+    });
+  });
+  describe("#isSocketBanned", function(){
+    it("should return true for banned users", function(done){
+      db.isSocketBanned("Key5", function(err, banned){
+        if (err) return done(err);
+        expect(banned).to.be(true);
+        done();
+      });
+    });
+    it("should return false for not banned users", function(done){
+      db.isSocketBanned("Key1.1", function(err, banned){
+        if (err) return done(err);
+        expect(banned).to.be(false);
+        done();
+      });
+    });
+    it("should return false for not existing sockets", function(done){
+      db.isSocketBanned("SomeKey", function(err, banned){
+        if (err) return done(err);
+        expect(banned).to.be(false);
+        done();
+      });
+    });
+    it("should return any db errors", function(done){
+      errdb.isSocketBanned("SomeKey", function(err, banned){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        expect(banned).to.be(null);
+        done();
+      });
+    });
+  });
+  describe("#socketUserId", function(){
+    it("should return the user id of the socket owner", function(done){
+      db.socketUserId("Key5", function(err, user){
+        if (err) return done(err);
+        expect(user).to.be(5);
+        done();
+      });
+    });
+    it("should return the null if socket id does not exist", function(done){
+      db.socketUserId("SomeSocketKey", function(err, user){
+        if (err) return done(err);
+        expect(user).to.be(null);
+        done();
+      });
+    });
+    it("should return any db errors", function(done){
+      errdb.socketUserId("Key5", function(err, user){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        done();
+      });
+    });
+  });
 });
 
 
@@ -623,6 +851,7 @@ function populateDB(db) {
   db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  2, "user1", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 0, Date.now());
   db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  3, "user2", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 2, Date.now());
   db.run("INSERT INTO users (id, username, password, access, lastLogin) VALUES ((?), (?), (?), (?), (?))",  4, "user3", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 1, Date.now());
+  db.run("INSERT INTO users (id, username, password, access, lastLogin, banned) VALUES ((?), (?), (?), (?), (?), (?))",  5, "user4", '$2a$10$QxVaZEiDyKzlQFUSWT3xDuii.WU7Kxj8h7cDaf704XhZ3ZenslpH6', 1, Date.now(), 1);
 
   db.run("INSERT INTO logins (id, ip, accessed, banned) VALUES ((?), (?), (?), (?))",  1, "555.555.555.555", 45, 1);
 }
