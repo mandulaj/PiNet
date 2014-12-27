@@ -1,11 +1,11 @@
 var expect = require("expect.js");
 var populateDB = require("./lib/testUtil.js").populateDB;
 
-var dbReader = require("../lib/dbReader.js")
+var dbReader = require("../lib/dbReader.js");
 
 
 
-var sqlite3 = require('sqlite3')
+var sqlite3 = require('sqlite3');
 var database = new sqlite3.Database(":memory:");
 var errorTestdatabase = new sqlite3.Database(":memory:");
 require("../config/db.js")(database);
