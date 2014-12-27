@@ -40,14 +40,13 @@ socket = io(server, {
 });
 require("./config/socketio.js")(socket, config);
 
-// Setup robot
-var Robot = PiNet(socket, db, {
-   port: 8800
-});
-
 // Setup db
 require("./config/db.js")(db);
 
+// Setup robot
+var Robot = PiNet(socket, db, {
+   port: "robot.sock"
+});
 
 process.title = 'PiNet.js';
 

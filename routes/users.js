@@ -5,7 +5,8 @@ var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 userRouter.use(isAuthenticated)
 
 userRouter.get("/", function(req, res, next) {
-  req.user.isAdmin(function(admin) {
+  req.user.isAdmin(function(err, admin) {
+    if (err) return next(err);
     res.render("room", {
       username: req.user.username,
       admin: admin
@@ -45,7 +46,8 @@ module.exports = userRouter;
 
 
 function isAdmin(req, res, next) {
-  req.user.isAdmin(function(admin) {
+  req.user.isAdmin(function(err, admin) {
+    if (err) return next(err);
     if (admin) {
       return next();
     } else {

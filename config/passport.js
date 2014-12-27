@@ -32,7 +32,8 @@ module.exports = function(passport, db) {
       }
 
       // is he an admin
-      clientUser.isAdmin(function(admin) {
+      clientUser.isAdmin(function(err, admin) {
+        if (err) return done(err, false);
         if (!admin) {
           // No, return false
           return done(null, false);
