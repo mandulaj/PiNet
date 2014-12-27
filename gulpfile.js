@@ -1,4 +1,8 @@
 var gulp = require('gulp'),
+  mocha = require("gulp-mocha"),
+  istanbul = require("gulp-istanbul"),
+  coveralls = require('gulp-coveralls'),
+
   uglify = require('gulp-uglify'),
   nodemon = require('gulp-nodemon'),
   minifyCSS = require('gulp-minify-css'),
@@ -16,6 +20,24 @@ var paths = {
   less: 'src/less/*.less',
   jade: 'src/jade/*.jade'
 };
+
+
+gulp.task('test', function(cb) {
+  gulp.src(['lib/**/*.js', 'config/lib/**/*.js'])
+    .pipe(istanbul()) // Covering files
+    .on('finish', function() {
+      gulp.src(['test/*.js'])
+        .pipe(mocha())
+        .pipe(istanbul.writeReports()) // Creating the reports after tests ran
+        .on('end', cb);
+    });
+});
+
+gulp.task('coverage', function() {
+  gulp.src("coverage/lcov.info")
+    .pipe(coveralls());
+});
+
 
 gulp.task('scripts', function() {
   return gulp.src(paths.scripts)
