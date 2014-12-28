@@ -39,17 +39,25 @@ html
 
       .row
         .col-md-8
-          table.table.table-hover.socket-table
-            thead
-              tr
-                th #
-                th Socket ID
-                th User ID
-                th User name
-                th Login Date
-                th Access
-            tbody
+          .table-responsive
+            table.table.table-hover.socket-table
+              thead
+                tr
+                  th #
+                  th Socket ID
+                  th User name
+                  th Login Date
+              tbody
         .col-md-4
+          .table-responsive
+            table.table.table-hover.user-table
+              thead
+                tr
+                  th User ID
+                  th Username
+                  th Access
+                  th Banned
+              tbody
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
   script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')
