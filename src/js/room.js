@@ -317,6 +317,14 @@ function Robot() {
     self.updateStatus(data.load);
   });
 
+  this.socket.on("kicked", function(){
+    alert("You have been kicked!");
+  });
+
+  this.socket.on("banned", function(){
+    alert("You have been banned!");
+  });
+
 }
 
 
