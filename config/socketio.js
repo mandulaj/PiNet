@@ -24,6 +24,9 @@ module.exports = function(socket, database, config){
   routes.use(handleErrors)
 
 
+  // Routing
+  // *****************************************************
+
   socket.use(socketioJwt.authorize({
     secret: config.secrets.jwt,
     handshake: true
