@@ -10,18 +10,13 @@ module.exports = function(socket, database, config){
 
   // Admin only...
   var checkSudo = SocketRouter();
-  checkSudo.on('killUser', function(socket, args, next) {
+  checkSudo.on('*', function(socket, args, next) {
     db.isSocketSudo(socket.id, function(err, sudo){
       if (err) return next(new Error("DB Error"));
       if (!sudo) return;
       return next();
     });
   });
-
-  // Registering routes
-  var routes = SocketRouter();
-  routes.use(checkSudo)
-  routes.use(handleErrors)
 
 
   // Routing
@@ -33,20 +28,37 @@ module.exports = function(socket, database, config){
   }));
 
   // All defined routes, See above
-  socket.of("/commands").use(routes);
+  socket.of("/admin").use(checkSudo);
 
-  socket.on("connection", function(socket) {
-    db.isSocketBanned(socket.id, function(err, banned){
-      if (err) return socket.emit("error", err);
+  // Test if socket is banned
+  socket.on("connection", function(sock) {
+    db.isSocketBanned(sock.id, function(err, banned){
+      if (err) return sock.emit("error", err);
       if (banned) {
-        return socket.disconnect();
+        console.log("banned", sock.id)
+        return sock.disconnect();
       } else {
+        var id = sock.decoded_token.id;
+        db.addSocket(id, sock.id, function(err){
+          console.log(err)
+          if (err) return sock.destroy();
 
-        var id = socket.decoded_token.id;
-        db.addSocket(id, socket.id, function(err){
-          if (err) return socket.destroy();
+          // Report this to any admin
+          db.listSockets(function(err, sockets){
+            if (err) sock.emit("error");
+            socket.of("/admin").emit("socketList", {
+              sockets: sockets
+            });
+          });
         });
       }
+    });
+
+    sock.on("disconnect", function(){
+      db.removeSocket(sock.id, function(err){
+        console.log("removed", sock.id);
+        if (err) console.error(err) // TODO: handle errors
+      });
     });
   });
 }
