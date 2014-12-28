@@ -20,6 +20,9 @@ app = express();
 // Setup database
 db = new sqlite3.Database(config.db);
 
+// Setup db
+require("./config/db.js")(db);
+
 // Setup the server
 if (config.ssl) {
   var options = {
@@ -38,10 +41,7 @@ socket = io(server, {
   'heartbeat timeout': 10,
   'heartbeat interval': 5
 });
-require("./config/socketio.js")(socket, config);
-
-// Setup db
-require("./config/db.js")(db);
+require("./config/socketio.js")(socket, db, config);
 
 // Setup robot
 var Robot = PiNet(socket, db, {
