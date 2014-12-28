@@ -42,6 +42,7 @@ socket = io(server, {
   'heartbeat interval': 5
 });
 require("./config/socketio.js")(socket, db, config);
+require("./lib/socketio.js")(socket, db);
 
 // Setup robot
 var Robot = PiNet(socket, db, {
