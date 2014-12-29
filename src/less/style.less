@@ -13,88 +13,91 @@ body {
   //min-width: 600px;
 
 }
-// Main Buttons
-.arrow {
-  user-drag: none;
-  user-modify: none;
-  highlight: none;
-  touch-callout: none;
-  user-select: none;
-  background: #b3b1b2;
-
-  width: 100px;
-  height: 100px;
-
-  border-radius: 10px;
-  background: #b3b1b2;
-  box-shadow: 0 5px 8px #333;
-  transition: @transitionSpeed background;
-
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-
-  &:hover {
-    background: #999;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-
-  }
-  // A key that is pressed
-  &.pressedKey {
-    background-color: #454545;
-
-  }
-  &#upkey {
-    background-image: url("/static/images/arrowUp.png");
-
-  }
-  &#downkey {
-    background-image: url("/static/images/arrowDown.png");
-
-  }
-  &#rightkey {
-    background-image: url("/static/images/arrowRight.png");
-
-  }
-  &#leftkey {
-    background-image: url("/static/images/arrowLeft.png");
-
-  }
-  &#cam_upkey {
-    background-image: url("/static/images/cam_arrowUp.png");
-
-  }
-  &#cam_downkey {
-    background-image: url("/static/images/cam_arrowDown.png");
-
-  }
-  &#cam_rightkey {
-    background-image: url("/static/images/cam_arrowRight.png");
-
-  }
-  &#cam_leftkey {
-    background-image: url("/static/images/cam_arrowLeft.png");
-
-  }
-  &#cam_default {
-    background-image: url("/static/images/cam_default.png");
-  }
-
-}
 
 
 .arrowTable {
   table {
-    width: 300px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    td {
+      width: 33.3333%;
+      padding: 1%;
+    }
+  }
+
+  // Main Buttons
+  .arrow {
+    user-drag: none;
+    user-modify: none;
+    highlight: none;
+    touch-callout: none;
+    user-select: none;
+    background: #b3b1b2;
+
+    width: 100%;
+    padding-top: 100%;
+
+    border-radius: 10px;
+    background: #b3b1b2;
+    box-shadow: 0 5px 8px #333;
+    transition: @transitionSpeed background;
+
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    &:hover {
+      background: #999;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+
+    }
+    // A key that is pressed
+    &.pressedKey {
+      background-color: #454545;
+
+    }
+    &#upkey {
+      background-image: url("/static/images/arrowUp.png");
+
+    }
+    &#downkey {
+      background-image: url("/static/images/arrowDown.png");
+
+    }
+    &#rightkey {
+      background-image: url("/static/images/arrowRight.png");
+
+    }
+    &#leftkey {
+      background-image: url("/static/images/arrowLeft.png");
+
+    }
+    &#cam_upkey {
+      background-image: url("/static/images/cam_arrowUp.png");
+
+    }
+    &#cam_downkey {
+      background-image: url("/static/images/cam_arrowDown.png");
+
+    }
+    &#cam_rightkey {
+      background-image: url("/static/images/cam_arrowRight.png");
+
+    }
+    &#cam_leftkey {
+      background-image: url("/static/images/cam_arrowLeft.png");
+
+    }
+    &#cam_default {
+      background-image: url("/static/images/cam_default.png");
+    }
 
   }
-  //margin-top: 5px;
-
 }
+
+
+
 // Camera Buttons
 /*
 #cam_arrows {
@@ -479,17 +482,17 @@ body {
 
 }
 #laser {
-  //position: absolute;
+  //position: relative;
   //right: 10px;
-  width: 75px;
-  height: 75px;
+  width: 100%;
+  padding-top: 100%;
   margin: auto;
 
   background-color: rgb(228, 228, 37);
   background-image: url("/static/images/laser.png");
   background-size: cover;
   border: 2px solid #f5ba00;
-  border-radius: 50px;
+  border-radius: 100%;
 
   transition: @transitionSpeed background-color;
   &:hover {
