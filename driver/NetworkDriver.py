@@ -91,7 +91,8 @@ class NetworkDriver():
             while True:
                 # get all chunks loop
                 while True:
-                    chunk = conn.recv(8192) # read some bytes from the connection
+                    # read less bytes then the expected messages
+                    chunk = conn.recv(40) # read some bytes from the connection
                     if chunk == "": # the connection has closed, break out
                         data = ""
                         break
