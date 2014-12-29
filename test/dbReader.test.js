@@ -42,6 +42,12 @@ describe("DB Wrapper", function(){
       expect(db.removeSocket).to.be.a("function");
       expect(db.isSocketBanned).to.be.a("function");
       expect(db.socketUserId).to.be.a("function");
+      expect(db.isSocketSudo).to.be.a("function");
+      expect(db.banUser).to.be.a("function");
+      expect(db.unbanUser).to.be.a("function");
+      expect(db.isUserBanned).to.be.a("function");
+      expect(db.userSockets).to.be.a("function");
+      expect(db.dataForAdmin).to.be.a("function");
     });
   });
   describe("#findById", function(){
@@ -540,7 +546,7 @@ describe("DB Wrapper", function(){
     it('should add a new socket to the database', function(done){
       db.addSocket(1, "Key1", function(err){
         if (err) return done(err);
-        database.all("SELECT * FROM sockets", function(err, rows){
+        database.all("SELECT * FROM sockets WHERE id = 'Key1' AND userId = 1", function(err, rows){
           if (err) return done(err);
           expect(rows).to.have.length(1);
           expect(rows[0].id).to.be("Key1");
@@ -548,10 +554,9 @@ describe("DB Wrapper", function(){
 
           db.addSocket(1, "Key1.1", function(err){
             if (err) return done(err);
-            database.all("SELECT * FROM sockets", function(err, rows){
+            database.all("SELECT * FROM sockets WHERE id = 'Key1.1' OR id = 'Key1' AND userId = 1", function(err, rows){
               if (err) return done(err);
               expect(rows).to.have.length(2);
-              expect(rows[1].id).to.be("Key1.1");
               expect(rows[1].userId).to.be(1);
               done();
             });
@@ -562,11 +567,11 @@ describe("DB Wrapper", function(){
     it('should add a new socket for banned users', function(done){
       db.addSocket(5, "Key5", function(err){
         if (err) return done(err);
-        database.all("SELECT * FROM sockets", function(err, rows){
+        database.all("SELECT * FROM sockets WHERE id = 'Key5' AND userId = 5", function(err, rows){
           if (err) return done(err);
-          expect(rows).to.have.length(3);
-          expect(rows[2].id).to.be("Key5");
-          expect(rows[2].userId).to.be(5);
+          expect(rows).to.have.length(1);
+          expect(rows[0].id).to.be("Key5");
+          expect(rows[0].userId).to.be(5);
           done();
         });
       });
@@ -583,11 +588,9 @@ describe("DB Wrapper", function(){
     it('should remove given socket from the database', function(done){
       db.removeSocket("Key1", function(err){
         if (err) return done(err);
-        database.all("SELECT * FROM sockets", function(err, rows){
+        database.all("SELECT * FROM sockets WHERE id = 'Key1' AND userId = 1", function(err, rows){
           if (err) return done(err);
-          expect(rows).to.have.length(2);
-          expect(rows[0].id).to.be("Key1.1");
-          expect(rows[0].userId).to.be(1);
+          expect(rows).to.have.length(0);
           done();
         });
       });
@@ -601,14 +604,14 @@ describe("DB Wrapper", function(){
     });
   });
   describe("#isSocketBanned", function(){
-    it("should return true for banned users", function(done){
+    it("should return true for banned socket users", function(done){
       db.isSocketBanned("Key5", function(err, banned){
         if (err) return done(err);
         expect(banned).to.be(true);
         done();
       });
     });
-    it("should return false for not banned users", function(done){
+    it("should return false for not banned socket users", function(done){
       db.isSocketBanned("Key1.1", function(err, banned){
         if (err) return done(err);
         expect(banned).to.be(false);
@@ -619,6 +622,13 @@ describe("DB Wrapper", function(){
       db.isSocketBanned("SomeKey", function(err, banned){
         if (err) return done(err);
         expect(banned).to.be(false);
+        done();
+      });
+    });
+    it("should return null if socket does not exist", function(done){
+      db.isSocketSudo("NoKey", function(err, sudo){
+        if(err) return done(err);
+        expect(sudo).to.be(null);
         done();
       });
     });
@@ -650,6 +660,177 @@ describe("DB Wrapper", function(){
       errdb.socketUserId("Key5", function(err, user){
         if (!err) return done(new Error("Has no error but expected one."));
         expect(err).to.be.an(Error);
+        done();
+      });
+    });
+  });
+  describe("#isSocketSudo", function(){
+    it("should return true if socket belongs to a superuser", function(done){
+      db.isSocketSudo("Key1.1", function(err, sudo){
+        if(err) return done(err);
+        expect(sudo).to.be(true);
+        done();
+      });
+    });
+    it("should return false if socket belongs to a superuser", function(done){
+       db.isSocketSudo("Key5", function(err, sudo){
+        if(err) return done(err);
+        expect(sudo).to.be(false);
+        done();
+      });
+    });
+    it("should return any db errors", function(done){
+       errdb.isSocketSudo("Key1.1", function(err, sudo){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(err).to.be.an(Error);
+        expect(sudo).to.be(null);
+        done();
+      });
+    });
+  });
+  describe("#banUser", function(){
+    it("should ban a user", function(done){
+      db.banUser(6, function(err){
+        if(err) return done(err);
+        database.get("SELECT banned FROM users WHERE id = 6", function(err, data){
+          if(err) return done(err);
+          expect(data.banned).to.be(1);
+          done();
+        });
+      });
+    });
+    it("should ban a user that is already banned", function(done){
+      db.banUser(6, function(err){
+        if(err) return done(err);
+        database.get("SELECT banned FROM users WHERE id = 6", function(err, data){
+          if(err) return done(err);
+          expect(data.banned).to.be(1);
+          done();
+        });
+      });
+    });
+    it("should return any db errors", function(done){
+       errdb.banUser(6, function(err){
+        if (!err) return done(new Error("Has no error but expected one."));
+        done();
+      });
+    });
+  });
+  describe("#unbanUser", function(){
+    it("should unban a user", function(done){
+      db.unbanUser(7, function(err){
+        if(err) return done(err);
+        database.get("SELECT banned FROM users WHERE id = 7", function(err, data){
+          if(err) return done(err);
+          expect(data.banned).to.be(0);
+          done();
+        });
+      });
+    });
+    it("should unban a user that is already unbanned", function(done){
+      db.unbanUser(7, function(err){
+        if(err) return done(err);
+        database.get("SELECT banned FROM users WHERE id = 7", function(err, data){
+          if(err) return done(err);
+          expect(data.banned).to.be(0);
+          done();
+        });
+      });
+    });
+    it("should return any db errors", function(done){
+       errdb.unbanUser(7, function(err){
+        if (!err) return done(new Error("Has no error but expected one."));
+        done();
+      });
+    });
+  });
+  describe("#isUserBanned", function(){
+    it("should return true if a user is banned", function(done){
+      db.isUserBanned(6,function(err, banned){
+        if(err) return done(err);
+        expect(banned).to.be(true);
+        done();
+      });
+    });
+    it("should return false if a user is not banned", function(done){
+      db.isUserBanned(7,function(err, banned){
+        if(err) return done(err);
+        expect(banned).to.be(false);
+        done();
+      });
+    });
+    it("should return any db errors", function(done){
+      errdb.isUserBanned(7,function(err, banned){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(banned).to.be(null);
+        done();
+      });
+    });
+  });
+  describe("#userSockets", function(){
+    it("should return a list of sockets owned by user", function(done){
+      db.userSockets(6, function(err, sockets){
+        if (err) done(err);
+        expect(sockets).to.have.length(4);
+        done();
+      });
+    });
+    it("should return an empty list if user owns nothing", function(done){
+      db.userSockets(9, function(err, sockets){
+        if (err) done(err);
+        expect(sockets).to.have.length(0);
+        done();
+      });
+    });
+    it("should return any db errors", function(done){
+      errdb.userSockets(6, function(err, sockets){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(sockets).to.be(null);
+        done();
+      });
+    });
+  });
+  describe("#dataForAdmin", function(){
+    it("should return an object", function(done){
+      db.dataForAdmin(function(err, data){
+        if (err) done(err);
+        expect(data).to.be.an("object");
+        done();
+      });
+    });
+    it("should contain all the fields", function(done){
+      db.dataForAdmin(function(err, data){
+        if (err) done(err);
+        expect(data).to.only.have.keys(['users', 'sockets']);
+        expect(data.users).to.be.an(Array);
+        expect(data.sockets).to.be.an(Array);
+        done();
+      });
+    });
+    it("should return users which contain all users in the db", function(done){
+      db.dataForAdmin(function(err, data){
+        if (err) done(err);
+        expect(data.users).to.have.length(10);
+        for(var i in data.users) {
+          expect(data.users[i]).to.only.have.keys(['id', 'username', 'access', 'banned']);
+        }
+        done();
+      });
+    });
+    it("should return all sockets in the database", function(done){
+      db.dataForAdmin(function(err, data){
+        if (err) done(err);
+        expect(data.sockets).to.have.length(9);
+        for(var i in data.sockets) {
+          expect(data.sockets[i]).to.only.have.keys(['id', 'userId', 'login','username', 'access']);
+        }
+        done();
+      });
+    });
+    it("should return any db errors", function(done){
+      errdb.dataForAdmin(function(err, data){
+        if (!err) return done(new Error("Has no error but expected one."));
+        expect(data).to.be(null);
         done();
       });
     });
