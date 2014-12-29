@@ -70,9 +70,6 @@
         text += users[i].access;
         text += "</strong></td>";
         text += "<td>";
-        text += banned?("Yes"):("No");
-        text += "</td>";
-        text += "<td>";
         text += (!banned)?("<button class='btn btn-danger' " +  ((root)?('disabled="disabled"'):("")) + " onclick=window.admin.ban(" + i + ")>Ban</button>"):("<button class='btn btn-info' onclick=window.admin.unban(" + i + ")>Undo</button>")
         text += "</td>";
         text += "</tr>";
