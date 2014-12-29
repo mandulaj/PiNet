@@ -10,7 +10,7 @@ body {
 }
 #imageStream {
   width: 100%;
-  min-width: 600px;
+  //min-width: 600px;
 
 }
 // Main Buttons
@@ -47,42 +47,44 @@ body {
 
   }
   &#upkey {
-    background-image: url("../images/arrowUp.png");
+    background-image: url("/static/images/arrowUp.png");
 
   }
   &#downkey {
-    background-image: url("../images/arrowDown.png");
+    background-image: url("/static/images/arrowDown.png");
 
   }
   &#rightkey {
-    background-image: url("../images/arrowRight.png");
+    background-image: url("/static/images/arrowRight.png");
 
   }
   &#leftkey {
-    background-image: url("../images/arrowLeft.png");
+    background-image: url("/static/images/arrowLeft.png");
 
   }
   &#cam_upkey {
-    background-image: url("../images/cam_arrowUp.png");
+    background-image: url("/static/images/cam_arrowUp.png");
 
   }
   &#cam_downkey {
-    background-image: url("../images/cam_arrowDown.png");
+    background-image: url("/static/images/cam_arrowDown.png");
 
   }
   &#cam_rightkey {
-    background-image: url("../images/cam_arrowRight.png");
+    background-image: url("/static/images/cam_arrowRight.png");
 
   }
   &#cam_leftkey {
-    background-image: url("../images/cam_arrowLeft.png");
+    background-image: url("/static/images/cam_arrowLeft.png");
 
   }
   &#cam_default {
-    background-image: url("../images/cam_default.png");
+    background-image: url("/static/images/cam_default.png");
   }
 
 }
+
+
 .arrowTable {
   table {
     width: 300px;
@@ -447,7 +449,7 @@ body {
     top: 7px;
     left: 583px;
     transition: @transitionSpeed background-color;
-    background-image: url("../images/cross.png");
+    background-image: url("/static/images/cross.png");
     background-size: contain;
     &:hover {
       background-color: #232323;
@@ -464,7 +466,7 @@ body {
   height: 45px;
   border-radius: 5px;
   background-color: #555;
-  background-image: url("../images/videoplay.png");
+  background-image: url("/static/images/videoplay.png");
   background-size: contain;
   float: right;
   position: relative;
@@ -477,13 +479,14 @@ body {
 
 }
 #laser {
-  position: absolute;
-  right: 10px;
+  //position: absolute;
+  //right: 10px;
   width: 75px;
   height: 75px;
+  margin: auto;
 
   background-color: rgb(228, 228, 37);
-  background-image: url("../images/laser.png");
+  background-image: url("/static/images/laser.png");
   background-size: cover;
   border: 2px solid #f5ba00;
   border-radius: 50px;
@@ -497,21 +500,24 @@ body {
   }
 
 }
-.stat_title {
-  font-weight: bold;
 
-}
-.stat_val {
-  font-style: italic;
+.piStats {
+  h5 {
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: underline;
 
-}
-.piStats>h5 {
-  font-weight: bold;
-  font-style: italic;
-  text-decoration: underline;
+  }
+  h4 {
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .stat_title {
+    font-weight: bold;
 
-}
-.piStats>h4 {
-  font-weight: bold;
-  font-size: 20px;
+  }
+  .stat_val {
+    font-style: italic;
+
+  }
 }

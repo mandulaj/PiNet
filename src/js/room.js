@@ -557,7 +557,7 @@ Recording.prototype.start = function(obj) {
       status: "stop"
     });
     this.status = "stop";
-    $(obj).css("background-image", "url(images/videoplay.png)");
+    $(obj).css("background-image", "url(/static/images/videoplay.png)");
   } else if (this.status == "stop") {
     this.status = "start";
     this.socket.emit("mission", {
@@ -565,7 +565,7 @@ Recording.prototype.start = function(obj) {
       moves: this.moves
     });
     console.log(window.JSON.stringify(this.moves));
-    $(obj).css("background-image", "url(images/videostop.png)");
+    $(obj).css("background-image", "url(/static/images/videostop.png)");
   }
 };
 
