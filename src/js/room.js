@@ -35,6 +35,9 @@ function KeyEventHandler(robot) {
 
   $(document).keydown(function(e) {
     var index = self.keys.indexOf(e.keyCode);
+    if (index != -1) {
+      e.preventDefault()
+    }
     self.handleDown(index);
   });
   $(document).keyup(function(e) {
