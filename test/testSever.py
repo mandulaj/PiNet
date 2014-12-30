@@ -17,7 +17,8 @@ try:
         newData = ""
         while True:
             while True:
-              chunk = client.recv(1024)
+              chunk = client.recv(40)
+              print "Chunk", chunk
               if chunk == "":
                 data = ""
                 break
