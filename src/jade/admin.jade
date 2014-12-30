@@ -5,6 +5,7 @@ html
     title PiNet
     link(type='text/css', rel='stylesheet', href='/static/css/admin.css')
     link(type='text/css', rel='stylesheet', href='/static/modules/bootstrap/dist/css/bootstrap.min.css')
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
 
   body(unselectable='on')
     div(class="navbar navbar-default navbar-static-top", role="navigation")
@@ -36,6 +37,27 @@ html
 
     div.container
       h1 Admin Corner
+
+      .row
+        .col-md-8
+          .table-responsive
+            table.table.table-hover.socket-table
+              thead
+                tr
+                  th #
+                  th Socket ID
+                  th User name
+                  th Login Date
+              tbody
+        .col-md-4
+          .table-responsive
+            table.table.table-hover.user-table
+              thead
+                tr
+                  th User ID
+                  th Username
+                  th Access
+              tbody
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
   script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')
