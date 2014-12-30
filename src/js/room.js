@@ -1,26 +1,24 @@
 // JavaScript Document
-/*
-var Dragging = false;
-var is_touch_device = 'ontouchstart' in document.documentElement;
-var sideBar = 0;
-var recordings = 0;
-*/
 
+/* Object for handling events and passing them to the robot
+
+  @param {Robot} - robot object to which the events should be passed
+*/
 function KeyEventHandler(robot) {
   var self = this;
   this.robot = robot;
-  this.is_touch_device = 'ontouchstart' in window;
-  this.dragging = false;
-  this.keys = [38, 37, 40, 39, 87, 65, 83, 68, 88];
-  this.keyStatus = [false, false, false, false, false, false, false, false, false];
-  this.otherComponents = {
+  this.is_touch_device = 'ontouchstart' in window; // are we using a touch device
+  this.dragging = false; // used to check if we are dragging the speed slider
+  this.keys = [38, 37, 40, 39, 87, 65, 83, 68, 88]; // all key codes we are using
+  this.keyStatus = [false, false, false, false, false, false, false, false, false]; // the status of the keys
+  this.otherComponents = { // status of other components
     light: 0,
     laser: false,
     ai: false,
     speed: 100,
     recordings_window: false
   };
-  this.keyElements = [
+  this.keyElements = [ // the DOM key elements we attach events to
     $('#upkey'),
     $('#leftkey'),
     $('#downkey'),
@@ -32,10 +30,10 @@ function KeyEventHandler(robot) {
     $('#cam_default')
   ];
 
-
+  // Set up key down and key up events
   $(document).keydown(function(e) {
     var index = self.keys.indexOf(e.keyCode);
-    if (index != -1) {
+    if (index != -1) { // prevents scrolling when arrow keys are pressed
       e.preventDefault()
     }
     self.handleDown(index);
@@ -46,9 +44,15 @@ function KeyEventHandler(robot) {
   });
   console.log(this.is_touch_device)
 
-  function registerEvents(self, element, i) {
-    // If we use touch device only assign the required listeners and vice versa
+  /* registers events for a given element
 
+    @param {Object} self - reference to this
+    @param {Object} element - jQuery element we want the events to attach to
+    @param {Number} i - the position that the element is in the array (used to tell which key is pressed)
+  */
+  function registerEvents(self, element, i) {
+
+    // If we use touch device only assign the required listeners and vice versa
     if (self.is_touch_device) {
       element.on("touchstart", function() {
         self.handleDown(i);
@@ -68,10 +72,14 @@ function KeyEventHandler(robot) {
       });
     }
   }
+
+  // Attach the event listeners to each element
   for (var i = 0; i < self.keyElements.length; i++) {
     var element = self.keyElements[i];
     registerEvents(this, element, i);
   }
+
+  // Other special buttons
 
   // Laser button listeners
   var laser = $("#laser");
@@ -107,7 +115,7 @@ function KeyEventHandler(robot) {
     });
   }
 
-
+  // Speed slider
   $("#grabthing").draggable({
     axis: "y",
     containment: 'parent',
@@ -136,11 +144,12 @@ function KeyEventHandler(robot) {
     }
   });
 
-
+  // Side bar toggle
   $(".showsideBar").click(function() {
     $(this).parent().toggleClass("open");
   });
 
+  // Lights
   $(".lightSwitch").click(function() {
     var status = self.otherComponents.light;
     var text = "Off";
@@ -164,6 +173,7 @@ function KeyEventHandler(robot) {
     $(".lightSwitch").html(text);
   });
 
+  // AI switch
   $(".ai").click(function() {
     var text = "Off";
     var color = "#111";
@@ -182,6 +192,7 @@ function KeyEventHandler(robot) {
     self.update();
   });
 
+  // Record button
   $(".rec").click(function() {
     var text = "Off";
     if (!self.robot.getRecordingStatus() && !self.otherComponents.ai && !self.otherComponents.recordings_window) {
@@ -189,51 +200,54 @@ function KeyEventHandler(robot) {
       text = "On";
       $(".rec").addClass("active_recording");
       // TODO: remove the following line of code:
-      $("#recIndic").fadeIn(200);
+      $("#recIndic").fadeIn(200); // TODO: use HTML5 transitions
 
     } else {
       self.robot.stopRecording();
       text = "Off";
       $(".rec").removeClass("active_recording");
-      $("#recIndic").fadeOut(200);
+      $("#recIndic").fadeOut(200); // TODO: use HTML5 transitions
     }
     $(".rec").html(text);
   });
 
+  // View Recordings Button
   $(".rec_view").click(function() {
     if (!self.robot.getRecordingStatus() && !self.otherComponents.ai && !self.otherComponents.recordings_window) {
       self.otherComponents.recordings_window = 1;
       self.robot.drawRecordings();
-      $(".rec_window").fadeIn(500);
+      $(".rec_window").fadeIn(500); // TODO: use HTML5 transitions
     } else {
       self.otherComponents.recordings_window = 0;
       self.robot.stopAllMissions();
-      $(".rec_window").fadeOut(500);
+      $(".rec_window").fadeOut(500); // TODO: use HTML5 transitions
     }
   });
 
+  // Close recordings window
   $("#rec_window_close").click(function() {
     self.otherComponents.recordings_window = 0;
-    $(".rec_window").fadeOut(500);
+    $(".rec_window").fadeOut(500); // TODO: use HTML5 transitions
     self.robot.stopAllMissions();
   });
 
+  // Set up url for the stream
   var stream = $("#imageStream")[0];
   var url = document.URL.split(":");
   var schema = url[0];
   var host = url[1].replace(/\//g, "");
 
-  var streamPath = "http://" + host + ":8080/?action=stream";
-  //streamPath = "http://10.0.0.3:8080/?action=stream";
-  console.log(streamPath, stream);
-  stream.addEventListener('error', function(e) {
+  var streamPath = "http://" + host + ":8080/?action=stream"; // build url
+  stream.addEventListener('error', function(e) { // if we fail to load the image, use the off-line image
     $('#live').hide();
     stream.setAttribute("src", "/static/images/offline.jpg");
   });
   stream.setAttribute("src", streamPath);
 }
 
-// Presses down the keys with the specified index and triggers and update
+/* Presses down the keys with the specified index and triggers and update
+  @param {Number} index - index of the key in the keyStatus array
+*/
 KeyEventHandler.prototype.handleDown = function(index) {
   // only trigger if the index is valid and the key is not already pressed
   if (index >= 0 && !this.keyStatus[index]) {
@@ -243,7 +257,9 @@ KeyEventHandler.prototype.handleDown = function(index) {
   }
 };
 
-// Lifts the keys with the specified index and triggers and update
+/* Lifts the keys with the specified index and triggers and update
+  @param {Number} index - index of the key in the keyStatus array
+*/
 KeyEventHandler.prototype.handleUp = function(index) {
   // only trigger if the index is valid and the key is already pressed
   if (index >= 0 && this.keyStatus[index]) {
@@ -254,7 +270,8 @@ KeyEventHandler.prototype.handleUp = function(index) {
 };
 
 
-// Lifts all keys and triggers and update on the robot object
+/* Lifts all keys and triggers and update on the robot object
+*/
 KeyEventHandler.prototype.allUp = function() {
   for (var i = this.keyElements.length - 1; i >= 0; i--) {
     this.keyStatus[i] = false;
@@ -265,7 +282,8 @@ KeyEventHandler.prototype.allUp = function() {
 };
 
 
-// Updates the values in the Robot object
+/* Updates the values in the Robot object
+*/
 KeyEventHandler.prototype.update = function() {
   var self = this;
 
@@ -288,7 +306,8 @@ KeyEventHandler.prototype.update = function() {
   });
 };
 
-
+/* Object used to send and receive information from the robot
+*/
 function Robot() {
   var self = this;
   this.keyEventHandler = new KeyEventHandler(this);
@@ -519,7 +538,7 @@ Robot.prototype.stopMissionRecording = function() {
 };
 
 $(document).ready(function() {
-  $(".cover").fadeOut(500);
+  $(".cover").fadeOut(500); // TODO: use HTML5 transitions
   window.PiNet = new Robot();
 });
 
