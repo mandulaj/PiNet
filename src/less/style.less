@@ -1,5 +1,5 @@
-/* CSS Document */
-@transitionSpeed: 0.2s;
+ /* CSS Document */
+@transitionSpeed: 0.15s;
 
 body {
   user-select: none;
@@ -8,12 +8,6 @@ body {
   margin: 0;
 
 }
-#imageStream {
-  width: 100%;
-  //min-width: 600px;
-
-}
-
 
 .arrowTable {
   table {
@@ -21,6 +15,19 @@ body {
     td {
       width: 33.3333%;
       padding: 1%;
+
+      div {
+        width: 100%;
+        padding-top: 100%;
+
+        background-color: #b3b1b2;
+        box-shadow: 0 5px 8px #333;
+        transition: @transitionSpeed background, @transitionSpeed background-color, @transitionSpeed box-shadow;
+
+        &.activated, &.pressedKey {
+          box-shadow: 0 3px 6px #222;
+        }
+      }
     }
   }
 
@@ -31,22 +38,16 @@ body {
     highlight: none;
     touch-callout: none;
     user-select: none;
-    background: #b3b1b2;
-
-    width: 100%;
-    padding-top: 100%;
 
     border-radius: 10px;
-    background: #b3b1b2;
-    box-shadow: 0 5px 8px #333;
-    transition: @transitionSpeed background;
+
 
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 
     &:hover {
-      background: #999;
+      background-color: #999;
       background-repeat: no-repeat;
       background-position: center;
       background-size: contain;
@@ -94,156 +95,26 @@ body {
     }
 
   }
+  #laser {
+
+    margin: auto;
+
+    background-color: rgb(228, 228, 37);
+    background-image: url("/static/images/laser.png");
+    background-size: cover;
+    border-radius: 100%;
+
+    &:hover {
+      background-color: rgb(216, 130, 0);
+    }
+    &.activated {
+      background-color: rgb(206, 13, 13);
+    }
+
+  }
 }
 
 
-
-// Camera Buttons
-/*
-#cam_arrows {
-  &: extend(#arrows);
-  width: 150px;
-
-}
-.cam_arrowkey {
-  &: extend(.arrowkey);
-
-  width: 50px;
-  height: 50px;
-
-  &:hover {
-    background: #999;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-
-  }
-  // A key that is pressed
-  &.pressedKey {
-    background-color: #454545;
-  }
-
-}
-/*
-#stream {
-  width: 644px;
-  height: 484px;
-  margin-left: auto;
-  margin-right: auto;
-  border: 2px solid #969696;
-  box-shadow: 0 0 10px #3e3e3e;
-
-}
-@media (max-width: 750px ) {
-  #stream {
-    width: 424px;
-    height: 319px;
-
-  }
-  #liveStream {
-    width: 420px;
-    height: 315px;
-  }
-  .arrowkey {
-    height: 80px;
-    width: 80px;
-  }
-  .cam_arrowkey {
-    height: 40px;
-    width: 40px;
-
-  }
-  #arrows {
-    width: 240px;
-  }
-
-}
-@media (max-width: 450px ) {
-  #stream {
-    width: 324px;
-    height: 244px;
-
-  }
-  #liveStream {
-    width: 320px;
-    height: 240px;
-  }
-  .arrowkey {
-    height: 60px;
-    width: 60px;
-  }
-  .cam_arrowkey {
-    height: 30px;
-    width: 30px;
-  }
-  #arrows {
-    width: 180px;
-  }
-
-}
-@media (max-width: 320px ) {
-  #stream {
-    width: 304px;
-    height: 229px;
-
-  }
-  #liveStream {
-    width: 300px;
-    height: 225px;
-  }
-  .arrowkey {
-    height: 50px;
-    width: 50px;
-  }
-  .cam_arrowkey {
-    height: 25px;
-    width: 25px;
-  }
-  #arrows {
-    width: 150px;
-  }
-
-}
-
-
-#upkey {
-  background-image: url("../images/arrowUp.png");
-
-}
-#downkey {
-  background-image: url("../images/arrowDown.png");
-
-}
-#rightkey {
-  background-image: url("../images/arrowRight.png");
-
-}
-#leftkey {
-  background-image: url("../images/arrowLeft.png");
-
-}
-#cam_upkey {
-  background-image: url("../images/cam_arrowUp.png");
-
-}
-#cam_downkey {
-  background-image: url("../images/cam_arrowDown.png");
-
-}
-#cam_rightkey {
-  background-image: url("../images/cam_arrowRight.png");
-
-}
-#cam_leftkey {
-  background-image: url("../images/cam_arrowLeft.png");
-
-}
-#cam_default {
-  background-image: url("../images/cam_default.png");
-
-}
-
-*/
 // 'Live' box
 @keyframes rec {
   0% {
@@ -257,32 +128,42 @@ body {
   }
 
 }
-#live {
-  position: absolute;
-  margin-top: 10px;
-  margin-left: 10px;
-  color: #900;
-  border: 2px solid #900;
-  border-radius: 5px;
-  text-align: center;
-  line-height: 25px;
-  width: 55px;
-  height: 25px;
-  z-index: 20;
 
-  div {
+.robotView {
+  #live {
     position: absolute;
-    left: 65px;
-    top: 3px;
-    background-color: #900;
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    filter: blur(1px);
-    animation: rec 1.5s infinite;
-  }
+    margin-top: 10px;
+    margin-left: 10px;
+    color: #900;
+    border: 2px solid #900;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 25px;
+    width: 55px;
+    height: 25px;
+    z-index: 20;
 
+    div {
+      position: absolute;
+      left: 65px;
+      top: 3px;
+      background-color: #900;
+      width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      filter: blur(1px);
+      animation: rec 1.5s infinite;
+    }
+
+  }
+  #imageStream {
+    width: 100%;
+    //min-width: 600px;
+
+  }
 }
+
+
 #slider {
   position: absolute;
   float: left;
@@ -294,46 +175,48 @@ body {
   top: 90px;
   right: 5px;
 
-}
-#track {
-  position: absolute;
-  width: 2px;
-  height: 426px;
-  margin: 5px 26px;
-  background-color: #000;
-  z-index: 1;
-
-}
-#grabthing {
-  position: relative;
-  width: 48px;
-  height: 25px;
-  margin: 4px;
-  background-color: #ababab;
-  border: 1px solid #030303;
-  box-shadow: 1px 1px 5px #2e2e2e;
-  z-index: 2;
-  cursor: n-resize;
-  transition: @transitionSpeed background-color, top 0.2s;
-  border-radius: 3px;
-  &:hover {
-    background-color: #d3d3d3;
+  #track {
+    position: absolute;
+    width: 2px;
+    height: 426px;
+    margin: 5px 26px;
+    background-color: #000;
+    z-index: 1;
 
   }
-  p {
-    text-align: center;
-    vertical-align: middle;
-    margin: 0;
-    padding: 0;
-    font-weight: bold;
-    color: black;
-    transition: 0.4s color;
-    &.highSpeed {
-      color: red;
+
+  #grabthing {
+    position: relative;
+    width: 48px;
+    height: 25px;
+    margin: 4px;
+    background-color: #ababab;
+    border: 1px solid #030303;
+    box-shadow: 1px 1px 5px #2e2e2e;
+    z-index: 2;
+    cursor: n-resize;
+    transition: @transitionSpeed background-color, top 0.2s;
+    border-radius: 3px;
+    &:hover {
+      background-color: #d3d3d3;
+
+    }
+    p {
+      text-align: center;
+      vertical-align: middle;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+      color: black;
+      transition: 0.4s color;
+      &.highSpeed {
+        color: red;
+      }
     }
   }
-
 }
+
+
 .piStats {
   text-align: center;
   //position: absolute;
@@ -352,58 +235,60 @@ body {
   background-color: #ccc;
   border-radius: 5px;
   padding: 2px;
+  padding-bottom: 5px;
+
   width: 120px;
-  height: 600px;
   box-shadow: 5px 5px 20px #000;
   overflow: hidden;
   left: -105px;
   text-align: center;
   z-index: 50;
-  transition: 0.5s left;
+
+  transition: 0.4s left;
   &.open {
     left: 10px;
   }
 
-}
-.component-btn {
-  cursor: pointer;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 10px;
-  text-align: center;
-  line-height: 75px;
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  width: 75px;
-  height: 75px;
-  border-radius: 50px;
-  box-shadow: 0 0 20px #fff;
-  background-color: #111;
-  border: 2px solid #666;
-  transition: @transitionSpeed background-color, @transitionSpeed color;
-  &:hover {
-    color: #999;
+  .showsideBar {
+    padding-right: 5px;
+    width: 120px;
+    height: 30px;
+    background-color: #666;
+    margin-top: -2px;
+    margin-left: -2px;
+    line-height: 30px;
+    font-weight: bold;
+    transition: @transitionSpeed background-color;
+
+    &:hover {
+      background-color: #333;
+    }
+
   }
 
-}
-.showsideBar {
-  text-align: right;
-  padding-right: 5px;
-  width: 120px;
-  height: 30px;
-  background-color: #666;
-  margin-top: -2px;
-  margin-left: -2px;
-  line-height: 30px;
-  font-weight: bold;
-  transition: @transitionSpeed background-color;
-
-  &:hover {
-    background-color: #333;
+  .component-btn {
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    text-align: center;
+    line-height: 75px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    width: 75px;
+    height: 75px;
+    border-radius: 50px;
+    box-shadow: 0 0 20px #fff;
+    background-color: #111;
+    border: 2px solid #666;
+    transition: @transitionSpeed background-color, @transitionSpeed color;
+    &:hover {
+      color: #999;
+    }
   }
-
 }
+
 .active_recording {
   background-color: rgb(255, 40, 40);
   animation: rec 3s infinite;
@@ -459,50 +344,28 @@ body {
     }
   }
 
-}
-#rec_window_content>div {
-  margin-top: 25px;
+  #rec_window_content>div {
+    margin-top: 25px;
 
-}
-#rec_startstop {
-  width: 45px;
-  height: 45px;
-  border-radius: 5px;
-  background-color: #555;
-  background-image: url("/static/images/videoplay.png");
-  background-size: contain;
-  float: right;
-  position: relative;
-  left: -168px;
-  top: -9px;
-  transition: @transitionSpeed background-color, @transitionSpeed color;
-  &:hover {
-    background-color: #333;
+    #rec_startstop {
+      width: 45px;
+      height: 45px;
+      border-radius: 5px;
+      background-color: #555;
+      background-image: url("/static/images/videoplay.png");
+      background-size: contain;
+      float: right;
+      position: relative;
+      left: -168px;
+      top: -9px;
+      transition: @transitionSpeed background-color, @transitionSpeed color;
+      &:hover {
+        background-color: #333;
+      }
+    }
   }
-
 }
-#laser {
-  //position: relative;
-  //right: 10px;
-  width: 100%;
-  padding-top: 100%;
-  margin: auto;
 
-  background-color: rgb(228, 228, 37);
-  background-image: url("/static/images/laser.png");
-  background-size: cover;
-  border: 2px solid #f5ba00;
-  border-radius: 100%;
-
-  transition: @transitionSpeed background-color;
-  &:hover {
-    background-color: rgb(216, 130, 0);
-  }
-  &.activated {
-    background-color: rgb(206, 13, 13);
-  }
-
-}
 
 .piStats {
   h5 {

@@ -45,7 +45,7 @@ function KeyEventHandler(robot) {
 
   function registerEvents(self, element, i) {
     // If we use touch device only assign the required listeners and vice versa
-    console.log(element)
+
     if (self.is_touch_device) {
       element.on("touchstart", function() {
         self.handleDown(i);
@@ -67,7 +67,6 @@ function KeyEventHandler(robot) {
   }
   for (var i = 0; i < self.keyElements.length; i++) {
     var element = self.keyElements[i];
-
     registerEvents(this, element, i);
   }
 
