@@ -1,5 +1,5 @@
-var config = require("../config.json"),
-  Db = require("../../lib/dbReader.js");
+var config = require("../config.json");
+
 // User abstraction object used to interact with the user in the database
 function User(user, db) {
 
@@ -50,13 +50,7 @@ User.prototype.updateAdminPower = function(power, cb) {
 };
 
 // export function to create a user object on demand User([id|username], database, callback)
-module.exports = function(id, database, cb) {
-  var db = database;
-  // Create the database abstraction object if it is not already
-  // TODO: check if the object is a database wrapper
-  if (true) {
-    db = new Db(database);
-  }
+module.exports = function(id, db, cb) {
   // Try creating the user form the id provided
   createUserById(id, db, function(err, user) {
     if (err) return cb(err, null);

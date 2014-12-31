@@ -1,7 +1,6 @@
 var jwt = require('jsonwebtoken');
 var express = require('express');
 var config = require('../config/config.json');
-var Db = require('../lib/dbReader.js');
 var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 
 
@@ -10,8 +9,6 @@ var userRouter = require("./users.js");
 
 /* GET home page. */
 module.exports = function(app, passport, db) {
-
-  var database = new Db(db);
 
   // Index
   indexRouter.get('/', function(req, res, next) {
@@ -89,7 +86,7 @@ module.exports = function(app, passport, db) {
 
 
   function checkIp(req, res, next) {
-    database.isIpBlocked(req.ip, function(err, blocked) {
+    db.isIpBlocked(req.ip, function(err, blocked) {
       if (err) return next(err);
       if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
       next();

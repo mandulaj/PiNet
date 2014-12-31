@@ -7,21 +7,23 @@ var https = require('https'),
   sqlite3 = require('sqlite3').verbose(),
   io = require('socket.io'),
   config = require('./config/config.json'),
+  DBReader = require("./lib/dbReader.js"),
   PiNet = require("./lib/pinet.js"),
 
   // App variables
   app,
-  db,
+  database, // Raw Database object
+  db, // db reader object
   server,
   socket;
 
 // Create the app
 app = express();
 // Setup database
-db = new sqlite3.Database(config.db);
-
+database = new sqlite3.Database(config.db);
+db = new DBReader(database);
 // Setup db
-require("./config/db.js")(db);
+require("./config/db.js")(database);
 
 // Setup the server
 if (config.ssl) {

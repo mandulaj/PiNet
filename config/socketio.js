@@ -1,12 +1,10 @@
 /* Configuration file for the socket.io server */
 var socketioJwt = require('socketio-jwt'),
-  DB = require("../lib/dbReader.js"),
   SocketRouter = require('socket.io-events');
 
 
 
-module.exports = function(socket, database, config){
-  var db = new DB(database);
+module.exports = function(socket, db, config){
 
   // Only allow admin connection
   var checkSudo = SocketRouter();

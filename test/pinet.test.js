@@ -43,6 +43,8 @@ var database = new sqlite3.Database(":memory:");
 database.serialize();
 require("../config/db.js")(database);
 populateDB(database);
+// Create database reader object
+var db = new DB(database);
 
 
 // Set up the socket.io Server
@@ -51,7 +53,7 @@ var app = http.createServer(function(req,res){
 });
 socketServer = SocketIoServer(app);
 // Configure the socket server
-require("../config/socketio.js")(socketServer, database, config);
+require("../config/socketio.js")(socketServer, db, config);
 
 
 before(function(done){
@@ -84,9 +86,6 @@ before(function(done){
   // Bind the robot server to the test socket
   robotServer.listen(TEST_SOCKET, function(){
   });
-
-  // Create database reader object
-  var db = new DB(database);
   // Create the robot
   Robot = require('../lib/pinet.js')(socketServer, db, {
     port: TEST_SOCKET
