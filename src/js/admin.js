@@ -5,8 +5,8 @@
     this.socket = io("/admin", {
       'query': 'token=' + sessionStorage.getItem("token")
     });
-    console.log(this.socket.id)
-    this.socket.emit("requrestList");
+
+    this.requrestList();
 
     this.sockets = [];
 
@@ -19,7 +19,6 @@
       self.users = users;
       tableb.html("");
       userTable.html("");
-      console.log(data)
 
       for (var i = 0; i < sockets.length; i++) {
         var text = ""
@@ -101,7 +100,18 @@
     this.socket.emit("requrestList");
   };
 
+  Admin.prototype.requrestList = function(){
+    this.socket.emit("requrestList");
+  };
+
   $(document).ready(function(){
     window.admin = new Admin();
+    $("#refresh").click(function(){
+      $("#refresh span").addClass("rotate");
+      window.admin.requrestList();
+      setTimeout(function(){
+        $("#refresh span").removeClass("rotate");
+      }, 1000)
+    })
   });
 })()

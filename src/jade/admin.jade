@@ -37,6 +37,9 @@ html
 
     div.container
       h1 Admin Corner
+        button#refresh(type='button', class="btn btn-default")
+          span.glyphicon.glyphicon-refresh
+          |  Refresh
 
       .row
         .col-md-8
@@ -48,6 +51,7 @@ html
                   th Socket ID
                   th User name
                   th Login Date
+                  th
               tbody
         .col-md-4
           .table-responsive
@@ -57,6 +61,7 @@ html
                   th User ID
                   th Username
                   th Access
+                  th
               tbody
 
   script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
