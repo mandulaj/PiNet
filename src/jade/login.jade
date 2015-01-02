@@ -21,7 +21,7 @@ html
           form(method='post', role="form")
             .form-group
               label.control-label(for='username') Username
-              input#inputName.form-control(type='text', name='username', onkeypress='nameEnter(event)' placeholder='Enter Username')
+              input#inputName.form-control(type='text', name='username', onkeyup='nameEnter(event)' placeholder='Enter Username')
             .form-group
               label.control-label(for='password') Password
               input#inputPass.form-control(type='password', name='password', onkeypress='submitEnter(event)', placeholder='Enter Password')
