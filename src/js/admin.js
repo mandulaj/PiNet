@@ -1,7 +1,132 @@
 
 (function(){
+  function KeyEventHandler(admin) {
+    var self = this;
+    this.admin = admin;
+
+    $("#inputName").on("keyup", function(){
+      var element = $(this);
+      var username = element.val();
+      self.checkUserExists(username, function(data){
+        element.parent()
+          .removeClass("has-success")
+          .removeClass("has-error")
+          .children(".error").addClass("noError");
+
+        if (!data) {
+          element.parent().children("span").addClass("hidden");
+          return
+        }
+
+        element.parent().children("span").removeClass("hidden glyphicon-ok glyphicon-remove");
+
+        if (data.exists) {
+          element.parent().children("span").addClass("glyphicon-remove")
+          element.parent().children(".error").removeClass("noError").html("<strong>Sorry: </strong></span>Username <em>" + data.username + "</em> already exists!")
+          element.parent().addClass("has-error");
+        } else {
+          element.parent().children("span").addClass("glyphicon-ok")
+          element.parent().addClass("has-success");
+        }
+      });
+    });
+    $("#inputPass").on("keyup", function(){
+      var element = $(this);
+      var password = element.val();
+      var passwordPass = self.checkPassword(password);
+      element.parent()
+        .removeClass("has-success")
+        .removeClass("has-error")
+        .children(".error").addClass("noError");
+
+      /*if (!passwordPass) {
+        element.parent().children("span").addClass("hidden");
+        return
+      }*/
+
+      element.parent().children("span").removeClass("hidden glyphicon-ok glyphicon-remove");
+
+      if (!passwordPass) {
+        element.parent().children("span").addClass("glyphicon-remove")
+        element.parent().addClass("has-error");
+      } else {
+        element.parent().children("span").addClass("glyphicon-ok")
+        element.parent().addClass("has-success");
+      }
+    });
+    $("#inputPassAgain").on("keyup", function(){
+      var element = $(this);
+      var password = $("#inputPass").val();
+      var passwordAgain = element.val();
+      element.parent()
+        .removeClass("has-success")
+        .removeClass("has-error")
+        .children(".error").addClass("noError");
+
+      element.parent().children("span").removeClass("hidden glyphicon-ok glyphicon-remove");
+
+      if (password !== passwordAgain) {
+        element.parent().children("span").addClass("glyphicon-remove");
+        element.parent().addClass("has-error");
+      } else {
+        element.parent().children("span").addClass("glyphicon-ok")
+        element.parent().addClass("has-success");
+      }
+
+    });
+    $("#submitbutton").click(function(e){
+      e.preventDefault();
+      $(".passSuccess").addClass("hidden");
+      $(".loginError").addClass("hidden");
+      var username = $("#inputName").val();
+      var password = $("#inputPass").val();
+      var access =   $("input[type='radio'][name='inputAccess']:checked").val();
+      // TODO: check input
+
+      $.ajax({
+        url: "/signup",
+        type: "POST",
+        cache: false,
+        dataType: "json",
+        data: {
+          username: username,
+          password: password,
+          access: access,
+        }
+      }).done(function(data){
+        if (data.signup) {
+          $(".passSuccess").removeClass("hidden");
+        } else {
+          $(".loginError").removeClass("hidden");
+        }
+      });
+
+    })
+  }
+
+  KeyEventHandler.prototype.checkUserExists = function(username, cb){
+    if (!username) return cb(null);
+    if (username.length < 3) return cb(null);
+    $.ajax({
+      url: "/api/username/" + username,
+      type: "GET",
+      cache: false,
+    }).done(function(data){
+      return cb(data);
+    });
+  };
+
+  KeyEventHandler.prototype.checkPassword = function(password) {
+    if (password.length < 6) {
+      return false;
+    }
+    return true;
+  }
+
   function Admin(){
     var self = this;
+    this.eventHandler = new KeyEventHandler(this);
+
     this.socket = io("/admin", {
       'query': 'token=' + sessionStorage.getItem("token")
     });

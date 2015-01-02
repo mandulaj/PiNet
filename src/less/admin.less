@@ -4,3 +4,24 @@
     transition: transform 1s;
   }
 }
+
+.scrolltable-wrapper {
+  height: 300px !important;
+  overflow: scroll;
+}
+
+.error {
+  transition: widht 0.3s ease-out, padding 0.3s ease-in, opacity 0.3s;
+  margin-top: 10px;
+  padding: 10px;
+  color: white;
+  background: #d9534f;
+  border-radius: 5px;
+  &.noError {
+    opacity: 0;
+    height: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+}
+
