@@ -32,8 +32,10 @@ var robotServer = null; // python test server
 var pythonSocket = null; // robot test connection
 
 var Robot = null; // instance of PiNet (being tested)
+var BadRobot = null; // instance of PiNet used for testing errors
 
 var socketServer = null; // socket.io testing server
+var badSocketServer = null // socket.io server for testing errors
 var socketClient = null; // socket.io testing client
 
 
@@ -52,6 +54,7 @@ var app = http.createServer(function(req,res){
   res.end("Test")
 });
 socketServer = SocketIoServer(app);
+badSocketServer = SocketIoServer();
 // Configure the socket server
 require("../config/socketio.js")(socketServer, db, config);
 
@@ -90,6 +93,9 @@ before(function(done){
   Robot = require('../lib/pinet.js')(socketServer, db, {
     port: TEST_SOCKET
   });
+  BadRobot = require("../lib/piNet.js")(badSocketServer, db, {
+    port: "doesNotExist"
+  })
 })
 
 
@@ -97,7 +103,6 @@ describe("PiNet", function () {
   describe("#constructor", function(){
 
     it('should create an object', function(){
-      //console.log("pysoc", pythonSocket);
       expect(Robot).to.be.an('object');
     });
     it('should have all the methods', function(){
@@ -315,7 +320,96 @@ describe("PiNet", function () {
       });
     });
   });
+  describe("#writeToRobot", function(){
+    it("should send given message to the robot", function(done){
+      var message = "The random number is: " + Math.random();
+      var start = Date.now();
+      Robot.writeToRobot(message);
+      pythonSocket.once('data', function(data){
+        var end = Date.now();
+        if ((end - start) < NETWORKING_TIMEOUT * 2) {
+          var strData = data.toString();
+          strData = strData.replace("&", "");
+          expect(strData).to.be(message);
+          done();
+        } else {
+          done(new Error('Timeout ' + (end - start) + "ms"));
+        }
+      });
+    });
+    it("should append an & to any message", function(done){
+      var message = "The random number is: " + Math.random();
+      var start = Date.now();
+      Robot.writeToRobot(message);
+      pythonSocket.once('data', function(data){
+        var end = Date.now();
+        if ((end - start) < NETWORKING_TIMEOUT * 2) {
+          var strData = data.toString();
+          expect(strData).to.contain("&");
+          expect(strData.indexOf("&")).to.be(strData.length - 1); // Last element
+          strData = strData.replace("&", "");
+          expect(strData).to.be(message);
+          done();
+        } else {
+          done(new Error('Timeout ' + (end - start) + "ms"));
+        }
+      });
+    });
+  });
+  describe("#defaultState", function(){
+    it("should send the robot the default state", function(done){
+      var start = Date.now();
+      Robot.defaultState();
+      pythonSocket.once('data', function(data){
+        var end = Date.now();
+        if ((end - start) < NETWORKING_TIMEOUT * 2) {
+          var strData = data.toString();
+          strData = strData.replace("&", "");
+          var json = JSON.parse(strData);
+          expect(json).to.only.have.keys("commands", "message");
+          expect(json.message).to.be("commands");
+          expect(json.commands).to.only.have.keys(["light", "ai", "laser", "keys", "speed", "camMove"]);
+          expect(json.commands.light).to.be(0);
+          expect(json.commands.ai).to.be(0);
+          expect(json.commands.laser).to.be(0);
+          expect(json.commands.keys).to.eql([0,0,0,0]);
+          expect(json.commands.speed).to.be(100);
+          expect(json.commands.camMove).to.eql([0,0,0,0]);
+          done();
+        } else {
+          done(new Error('Timeout ' + (end - start) + "ms"));
+        }
+      });
+    });
+  });
+  describe("#raiseAlert", function(){
+    it("should send the robot the default state", function(done){
+      var start = Date.now();
+      Robot.raiseAlert();
+      pythonSocket.once('data', function(data){
+        var end = Date.now();
+        if ((end - start) < NETWORKING_TIMEOUT * 2) {
+          var strData = data.toString();
+          strData = strData.replace("&", "");
+          var json = JSON.parse(strData);
+          expect(json).to.only.have.keys("commands", "message");
+          expect(json.message).to.be("commands");
+          expect(json.commands).to.only.have.keys(["light", "ai", "laser", "keys", "speed", "camMove"]);
+          expect(json.commands.light).to.be(0);
+          expect(json.commands.ai).to.be(0);
+          expect(json.commands.laser).to.be(0);
+          expect(json.commands.keys).to.eql([0,0,0,0]);
+          expect(json.commands.speed).to.be(100);
+          expect(json.commands.camMove).to.eql([0,0,0,0]);
+          done();
+        } else {
+          done(new Error('Timeout ' + (end - start) + "ms"));
+        }
+      });
+    });
+  });
 });
+
 
 after(function(){
   socketClient.disconnect();
