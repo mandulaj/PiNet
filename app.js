@@ -74,27 +74,30 @@ module.exports = app;
 
 
 // App clean-up
-
-// TODO: clean this up:
 function exitHandler(options, err) {
+  if (options.exit) console.log("\nShutting down...")
   if (options.cleanup) {
-    // TODO: add any clean up here
-    db.close(function() {
-      console.log("Exit Success!");
-      process.exit(0);
+    // TODO: add any clean up heartbeat
+    database.close(function(err) {
+      if (err) {
+        console.error("Error: ", err)
+        process.exit(1);
+      } else {
+        console.log("Success Closing DB");
+        process.exit(0);
+      }
     });
   }
   if (err) console.log(err.stack);
-  if (options.exit) process.exit();
 }
 
 //do something when app is closing
-process.on('exit', exitHandler.bind(null, {
+process.on('SIGINT', exitHandler.bind(null, {
+  exit: true,
   cleanup: true
 }));
-process.on('SIGINT', exitHandler.bind(null, {
-  exit: true
-}));
 process.on('uncaughtException', exitHandler.bind(null, {
-  exit: true
 }));
+process.on("exit", function(code){
+  console.log("Exit Status:", code)
+})
