@@ -93,7 +93,7 @@ before(function(done){
   Robot = require('../lib/pinet.js')(socketServer, db, {
     port: TEST_SOCKET
   });
-  BadRobot = require("../lib/piNet.js")(badSocketServer, db, {
+  BadRobot = require("../lib/pinet.js")(badSocketServer, db, {
     port: "doesNotExist"
   })
 })
