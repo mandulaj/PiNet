@@ -6,12 +6,12 @@ var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 module.exports = function(db) {
   //apiRouter.use(isAuthenticated);
 
-  apiRouter.get("/", function(req, res){
+  apiRouter.get("/", function(req, res) {
     res.send("api");
-  })
+  });
 
-  apiRouter.get('/username/:username', function(req, res, next){
-    db.doesExist(req.params.username, function(err, exists){
+  apiRouter.get('/username/:username', function(req, res, next) {
+    db.doesExist(req.params.username, function(err, exists) {
       if (err) return next(err);
       res.send({
         username: req.params.username,
@@ -22,4 +22,4 @@ module.exports = function(db) {
 
 
   return apiRouter;
-}
+};

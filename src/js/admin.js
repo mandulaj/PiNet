@@ -1,13 +1,12 @@
-
-(function(){
+(function() {
   function KeyEventHandler(admin) {
     var self = this;
     this.admin = admin;
 
-    $("#inputName").on("keyup", function(){
+    $("#inputName").on("keyup", function() {
       var element = $(this);
       var username = element.val();
-      self.checkUserExists(username, function(data){
+      self.checkUserExists(username, function(data) {
         element.parent()
           .removeClass("has-success")
           .removeClass("has-error")
@@ -15,22 +14,22 @@
 
         if (!data) {
           element.parent().children("span").addClass("hidden");
-          return
+          return;
         }
 
         element.parent().children("span").removeClass("hidden glyphicon-ok glyphicon-remove");
 
         if (data.exists) {
-          element.parent().children("span").addClass("glyphicon-remove")
-          element.parent().children(".error").removeClass("noError").html("<strong>Sorry: </strong></span>Username <em>" + data.username + "</em> already exists!")
+          element.parent().children("span").addClass("glyphicon-remove");
+          element.parent().children(".error").removeClass("noError").html("<strong>Sorry: </strong></span>Username <em>" + data.username + "</em> already exists!");
           element.parent().addClass("has-error");
         } else {
-          element.parent().children("span").addClass("glyphicon-ok")
+          element.parent().children("span").addClass("glyphicon-ok");
           element.parent().addClass("has-success");
         }
       });
     });
-    $("#inputPass").on("keyup", function(){
+    $("#inputPass").on("keyup", function() {
       var element = $(this);
       var password = element.val();
       var passwordPass = self.checkPassword(password);
@@ -47,14 +46,14 @@
       element.parent().children("span").removeClass("hidden glyphicon-ok glyphicon-remove");
 
       if (!passwordPass) {
-        element.parent().children("span").addClass("glyphicon-remove")
+        element.parent().children("span").addClass("glyphicon-remove");
         element.parent().addClass("has-error");
       } else {
-        element.parent().children("span").addClass("glyphicon-ok")
+        element.parent().children("span").addClass("glyphicon-ok");
         element.parent().addClass("has-success");
       }
     });
-    $("#inputPassAgain").on("keyup", function(){
+    $("#inputPassAgain").on("keyup", function() {
       var element = $(this);
       var password = $("#inputPass").val();
       var passwordAgain = element.val();
@@ -69,18 +68,18 @@
         element.parent().children("span").addClass("glyphicon-remove");
         element.parent().addClass("has-error");
       } else {
-        element.parent().children("span").addClass("glyphicon-ok")
+        element.parent().children("span").addClass("glyphicon-ok");
         element.parent().addClass("has-success");
       }
 
     });
-    $("#submitbutton").click(function(e){
+    $("#submitbutton").click(function(e) {
       e.preventDefault();
       $(".passSuccess").addClass("hidden");
       $(".loginError").addClass("hidden");
       var username = $("#inputName").val();
       var password = $("#inputPass").val();
-      var access =   $("input[type='radio'][name='inputAccess']:checked").val();
+      var access = $("input[type='radio'][name='inputAccess']:checked").val();
       // TODO: check input
 
       $.ajax({
@@ -93,7 +92,7 @@
           password: password,
           access: access,
         }
-      }).done(function(data){
+      }).done(function(data) {
         if (data.signup) {
           $(".passSuccess").removeClass("hidden");
         } else {
@@ -101,17 +100,17 @@
         }
       });
 
-    })
+    });
   }
 
-  KeyEventHandler.prototype.checkUserExists = function(username, cb){
+  KeyEventHandler.prototype.checkUserExists = function(username, cb) {
     if (!username) return cb(null);
     if (username.length < 3) return cb(null);
     $.ajax({
       url: "/api/username/" + username,
       type: "GET",
       cache: false,
-    }).done(function(data){
+    }).done(function(data) {
       return cb(data);
     });
   };
@@ -121,9 +120,9 @@
       return false;
     }
     return true;
-  }
+  };
 
-  function Admin(){
+  function Admin() {
     var self = this;
     this.eventHandler = new KeyEventHandler(this);
 
@@ -135,7 +134,7 @@
 
     this.sockets = [];
 
-    this.socket.on("list", function(data){
+    this.socket.on("list", function(data) {
       var tableb = $(".socket-table>tbody");
       var userTable = $(".user-table>tbody");
       var sockets = data.sockets;
@@ -145,10 +144,12 @@
       tableb.html("");
       userTable.html("");
 
+      var text, addClass, root, banned;
+
       for (var i = 0; i < sockets.length; i++) {
-        var text = ""
-        var addClass = "";
-        var root = false;
+        text = "";
+        addClass = "";
+        root = false;
         if (sockets[i].access == 5) {
           addClass = " class='info'";
           root = true;
@@ -165,39 +166,39 @@
         text += sockets[i].username;
         text += "</strong></td>";
         text += "<td>";
-        text += loginDate.toLocaleTimeString()+ " " + loginDate.toLocaleDateString();
+        text += loginDate.toLocaleTimeString() + " " + loginDate.toLocaleDateString();
         text += "</td>";
         text += "<td>";
-        text += "<button class='btn btn-warning' " + (root?(" disabled='disabled' "):("")) + " onclick=window.admin.kick(" + i + ")>Kick</button>";
+        text += "<button class='btn btn-warning' " + (root ? (" disabled='disabled' ") : ("")) + " onclick=window.admin.kick(" + i + ")>Kick</button>";
         text += "</td>";
         text += "</tr>";
-        tableb.append(text)
+        tableb.append(text);
       }
 
-      for (var i = 0; i < users.length; i++) {
-        var text = ""
-        var addClass = "";
-        var banned = users[i].banned == 1;
-        var root = users[i].access == 5;
+      for (var j = 0; i < users.length; j++) {
+        text = "";
+        addClass = "";
+        banned = users[j].banned == 1;
+        root = users[j].access == 5;
         if (banned) {
           addClass = " class='danger'";
         }
 
         text += "<tr" + addClass + ">";
         text += "<td><em>";
-        text += users[i].id;
+        text += users[j].id;
         text += "</em></td>";
         text += "<td>";
-        text += users[i].username;
+        text += users[j].username;
         text += "</td>";
         text += "<td><strong>";
-        text += users[i].access;
+        text += users[j].access;
         text += "</strong></td>";
         text += "<td>";
-        text += (!banned)?("<button class='btn btn-danger' " +  ((root)?('disabled="disabled"'):("")) + " onclick=window.admin.ban(" + i + ")>Ban</button>"):("<button class='btn btn-info' onclick=window.admin.unban(" + i + ")>Undo</button>")
+        text += (!banned) ? ("<button class='btn btn-danger' " + ((root) ? ('disabled="disabled"') : ("")) + " onclick=window.admin.ban(" + j + ")>Ban</button>") : ("<button class='btn btn-info' onclick=window.admin.unban(" + j + ")>Undo</button>");
         text += "</td>";
         text += "</tr>";
-        userTable.append(text)
+        userTable.append(text);
       }
     });
     // this.socket.on('connect', function(socket){
@@ -225,18 +226,18 @@
     this.socket.emit("requrestList");
   };
 
-  Admin.prototype.requrestList = function(){
+  Admin.prototype.requrestList = function() {
     this.socket.emit("requrestList");
   };
 
-  $(document).ready(function(){
+  $(document).ready(function() {
     window.admin = new Admin();
-    $("#refresh").click(function(){
+    $("#refresh").click(function() {
       $("#refresh span").addClass("rotate");
       window.admin.requrestList();
-      setTimeout(function(){
+      setTimeout(function() {
         $("#refresh span").removeClass("rotate");
-      }, 1000)
-    })
+      }, 1000);
+    });
   });
-})()
+})();

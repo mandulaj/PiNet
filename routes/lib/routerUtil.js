@@ -7,4 +7,4 @@ module.exports.isAuthenticated = function(req, res, next) {
   } else {
     res.redirect("/"); // send the user to the landing page if he is not logged in...
   }
-}
+};
