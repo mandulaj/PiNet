@@ -6,6 +6,7 @@ var LocalStrategy = require('passport-local').Strategy,
 
 module.exports = function(passport, db) {
   var database = new Db(db);
+
   passport.serializeUser(function(user, done) {
     return done(null, user.getId());
   });
@@ -31,7 +32,8 @@ module.exports = function(passport, db) {
       }
 
       // is he an admin
-      clientUser.isAdmin(function(admin) {
+      clientUser.isAdmin(function(err, admin) {
+        if (err) return done(err, false);
         if (!admin) {
           // No, return false
           return done(null, false);
@@ -52,7 +54,7 @@ module.exports = function(passport, db) {
           // All is good, make the new user
           database.createNewUser(newData, function(err, user) {
             if (err) return done(err, false);
-            return done(err, true);
+            return done(null, true);
           });
         });
       });
@@ -94,7 +96,7 @@ module.exports = function(passport, db) {
               return done(null, user);
             });
           } else {
-            // The verification failed so we just report the users ip and return false to gim
+            // The verification failed so we just report the users ip and return false to him
             database.reportFailedLogin(req.ip, function(err) {
               return done(err, false);
             });

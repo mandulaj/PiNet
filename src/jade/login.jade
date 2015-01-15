@@ -1,0 +1,32 @@
+doctype html
+
+html
+  head
+    title PiNet
+    link(type='text/css', rel='stylesheet', href='/static/modules/bootstrap/dist/css/bootstrap.min.css')
+    link(type='text/css', rel='stylesheet', href='/static/css/login.css')
+    link(rel='shortcut icon', type='image/x-icon', href='/favicon.ico')
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
+
+  body(unselectable='on')
+    div(class="navbar navbar-default navbar-static-top")
+      div.container
+        div.navbar-header
+          h3 Welcome to PiNet control room
+
+    .container
+      .row
+        .col-sm-4.col-sm-offset-4
+          h2 Login
+          form(method='post', role="form")
+            .form-group
+              label.control-label(for='username') Username
+              input#inputName.form-control(type='text', name='username', onkeyup='nameEnter(event)' placeholder='Enter Username')
+            .form-group
+              label.control-label(for='password') Password
+              input#inputPass.form-control(type='password', name='password', onkeypress='submitEnter(event)', placeholder='Enter Password')
+            button#submitbutton(class='btn btn-default') Sign In
+          #Error
+
+    script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
+    script(type='text/javascript', src='/static/js/login.js')

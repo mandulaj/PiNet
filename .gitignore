@@ -20,3 +20,7 @@ keys
 
 # Database file
 *.db
+
+#Coverage
+coverage
+.coveralls.yml

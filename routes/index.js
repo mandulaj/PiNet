@@ -1,21 +1,26 @@
 var jwt = require('jsonwebtoken');
 var express = require('express');
-var indexRouter = express.Router();
-var userRouter = express.Router();
 var config = require('../config/config.json');
 var Db = require('../lib/dbReader.js');
+var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 
+
+var indexRouter = express.Router();
 /* GET home page. */
 module.exports = function(app, passport, db) {
 
   var database = new Db(db);
 
+  // other routes
+  var userRouter = require("./users.js")();
+  var apiRouter = require("./api.js")(database);
+
   // Index
-  indexRouter.get('/', function(req, res) {
+  indexRouter.get('/', function(req, res, next) {
     if (req.isAuthenticated()) {
       res.redirect("/user");
     } else {
-      res.render('index', {});
+      res.render('login', {});
     }
   });
 
@@ -29,11 +34,10 @@ module.exports = function(app, passport, db) {
         });
       }
       req.login(user, function(err) {
-        if (err)
-          return next(err);
+        if (err) return next(err);
 
         var token = jwt.sign({
-          name: user.getId()
+          id: user.getId()
         }, config.secrets.jwt, {
           expiresInMinutes: 24 * 60
         });
@@ -49,11 +53,7 @@ module.exports = function(app, passport, db) {
 
   indexRouter.post('/signup', function(req, res, next) {
     passport.authenticate('local-signup', function(err, user, info) {
-      if (err) {
-        return res.send({
-          signup: false
-        });
-      }
+      if (err) return next(err);
       if (user) {
         return res.send({
           signup: true
@@ -66,38 +66,61 @@ module.exports = function(app, passport, db) {
     })(req, res, next);
   });
 
-  indexRouter.get("/logout", function(req, res) {
+  indexRouter.get("/logout", function(req, res, next) {
     req.logout();
     res.redirect("/");
   });
 
 
-  // User
-  userRouter.use(isAuthenticated);
-  userRouter.get("/", function(req, res) {
-    res.render("room", {});
-  });
-  userRouter.get("/changepassword", function(req, res) {
-    res.render("passChange", {});
-  });
+  // Middleware:
 
   // Check if the IP is not banned
-  app.use(function(req, res, next) {
-    database.isIpBlocked(req.ip, function(err, blocked) {
-      if (err) return res.status(500).end("Error");
-      if (blocked) return res.status(403).end("403: You were banned! Try hacking into something dumber than PiNet :D");
-      next();
-    });
-  });
+  app.use(checkIp);
 
+  // Register the routers
+  app.use('/api', apiRouter);
   app.use('/user', userRouter);
   app.use('/', indexRouter);
 
-  function isAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-      return next();
-    } else {
-      res.redirect("/"); // send the user to the landing page if he is not logged in...
-    }
+  // Error handlers:
+  // 404
+  app.use(notFound);
+
+  app.use(errorLogger);
+  // 500
+  app.use(errorHandler);
+
+
+  function checkIp(req, res, next) {
+    database.isIpBlocked(req.ip, function(err, blocked) {
+      if (err) return next(err);
+      if (blocked) return res.status(403).send("403: You were banned! Try hacking into something dumber than PiNet :D");
+      next();
+    });
   }
 };
+
+
+// Catch 404 and forward to error handler
+function notFound(req, res, next) {
+
+  res.status(404);
+  res.render("404", {
+    path: req.path
+  });
+}
+
+// Log errors
+function errorLogger(err, req, res, next) {
+  console.error(err.stack);
+  next(err);
+}
+
+// 500 errors
+function errorHandler(err, req, res, next) {
+  res.status(500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+}

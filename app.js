@@ -1,25 +1,29 @@
 var https = require('https'),
   http = require('http'),
   express = require('express'),
-  path = require('path'),
   fs = require('fs'),
   colors = require('colors'),
-  favicon = require('serve-favicon'),
-  logger = require('morgan'),
-  cookieParser = require('cookie-parser'),
-  bodyParser = require('body-parser'),
   passport = require('passport'),
   sqlite3 = require('sqlite3').verbose(),
-  session = require('express-session'),
   io = require('socket.io'),
   config = require('./config/config.json'),
-  socketioJwt = require('socketio-jwt'),
-  PiNet = require("./lib/pinet.js");
+  PiNet = require("./lib/pinet.js"),
 
+  // App variables
+  app,
+  db,
+  server,
+  socket;
 
-var app = express();
-var db = new sqlite3.Database(config.db);
-var server;
+// Create the app
+app = express();
+// Setup database
+db = new sqlite3.Database(config.db);
+
+// Setup db
+require("./config/db.js")(db);
+
+// Setup the server
 if (config.ssl) {
   var options = {
     key: fs.readFileSync(config.keys.key),
@@ -31,86 +35,48 @@ if (config.ssl) {
 }
 console.log('Express'.bold + ' server listening on ' + 'http'.green + ((config.ssl) ? ("s".green) : ("")) + "://localhost:".green + config.port.toString().green);
 
-var socket = io(server, {
+// Setup socket
+socket = io(server, {
   'close timeout': 10,
   'heartbeat timeout': 10,
   'heartbeat interval': 5
 });
+require("./config/socketio.js")(socket, db, config);
+require("./lib/socketio.js")(socket, db);
 
-socket.use(socketioJwt.authorize({
-   secret: config.secrets.jwt,
-   handshake: true
-}));
-
-//
-var Robot = PiNet(socket, {
+// Setup robot
+var Robot = PiNet(socket, db, {
    port: "robot.sock"
 });
 
-db.run("CREATE TABLE IF NOT EXISTS users (id PRIMARY KEY  NOT NULL  UNIQUE, username TEXT  NOT NULL  UNIQUE, password TEXT  NOT NULL, access INT  DEFAULT ( 0 ), lastLogin TEXT)");
-db.run("CREATE TABLE IF NOT EXISTS logins (id PRIMARY KEY  NOT NULL  UNIQUE, ip TEXT  NOT NULL  UNIQUE, accessed INT  DEFAULT ( 1 ), lastDate  TEXT, threat  INT  DEFAULT ( 1 ), banned  BOOLEAN  DEFAULT( 0 ))");
-
 process.title = 'PiNet.js';
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 
-app.use("/static", express.static(path.join(__dirname, 'public')));
-//app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
-app.use(cookieParser());
-app.use(session({
-  saveUninitialized: true,
-  resave: true,
-  secret: config.secrets.cookie,
-}));
+// Setup of the app
+
+require("./config/app.js")(app, config, {
+  dirname: __dirname,
+  favicon: false // XXX: this in only temporary...
+});
+
+
+// Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
-
 require("./config/passport.js")(passport, db); // Passport setup
-require('./routes/index')(app, passport, db); // main routs setup
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
+// Main Routes file
+require('./routes/index')(app, passport, db);
 
 
 module.exports = app;
 
+
+// App clean-up
+
+// TODO: clean this up:
 function exitHandler(options, err) {
   if (options.cleanup) {
-    //TODO: cleanup
+    // TODO: add any clean up here
     db.close(function() {
       console.log("Exit Success!");
       process.exit(0);

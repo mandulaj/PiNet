@@ -1,0 +1,119 @@
+doctype html
+
+html
+  head
+    title PiNet
+    link(type='text/css', rel='stylesheet', href='/static/css/admin.css')
+    link(type='text/css', rel='stylesheet', href='/static/css/login.css')
+    link(type='text/css', rel='stylesheet', href='/static/css/passwd.css')
+    link(type='text/css', rel='stylesheet', href='/static/modules/bootstrap/dist/css/bootstrap.min.css')
+    meta(name="viewport", content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
+
+  body(unselectable='on')
+    div(class="navbar navbar-default navbar-static-top", role="navigation")
+      div.container
+        div.navbar-header
+          button(type="button", class="navbar-toggle", data-toggle="collapse", data-target=".navbar-collapse")
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a(class="navbar-brand" href="#") PiNet - Controller Room
+            #recIndic(style='display: ;')
+        div(class="navbar-collapse collapse")
+          ul(class="nav navbar-nav")
+            li
+
+          ul(class="nav navbar-nav navbar-right")
+            li.dropdown
+              a(href="#" class="dropdown-toggle" data-toggle="dropdown")
+                strong <%= username %>
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href='/user/changepassword') Change Password
+                li
+                  a(href='/user') Controller room
+            li
+              a(href='/logout') Logout
+
+    div.container
+      h1 Admin Corner
+        button#refresh(type='button', class="btn btn-default")
+          span.glyphicon.glyphicon-refresh
+          |  Refresh
+
+      .row
+        .col-md-8
+          h3 Sockets
+          .table-responsive.scrolltable-wrapper
+            table.table.table-hover.socket-table
+              thead
+                tr
+                  th #
+                  th Socket ID
+                  th User name
+                  th Login Date
+                  th
+              tbody
+        .col-md-4
+          h3 Users
+          .table-responsive.scrolltable-wrapper
+            table.table.table-hover.user-table
+              thead
+                tr
+                  th User ID
+                  th Username
+                  th Access
+                  th
+              tbody
+      .row
+        h2 Create New User
+        .col-md-6
+          form(method='post', role="form")
+            .form-group.has-feedback
+              label.control-label(for='username') Username
+              input#inputName.form-control(type='text', name='username', placeholder='Enter Username')
+              span(class="glyphicon hidden form-control-feedback", aria-hidden="true")
+              .error.noError
+            .form-group.has-feedback
+              label.control-label(for='password') Password
+              input#inputPass.form-control(type='password', name='password', placeholder='Enter Password')
+              span(class="glyphicon hidden form-control-feedback", aria-hidden="true")
+              .error.noError
+            .form-group.has-feedback
+              label.control-label(for='passwordAgain') Retype Password
+              input#inputPassAgain.form-control(type='password', name='passwordAgain', placeholder='Enter Password Again')
+              span(class="glyphicon hidden form-control-feedback", aria-hidden="true")
+              .error.noError
+            .form-group
+              label.control-label(for='inputAccess') Access
+              br
+              label(class="radio-inline")
+                input(type="radio", name="inputAccess", value="0", checked="true" )
+                | 0
+              label(class="radio-inline")
+                input(type="radio", name="inputAccess", value="1")
+                | 1
+              label(class="radio-inline")
+                input(type="radio", name="inputAccess", value="2")
+                | 2
+              label(class="radio-inline")
+                input(type="radio", name="inputAccess", value="3")
+                | 3
+              label(class="radio-inline")
+                input(type="radio", name="inputAccess", value="4")
+                | 4
+              label(class="radio-inline")
+                input(type="radio", name="inputAccess", value="5")
+                | 5
+
+            button#submitbutton(class='btn btn-default') Create User
+          .loginError.hidden Username already exists
+          .passSuccess.hidden Success Creating the new User
+
+  script(type='text/javascript', src='/static/modules/jquery/dist/jquery.min.js')
+  script(type='text/javascript', src='/static/modules/jquery-ui/jquery-ui.min.js')
+  script(type='text/javascript', src='/static/modules/bootstrap/dist/js/bootstrap.min.js')
+  script(type='text/javascript', src='/static/modules/socket.io-client/socket.io.js')
+  script(type='text/javascript', src='/static/js/admin.js')

@@ -1,8 +1,28 @@
 /* CSS Document */
 
-.dataError {
-  margin: 0;
-  background-color: #e75457;
-  border: 2px solid #e10005;
+@keyframes success {
+  0% {
+    background: rgba(0, 61, 255, 0.58);
+  }
+  50% {
+    background: rgba(0, 126, 192, 0.8);
+  }
+  100% {
+    background: rgba(0, 61, 255, 0.58);
+  }
+
+}
+
+
+.passSuccess {
+  font-weight: bold;
+  font-size: 18px;
+  color: #ccc;
+  text-align: center;
+  margin: 30px 0 0;
+  background: rgba(0, 126, 192, 0.8);
+  border: 2px solid #1d0001;
+  border-radius: 5px;
   padding: 10px;
+  animation: success 2s infinite;
 }
