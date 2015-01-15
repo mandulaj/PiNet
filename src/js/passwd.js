@@ -1,8 +1,8 @@
 // JavaScript Document
 
 
-$(document).ready(function(){
-  $("#submitbutton").click(function(e){
+$(document).ready(function() {
+  $("#submitbutton").click(function(e) {
     e.preventDefault();
     submitForm();
   });
@@ -22,10 +22,10 @@ window.onload = function() {
   }
 };*/
 
-function submitForm(){
+function submitForm() {
   var errors = getErrors();
 
-  if(errors) {
+  if (errors) {
     $("#Error").addClass("loginError");
     $("#Error").html(errors);
     return;
@@ -60,7 +60,7 @@ function submitForm(){
   });
 }
 
-function checkOldPassword(password){
+function checkOldPassword(password) {
   $.ajax({
     url: "/api/checkPassword",
     type: "POST",
@@ -71,7 +71,7 @@ function checkOldPassword(password){
       password: password
     }
   }).done(function(data) {
-    console.log(data)
+    console.log(data);
   });
 }
 

@@ -34,7 +34,7 @@ function KeyEventHandler(robot) {
   $(document).keydown(function(e) {
     var index = self.keys.indexOf(e.keyCode);
     if (index != -1) { // prevents scrolling when arrow keys are pressed
-      e.preventDefault()
+      e.preventDefault();
     }
     self.handleDown(index);
   });
@@ -42,7 +42,7 @@ function KeyEventHandler(robot) {
     var index = self.keys.indexOf(e.keyCode);
     self.handleUp(index);
   });
-  console.log(this.is_touch_device)
+  console.log(this.is_touch_device);
 
   /* registers events for a given element
 
@@ -271,7 +271,7 @@ KeyEventHandler.prototype.handleUp = function(index) {
 
 
 /* Lifts all keys and triggers and update on the robot object
-*/
+ */
 KeyEventHandler.prototype.allUp = function() {
   for (var i = this.keyElements.length - 1; i >= 0; i--) {
     this.keyStatus[i] = false;
@@ -283,7 +283,7 @@ KeyEventHandler.prototype.allUp = function() {
 
 
 /* Updates the values in the Robot object
-*/
+ */
 KeyEventHandler.prototype.update = function() {
   var self = this;
 
@@ -307,7 +307,7 @@ KeyEventHandler.prototype.update = function() {
 };
 
 /* Object used to send and receive information from the robot
-*/
+ */
 function Robot() {
   var self = this;
   this.keyEventHandler = new KeyEventHandler(this);
@@ -341,11 +341,11 @@ function Robot() {
     self.updateStatus(data.load);
   });
 
-  this.socket.on("kicked", function(){
+  this.socket.on("kicked", function() {
     alert("You have been kicked!");
   });
 
-  this.socket.on("banned", function(){
+  this.socket.on("banned", function() {
     alert("You have been banned!");
   });
 

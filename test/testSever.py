@@ -17,19 +17,19 @@ try:
         newData = ""
         while True:
             while True:
-              chunk = client.recv(40)
-              print "Chunk", chunk
-              if chunk == "":
-                data = ""
-                break
-              delim = chunk.find("&")
-              if delim == -1:
-                newData += chunk
-              else:
-                newData += chunk[:delim]
-                data = newData
-                newData = chunk[delim + 1:]
-                break
+                chunk = client.recv(40)
+                print "Chunk", chunk
+                if chunk == "":
+                    data = ""
+                    break
+                delim = chunk.find("&")
+                if delim == -1:
+                    newData += chunk
+                else:
+                    newData += chunk[:delim]
+                    data = newData
+                    newData = chunk[delim + 1:]
+                    break
             print ""
             print "NEW DATA"
             print ""

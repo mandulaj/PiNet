@@ -1,11 +1,9 @@
 var LocalStrategy = require('passport-local').Strategy,
-  UserModel = require('./models/user.js'),
-  Db = require("../lib/dbReader.js");
+  UserModel = require('./models/user.js');
 
 
 
 module.exports = function(passport, db) {
-  var database = new Db(db);
 
   passport.serializeUser(function(user, done) {
     return done(null, user.getId());
@@ -42,17 +40,17 @@ module.exports = function(passport, db) {
         var newData = req.body;
 
         //Check if the data is ok
-        if (!database.checkFormData(newData)) {
+        if (!db.checkFormData(newData)) {
           return done(null, false);
         }
 
         // Does the user already exist
-        database.doesExist(username, function(err, exist) {
+        db.doesExist(username, function(err, exist) {
           if (err) return done(err, false);
           if (exist) return done(null, false);
 
           // All is good, make the new user
-          database.createNewUser(newData, function(err, user) {
+          db.createNewUser(newData, function(err, user) {
             if (err) return done(err, false);
             return done(null, true);
           });
@@ -79,7 +77,7 @@ module.exports = function(passport, db) {
         if (err) return done(err, false);
         // If the user does not exist, log him and return false to the user
         if (!user) {
-          return database.reportFailedLogin(req.ip, function(err) {
+          return db.reportFailedLogin(req.ip, function(err) {
             return done(err, false);
           });
         }
@@ -97,7 +95,7 @@ module.exports = function(passport, db) {
             });
           } else {
             // The verification failed so we just report the users ip and return false to him
-            database.reportFailedLogin(req.ip, function(err) {
+            db.reportFailedLogin(req.ip, function(err) {
               return done(err, false);
             });
           }

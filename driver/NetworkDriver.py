@@ -36,7 +36,6 @@ class NetworkDriver():
         else:
             self.server.listen(1)
         print("Success in setting up socket")
-        print("Server running on: " + str(host) + ":" + str(port))
 
     def parseData(self, data):
         """function parsing the json commands and directing them to the robot"""
@@ -44,7 +43,7 @@ class NetworkDriver():
         print data
         if data['message'] == "commands":
             # send the data to the robot
-            data = data['commands'] # TODO: do this for mission too!!!
+            data = data['commands']  # TODO: do this for mission too!!!
             self.sendCommands({
                 "keys": data['keys'],
                 "cam": data['camMove'],
@@ -84,26 +83,26 @@ class NetworkDriver():
         """main loop for listening on a socket and reading its data input"""
 
         while not self.serverThreadExitEv.is_set():
-            (conn, address) = self.server.accept() # accept new connections
-            incompleteData = "" # chunked data buffer
-            data = "" # full message
+            (conn, address) = self.server.accept()  # accept new connections
+            incompleteData = ""  # chunked data buffer
+            data = ""  # full message
             # loop through messages
             while True:
                 # get all chunks loop
                 while True:
                     # read less bytes then the expected messages
-                    chunk = conn.recv(40) # read some bytes from the connection
-                    if chunk == "": # the connection has closed, break out
+                    chunk = conn.recv(40)  # read some bytes from the connection
+                    if chunk == "":  # the connection has closed, break out
                         data = ""
                         break
-                    if self.serverThreadExitEv.is_set(): # if we request the thread shutdown, exit
+                    if self.serverThreadExitEv.is_set():  # if we request the thread shutdown, exit
                         return
-                    delim = chunk.find("&") # find the message delimiter
-                    if delim == -1: # if no delimiter found add chunk to buffer
+                    delim = chunk.find("&")  # find the message delimiter
+                    if delim == -1:  # if no delimiter found add chunk to buffer
                         incompleteData += chunk
                     else:
-                        data = incompleteData + chunk[:delim] # set data to content of buffer + remaining message
-                        incompleteData = chunk[delim + 1:] # set the beginning of the new buffer to the message after the delimiter
+                        data = incompleteData + chunk[:delim]  # set data to content of buffer + remaining message
+                        incompleteData = chunk[delim + 1:]  # set the beginning of the new buffer to the message after the delimiter
                         break
 
                 # if data is "", connection has closed on us
@@ -115,7 +114,7 @@ class NetworkDriver():
             conn.close()
             print "Close"
 
-        print("Exiting...\n") # we get here only when the socket is to be closed
+        print("Exiting...\n")  # we get here only when the socket is to be closed
         # get the filename of the unix socket
         filename = self.server.getsockname()
         # shut down the socket
