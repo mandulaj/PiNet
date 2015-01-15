@@ -4,7 +4,7 @@ var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 
 
 module.exports = function() {
-  userRouter.use(isAuthenticated)
+  userRouter.use(isAuthenticated);
 
   userRouter.get("/", function(req, res, next) {
     req.user.isAdmin(function(err, admin) {
@@ -44,7 +44,7 @@ module.exports = function() {
   });
 
   return userRouter;
-}
+};
 
 
 function isAdmin(req, res, next) {
