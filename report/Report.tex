@@ -1,0 +1,366 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{fontspec}
+\setmainfont{Arial}
+
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{biblatex}
+\usepackage{color}
+
+\bibliography{src.bib}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  %basicstyle=\footnotesize\ttfamily,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,
+  frame=single,                     % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=4,                       % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\author{\textbf{Jakub Mandula} \\ \textit{Supervisor:} Levente Felvinczi}
+\title{\textbf{Personal Project Report - Making a Robot} \\ \textit{Vienna International School}
+}
+\date{\today \bigskip \endgraf{\textbf{Words:} 3504}}
+\begin{document}
+\pagenumbering{gobble}
+\maketitle
+
+\pagebreak
+\pagenumbering{arabic} 
+\setcounter{page}{2}
+
+
+\tableofcontents
+\pagebreak
+\chapter{The Goal}
+
+\section{Topic}
+
+\paragraph{}
+The topic of the Personal Project was Robotics.
+\\
+The goal was to create a small robot capable of moving around flat surfaces. The catch about the robot however is to make it controllable over the internet plus give it some intelligence.
+
+\paragraph{}
+Today almost any person has a smartphone. It is very common to create applications for such phones that are doing specific things. App that come with small Wi-Fi robots are very cool because they let the user control the car through the phone and sometimes even see a live stream from a camera mounted to the vehicle. What was supposed to be different on this robot was the web interface approach. Instead of creating a app, I decided to create the web-application interface. This approach has a number of benefits:
+
+\begin{enumerate}
+	\item Works on any phone with internet and a modern-ish web browser
+	\item Works on computers
+	\item No need to install updates (all self hosted)
+	\item For me as a developer no need to adapt to different platforms
+\end{enumerate}
+
+\paragraph{}
+Thanks to amazing technologies that are starting to show up in the web-developer world, most things such as live streaming or two way secure socket layer are now possible in web browsers.
+
+\paragraph{}
+To add some touch to the product I have decided that it would be best if it also would have its own intelligence. The simplest yet most useful function is to follow a specific pattern in the image that the camera sees.
+
+\paragraph{}
+There are many applications of this robot where what I call “auto-stalk mode” could be very useful. It could help in the hospital carry patients, following the doctor or delivering medicine around the hospital. It could help old people carry heavy loads where ever they walk. To be specific the application range of this technology is limitless and therefore it should be developed.
+
+\section{Area of interaction}
+
+\paragraph{}
+The main are of interaction for this project is the Human Ingenuity. New technology is appearing every day and machines are evolving with it. It is however still the duty of engineers and programmers to implement it. Human Ingenuity is about how we create and how the creation affects us. Robots can be great helpers. If we manage to create robots that are smart and solve common daily problems, us humans can focus on solving more serious problems in the world. 
+
+\paragraph{}
+This project is not only about trying to make a robot that works but also about showing people that it is not that hard. One problem the world is faced with is that people think something is too complex if they see just a few wires and an unfamiliar-shaped computer. What I want to demonstrate is that a robot is a very simple machine that, thanks to modern technology, is relatively simple to build.
+
+\section{Summarized Goal}
+
+\paragraph{}
+To summarize the goal up: The actual goal of this project is to create a robot that can be controlled over the internet or over a local Wi-Fi network or can be in a auto-stalk mode following a target. This robot has to have a API so that anyone can write a simple program that tells the robot to do specific things. However it also should raise the awareness in people that robots are not as complicated as they used to be, thanks to the abstraction new technology brings us.
+
+\section{Specifications}
+
+The robot has to have the following specifications and features:
+
+\hypertarget{specifications}{}
+\begin{itemize}
+	\item A vehicle capable of of moving on flat surfaces
+	\item Wi-Fi controllable
+	\item Webcam enabled live stream
+	\item A programming API for developing specialized programs for the robot
+	\item AI-mode (auto-stalk mode)
+	\item Control Web interface
+\end{itemize}
+
+
+
+\chapter{Selection of sources}
+
+\section{Stackoverflow}
+\href{http://stackoverflow.com/}{Stackoverflow.com}
+
+\paragraph{}
+\textit{Stackoverflow.com} is a online forum for programmer. The way it works is people post questions and other people answer them. The questioner and other people who visit the question then rate the answers. This social sorting system eliminates answers that are bad or wrong and lifts answers that are helpful and relevant. Most of the time a programmer will find questions he has, already asked and answered by other people. However in case no one has ever run into the problem before, anyone can ask a question and in a relatively short period of time will get a reasonable response from experts.
+
+\paragraph{}
+Compared to other sources, such as books or online publications, \textit{Stackoverflow}, as with any other community projects, the information can't be 100\% trusted. However because the majority of people are intelligent with good intents, it can be granted that answers rated as good are actually good.
+
+\section{Python Documentation}
+\href{http://docs.python.org/2.7/library/index.html}{Python Documentation}
+
+\paragraph{}
+Any modern and widely spread programming language must be accompanied by a good documentation. Thanks to internet, this can be found online on the official sites of the language, provided for free.
+
+\paragraph{}
+As a source of information, official documentation is, in terms of reliability, the most trustworthy source. The documentation was written by people developing the language, Therefore it must be granted that what is written there must be true. There are always the possibilities of bugs or errors. However thanks to large communities around languages such as Python, the number of revisions assures high quality.
+
+\section{Node.js Documentation \& Mozilla Developer JavaScript reference}
+\href{http://nodejs.org/api/}{Node.js API Docs}
+\\
+\href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference}{Mozilla Developer JavaScript Reference}
+
+
+\paragraph{}
+Same as with the Python documentation, \textit{Node.js} is very well documented. \textit{Node.js} is, as the suffix suggest, a JavaScript Server. \textit{Mozilla} provides a very detailed, respected and approved documentation of this language. Mozilla, as a famous and respected company, will take care and make sure the documentation is up to date and valid. This makes Mozilla JS reference a very helpful source of information.
+
+\paragraph{}
+However JavaScript documented on \textit{Mozilla Developer} is intended for Web browsers.\textit{ Node.js} is a server. This doesn't make much difference except that some things, that enable the server functionalities, must be enabled, such as opening a port, reading a file, getting low level system information. These environment functions are only defined in node.js. Luckily \href{http://nodejs.org/}{Nodejs.org} provides a very detailed documentation of the API.
+
+\paragraph{}
+The fact that the Documentation is written by the actual developers makes the source a very reliable source. 
+
+\section{All About Circuits}
+
+\paragraph{}
+An important concept to understand when making robots is electronics and electric circuits. All About Circuits is a open source project that provides a total of six volumes of very well written books by experts in the area. The volumes include a book about DC, AC, Digital, Semiconductors and more.
+
+\paragraph{}
+Any project that is open for people around the world to contribute to has its benefits. However it has the potential risk of invalid or not approved information. Despite this fact it turns out that the community has a very strong self repair ability. Similar to \href{http://www.wikipedia.org/}{\textit{Wikipedia}} it is very hard to implant incorrect information, whether it is purposely or not. Because the content is revised by a huge community, mistakes and mismatches are rapidly detected and eliminated. Therefore like\textit{ Wikipedia} this source is very reliable and can indeed be trusted. This is even enforced because all the information in the book is in-text referenced. On any doubt or disagreement any information can be retraced to its original source.
+
+
+\paragraph{}
+There are many other sources used to construct the robot ranging from magazines, websites to books and even Youtube videos. However in this chapter I don’t have that much space so some of the important sources I will list in the Bibliography.
+
+
+\chapter{Application of information}
+
+\section{Stackoverflow}
+\lstset{language=Python}
+\paragraph{}
+One of the main sources that I used to create this product was \href{http://stackoverflow.com}{Stackoverflow}. As I said it is an online forum for programmers and hacker like me, designed to solve problems. One thing about a forum is that it is very difficult to cite it. The number of times I used it can’t be counted. The way I used it is either I searched or posed a question on a problem, that I was having, and very soon I got an answer from very clever people how to get around the problem. I am not going to mention every single problem that I was having but I am going to pick one.
+
+\paragraph{}
+The first big problem that I had and solved with Stackoverflow was reading the mjpeg stream from the webcam in OpenCV. To quickly explain the context:
+
+\begin{itemize}
+    \item \textbf{Mjpeg stream} - a stream of images in the mjpeg format that used to stream over the
+    \item \textbf{OpenCV} - an open source computer library used to manipulate and process images.
+\end{itemize}
+
+\paragraph{}
+The program mjpeg streamer is streaming the images on particular address. In the case of Raspberry Pi (local-host) it is:
+\\
+\textit{http://127.0.0.1:8080/?action=stream}.
+
+\paragraph{}
+What this means is that it is streamed over the http protocol on the address \textit{127.0.0.1} which is just a reference to itself. The images are streamed on port \textit{8080}. The \textit{?action=stream} bit tells the mjpeg streamer to deliver a continuous stream of images.
+
+
+\paragraph{}
+The OpenCV library has a function cv2.VideoCapture() that can be used to open a stream and read from it. In the parentheses would go the address like this: 
+\\
+\begin{lstlisting}
+cv2.VideoCapture("http://127.0.0.1:8080/?action=stream")
+\end{lstlisting}
+
+\paragraph{}
+However the problem was OpenCV did not understand what is going on. It wasn’t returning any error messages (which is bad because it was impossible to tell what is wrong) and it didn’t work. After some time spent researching I turned to Stackoverflow. Surprisingly a simple “OpenCV with Mjpeg Streamer” search brought me to a discussion that did solve my problem.
+
+\paragraph{}
+It turns out that OpenCV expects an extension such as .jpeg or .mjpeg but it couldn't find it in the stream, so it was failing. Adding a dummy parameter, as suggested, to the source solved the problem:
+\\
+\begin{lstlisting}
+cv2.VideoCapture("http://127.0.0.1:8080/?action=stream&dummy=mjpg")
+\end{lstlisting}
+
+\section{Python Documentation}
+
+\paragraph{}
+Another problem I had to solve is to make the node server communicate with the python program. In the Python documentation I found a way to open and listen to a socket. As I will mention later node has the same capability. Therefore I decided to use this socket layer to make the two processes talk to each other.
+
+\paragraph{}
+One reason to use sockets in this design is the interchangeability. It doesn’t matter what program in what programming language is talking to the python controller as long as it is using sockets and sending the correct data. Also this approach allows multiple programs being connected and sending data concurrently.
+
+\paragraph{How to listen to a socket connection:}
+The way that this is done is first importing the socket module:
+
+\begin{lstlisting}
+import socket
+\end{lstlisting}
+Then the socket is initialized:
+\begin{lstlisting}
+serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+\end{lstlisting}
+After that the socket is bound to a port:
+\begin{lstlisting}
+serversocket.bind(("127.0.0.1", 8081))
+\end{lstlisting}
+After that the program will listen at the socket until someone connects and then it will wait for data that it will parse and carry out the operations:
+\begin{lstlisting}
+while 1:
+	(clientsocket, address) = serversocket.accept()
+	while 1:
+		data = clientsocket.recv(10) ## get 10 bytes of data
+		parseData(data) ## parse it
+\end{lstlisting}
+
+
+\section{Node.js API documentation }
+
+\paragraph{}
+Something similar must be done in the Node.js environment. I had to find a way to send the data (or more technically write the data) to the socket. Luckily there is a very good documentation for Node.js. After a short time looking through the documentation I found a section explaining Node.js socket interaction. From the information and examples provided I found that I will have to use the \textit{net} module which gives the programmer the ability to read and write to sockets. The code that I used is in the following code section.
+
+
+\lstset{language=Java}
+\begin{lstlisting}
+net = require('net')
+
+/*
+Extra Code
+*/
+
+var thisObj = this;
+this.pythonSock = net.connect({port: this.SOCKET_PORT},function() // initializes socket used to communicate with the python program
+{
+	thisObj.pythonSock.on("error", function(err)
+	{
+		writeLog("Failed to connect to socket at port: "+thisObj.SOCKET_PORT, "error");
+		writeLog(err.message, "error");
+	});
+	writeLog("Socket client established!","debug");
+});
+\end{lstlisting}
+
+\paragraph{}
+This information was very helpful because like vocabulary in a science test, it is not something I can invent on the fly. Problems such as manipulating data, inventing algorithm and calculating values are not a big problem to invent but low level libraries and manuals on how to use them are essential to be documented. One can’t know how someone called a function. Is is send or perhaps write? And what parameter does it accept? Is it the address first and then the message and in what form does each have to be?  This is why good documentation is essential for building any complex program. It would be possible to write all the libraries by myself but why reinvent the wheel? 
+
+\section{All About Circuits}
+
+\paragraph{}
+When building a robot or any machine involved with electronics and circuits it is good to understand how and why they work. Are the motors not turning? Make sure they get enough voltage. Can I connect this to the PI? Make sure the wires are wired up in the correct locations. Is the current too high? Add a resistor. Without a little knowledge about how circuits work it would be very difficult, if not impossible to troubleshoot and solve common problems such as those mentioned above.
+
+\paragraph{}
+With digital components and the Raspberry Pi in particular it is important to not get the wires mixed up. It is good to know how to test what wire is safe to connect to the Pi and which can destroy it.
+
+\paragraph{}
+Despite having good knowledge about how the circuits work I still managed to burn up the Pi because I didn’t test a wire that was connected to the Pi. Because of a manufacturing fault in the motor controller it was sending a lot of current in the wrong direction which burned the Pi’s processor.
+
+\paragraph{}
+The book told me a very important concept and that is common ground. Because I am using two batteries that are connected electronically it is important to have them wired together through common ground. I think of this as a small creek connecting two lakes that makes sure if one lake sends water (electricity) to the other that the water can get back. This explanation is very simplified and actually not completely accurate but it serves its purpose.
+
+
+\chapter{Achieving the goal}
+
+
+\section{Specifications}
+
+\paragraph{}
+The specifications of the product are listed in the \hyperlink{specifications}{Specifications section}. To sum them up: The goal was creating a small Wi-Fi controlled robot with a webcam and a programming API and a Web interface, capable of automatic following.
+
+\paragraph{}
+First of all I have to say that I have met most of the specifications. I have created a robot that can be controlled over the local Wi-Fi network. I build it in a way that It creates a wireless local area network (\textit{WLAN}) to which devices can connect wirelessly and access the web interface. However it is possible for the robot to connect to the local \textit{WLAN} (School or home network). After that it is possible for any device in the network to connect to it. Additionally if I have \textit{root} access to the router (home only), I can port forward the required ports and after that it is possible to connect to and control the robot from any place on the planet with an internet connection.
+
+\section{Connection}
+\paragraph{}
+I have successfully tested all three methods (the final two only at home because school doesn’t let me do the configuration etc). My brother who lives in Grenoble has successfully driven the robot around my house.
+
+\section{Webcam}
+\paragraph{}
+This brings me to the second point: The streaming webcam. Whenever I tested the webcam, it was on short distance in the local network. The speed was very good (minimal lag) and frame rate very high. After putting the final product to test I have found a few limitations of the streaming. With the self hosted \textit{WLAN} the rates are best of all but only if the robot has more or less a direct line of sight to the device. When it goes behind a corner the signal gets very weak and sometimes drops out completely. This is not a big problem for sending the commands but for the video it is catastrophic. Sometimes the lag jumps to a few seconds or the image freezes completely. Streams over the internet have a very bad framerate as I have tested with my brother and the robot is almost useless when the location is updated about once a second. It is very difficult to navigate the robot with a camera (“blind”) when the information is delivered at very large intervals.
+
+\paragraph{}
+Also related to the camera, the view-angle of the webcam is very narrow. Therefore for both tracking and camera navigation it is difficult to use it as the robot has only a narrow angle of view. This could be solved by buying a camera with a wider lense or adding a diffusing lense in front of the camera. However I don’t think I will have the energy to tinker with it that much.
+
+\section{API}
+\paragraph{}
+I am very happy with the API that is in form of a python module. It includes all the basic functions such as driving in any direction at any speed, manipulating the light and turning on AI mode.
+
+\paragraph{}
+I am very happy with the Web interface which is interactive and works on most modern web browsers. There are some limitations with Chrome on iOS and Internet Explorer but other major platforms work. I am happy that it works very well on both touch screens and desktops which makes it very portable. I am considering adding the ability of using the accelerometers of the phones to control the robot but this is just a fun enhancement.
+
+\section{AI}
+
+\paragraph{}
+Finally I wanted to talk about the hardest part of making the robot and that was the AI. Tracking an object in a video is a very difficult task for a computer. Human brains have two distinct ways of analyzing information. Fast thinking and Slow thinking. Fast thinking gives us the ability to recognize objects, emotions, expressions, shapes, colours and much more. Brains are very good at pattern matching and let us tell very quickly whether it is a person or a car we are watching hence Fast thinking.
+
+\paragraph{}
+Slow thinking on the other hand happens when we try to solve logical or mathematical problems. Take $78*28$. Our brain can immediately tell that this is an arithmetic operation that multiplies the number \textit{78}  and \textit{28}. However it is slow thinking that gives us the ability to solve it. Except you have a awesome and very talented Slow thinking brain, it would take you a longer time to get the answer. Hence it is called Slow thinking.
+
+\paragraph{}
+Computers are the exact opposite. If we give a computer a very complex mathematical expression, the computer will spit the answer in a matter of nanoseconds. But finding a face in a picture is for a computer like doing a year or extra math homework for us. There are trick how to increase the speed which I will not go deep into but object tracking is very difficult on computers. Luckily there are technologies today that simplify the process such as OpenCV. However still there is a lot of work to be done.
+
+\paragraph{}
+The robot uses two different tracking methods. It can either track a specific colour which is faster or track a face. The second method is slower but more accurate. In computing it is always the dilemma of finding a balance between the speed and accuracy. 
+
+\paragraph{}
+Because the tracking is not perfect I am not 100\% happy with how it turned out but considering the technological and computational limitations I am faced with I must say that it turned out very well.
+
+
+
+\chapter{Reflection on learning}
+
+\section{Reflection}
+
+\paragraph{}
+This project was a very good exercise in many areas of science, computers and mathematics. During the process I got familiar with many new network technologies such as servers and packets. The project introduced me to the basics of computer vision which taught me a lot about how computers see and why it is so difficult to make computers see. I have been introduced to the main basics of electronic circuits and design.
+
+\paragraph{}
+The main concept that I have dramatically developed is new coding style and an incredible amount of topics related to computer programming.
+
+\paragraph{}
+Besides the actual programming, I have developed the skills of reading and using documentations. To a beginner reading  the\textit{"sometimes hard to read"} descriptions of how things work might present a challenge. Being good at quickly finding the needle in the haystack is an important skill that saves time and effort in building any program more complex than printing out \textit{“Hello World!”}.
+
+\paragraph{}
+It was very interesting to learn how computers see. It might seem like a very simple concept. However when you imagine how something that can add numbers and do simple decisions can see something, you realize it is very complex. I have read many articles, books and watched hours of videos on CV (computer vision) and spend days of playing with the amazing OpenCV library testing different methods of analyzing the image. I always was amazed by robots in movies that could recognize faces and track people. It makes me feel very special when I know what is really going on in the background.
+
+
+\chapter{Appendices}
+
+\section{Sources}
+
+\href{https://www.linuxforums.org/}{Linux Forums}\\
+\href{http://serverfault.com/}{ServerFault}\\
+\href{http://opencv.org/}{OpenCV}\\
+\href{http://www.raspberrypi.org/forum/}{Raspberry Pi Forum}\\
+\href{http://sourceforge.net/p/mjpg-streamer/wiki/Home/}{MJPG-streamer Wiki}\\
+\href{https://github.com/}{GitHub - General}\\
+\href{http://socket.io/}{Socket.io}\\
+\href{https://github.com/learnboost/socket.io}{Socket.io - GitHub}\\
+\href{http://www.w3schools.com/}{W3Schools}\\
+
+
+\end{document}
