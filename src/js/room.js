@@ -112,7 +112,6 @@ function equalArray(array1, array2) {
       var index = self.keys.indexOf(e.keyCode);
       self.handleUp(index);
     });
-    console.log(this.is_touch_device)
 
     /* registers events for a given element
 
@@ -313,7 +312,109 @@ function equalArray(array1, array2) {
       stream.setAttribute("src", "/static/images/offline.jpg");
     });
     stream.setAttribute("src", streamPath);
+
+
+    // Use device orientation to steer the robot
+    this.orientation = {
+      calibrated: {
+        alpha: 0,
+        beta: 0,
+        gamma: 0
+      },
+      current: {
+        alpha: 0,
+        beta: 0,
+        gamma: 0
+      },
+      useOrientation: false
+    };
+    if (window.DeviceOrientationEvent) {
+      function addButton (title, content, className) {
+        $(".sideBar > span").last().after("<div class='component-btn " + className + "'>" + content + "</div><span>" + title + "</span>");
+      }
+
+      addButton("Calibrate", "Go", "calibration");
+      addButton("Use orientation", "Off", "orientation-switch")
+
+      $(".orientation-switch").click(function () {
+        $(this).toggleClass("switch-on");
+        if ($(this).hasClass("switch-on")) {
+          $(this).html("On");
+          self.orientation.useOrientation = true;
+        } else {
+          $(this).html("Off");
+          self.orientation.useOrientation = false;
+        }
+      });
+
+      $(".calibration").click(function () {
+        var $this = $(this)
+        $this.css("background", "white");
+
+        self.calibrateOrientation(self.current.alpha, self.current.beta, self.current.gamma)
+
+        setTimeout(function () {
+          $this.css("background", "");
+        }, 100);
+
+      });
+
+      var lastTimeStamp = 0;
+      window.addEventListener("deviceorientation", function (e) {
+        if(e.timeStamp - lastTimeStamp > 500) { // execute every 500 milliseconds
+          self.updateOrientation(e.alpha, e.beta, e.gamma);
+        }
+      }, true);
+    }
+
   }
+
+  /**
+   * Calculates the direction and speed form the orientation values
+   * @param {number} beta The beta angle of the device
+   * @param {number} gamma  The gamma angle of the device
+   * @return {Object{direction:number, speed:number}} The direction and speed calculated from the orientation angel.
+  */
+  KeyEventHandler.prototype.calclulateDrectionValues = function(beta, gamma) {
+    // Compensate for the calibrated tilt
+    var resultBeta = beta - this.orientation.calibrated.beta;
+    var resultGamma = gamma - this.orientation.calibrated.gamma;
+
+
+
+  };
+
+
+  /**
+   * Update the current value of the device, send update to server if requested
+   * @param {number} alpha The alpha angle of the device
+   * @param {number} beta The beta angle of the device
+   * @param {number} gamma The gamma angle of the device
+  */
+  KeyEventHandler.prototype.updateOrientation = function(alpha, beta, gamma) {
+    this.orientation.current = {
+      alpha: alpha,
+      beta: beta,
+      gamma: gamma
+    };
+    if (this.orientation.useOrientation) {
+      var data = this.calclulateDrectionValues(beta, gamma);
+      this.robot.updateOrientation(data.direction, data.speed)
+    }
+
+  };
+  /**
+   * Calibrates the orientation of the app to new value
+   * @param {number} alpha The alpha angle of the device
+   * @param {number} beta The beta angle of the device
+   * @param {number} gamma The gamma angle of the device
+  */
+  KeyEventHandler.prototype.calibrateOrientation = function(alpha, beta, gamma) {
+    this.calibrated.alpha = alpha;
+    this.calibrated.beta = beta;
+    this.calibrated.gamma = gamma;
+  };
+
 
   /**
    * Presses down the keys with the specified index and triggers and update
@@ -598,6 +699,10 @@ function equalArray(array1, array2) {
   */
   Robot.prototype.stopMissionRecording = function() {
     this.recordings[this.recordings.length - 1].stopLastRecord();
+
+  };
+
+  Robot.prototype.updateOrientation = function(beta, gamma) {
 
   };
 
