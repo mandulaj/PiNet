@@ -48,7 +48,7 @@ require("./lib/socketio.js")(socket, db);
 
 // Setup robot
 var Robot = PiNet(socket, db, {
-   port: "robot.sock"
+  port: "robot.sock"
 });
 
 process.title = 'PiNet.js';
@@ -75,12 +75,12 @@ module.exports = app;
 
 // App clean-up
 function exitHandler(options, err) {
-  if (options.exit) console.log("\nShutting down...")
+  if (options.exit) console.log("\nShutting down...");
   if (options.cleanup) {
     // TODO: add any clean up heartbeat
     database.close(function(err) {
       if (err) {
-        console.error("Error: ", err)
+        console.error("Error: ", err);
         process.exit(1);
       } else {
         console.log("Success Closing DB");
@@ -96,8 +96,7 @@ process.on('SIGINT', exitHandler.bind(null, {
   exit: true,
   cleanup: true
 }));
-process.on('uncaughtException', exitHandler.bind(null, {
-}));
-process.on("exit", function(code){
-  console.log("Exit Status:", code)
-})
+process.on('uncaughtException', exitHandler.bind(null, {}));
+process.on("exit", function(code) {
+  console.log("Exit Status:", code);
+});

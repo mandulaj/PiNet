@@ -12,9 +12,9 @@ var merge_options = require("./lib/configUtil.js").merge_options;
 var defaultOpts = {
   dirname: __dirname,
   favicon: true
-}
+};
 
-module.exports = function(app, config, opts){
+module.exports = function(app, config, opts) {
   opts = merge_options(opts, defaultOpts);
 
   // View engine setup
@@ -28,7 +28,7 @@ module.exports = function(app, config, opts){
     maxAge: '1d'
   }));
   // Favicon
-  if(opts.favicon) {
+  if (opts.favicon) {
     app.use(favicon(opts.dirname + '/public/favicon.ico'));
   }
 
@@ -46,5 +46,4 @@ module.exports = function(app, config, opts){
     secret: config.secrets.cookie,
   }));
 
-}
-
+};

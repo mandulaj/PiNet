@@ -15,7 +15,7 @@ var db = new DB(database);
 // Setup database
 require("../config/db.js")(database, {
   clearSockets: false
-})
+});
 
 
 prompt.start();

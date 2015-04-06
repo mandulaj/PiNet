@@ -78,3 +78,4 @@
   window.loginHandler = new exportedEvents();
 
 })($, sessionStorage, window)
+

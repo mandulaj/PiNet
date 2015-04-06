@@ -1,5 +1,6 @@
 // JavaScript Document
 
+
 (function ($, window, io) {
   /* Object for handling events and passing them to the robot
 
@@ -282,12 +283,21 @@
     this.update();
   };
 
+  /* Lifts all keys and triggers and update on the robot object
+   */
+  KeyEventHandler.prototype.allUp = function() {
+    for (var i = this.keyElements.length - 1; i >= 0; i--) {
+      this.keyStatus[i] = false;
+      var element = this.keyElements[i];
+      element.removeClass("pressedKey");
+    }
+    this.update();
+  };
 
   /* Updates the values in the Robot object
   */
   KeyEventHandler.prototype.update = function() {
     var self = this;
-
     // set cam to default if the default key is being pressed
     var cameraKeys;
     if (self.keyStatus[8]) {
@@ -295,7 +305,6 @@
     } else {
       cameraKeys = self.keyStatus.slice(4, 8);
     }
-
     // Update the robot object
     self.robot.updateUserInput({
       keys: self.keyStatus.slice(0, 4),
@@ -349,9 +358,7 @@
     this.socket.on("banned", function(){
       alert("You have been banned!");
     });
-
   }
-
 
   Robot.prototype.updateStatus = function(status) {
     var mem = status.mem;
@@ -612,7 +619,6 @@
   Move.prototype.setStop = function(delay) {
     this.delay = delay;
   };
-
 
   $(document).ready(function() {
     $(".cover").fadeOut(500); // TODO: use HTML5 transitions

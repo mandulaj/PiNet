@@ -35,7 +35,7 @@ var Robot = null; // instance of PiNet (being tested)
 var BadRobot = null; // instance of PiNet used for testing errors
 
 var socketServer = null; // socket.io testing server
-var badSocketServer = null // socket.io server for testing errors
+var badSocketServer = null; // socket.io server for testing errors
 var socketClient = null; // socket.io testing client
 
 
@@ -50,8 +50,8 @@ var db = new DB(database);
 
 
 // Set up the socket.io Server
-var app = http.createServer(function(req,res){
-  res.end("Test")
+var app = http.createServer(function(req, res) {
+  res.end("Test");
 });
 socketServer = SocketIoServer(app);
 badSocketServer = SocketIoServer();
@@ -59,27 +59,27 @@ badSocketServer = SocketIoServer();
 require("../config/socketio.js")(socketServer, db, config);
 
 
-before(function(done){
+before(function(done) {
   // set up test 'python' (Robot) server
-  robotServer = net.createServer(function(c){
+  robotServer = net.createServer(function(c) {
     // Robot has connected, get the connection object
     pythonSocket = c;
-    c.on("data", function(data){ // Get the data so that the buffer gets flushed
+    c.on("data", function(data) { // Get the data so that the buffer gets flushed
       //console.log(data.toString());
       return;
     });
 
     // set up the socketio testing client
-    app.listen(SOCKETIO_PORT, "localhost" , function(){
+    app.listen(SOCKETIO_PORT, "localhost", function() {
       // Make the address for the client socket
       var servrAddr = app.address();
-      var socketAddr = 'http://' + servrAddr.address + ':' + servrAddr.port + '/commands';// + SOCKETIO_PORT;
+      var socketAddr = 'http://' + servrAddr.address + ':' + servrAddr.port + '/commands'; // + SOCKETIO_PORT;
 
       // Make the socket with the generated token
       socketClient = SocketIoClient(socketAddr, {
         'query': 'token=' + TOKEN
       });
-      socketClient.on('connect', function(){
+      socketClient.on('connect', function() {
         // client has connected, we can get started
         done();
       });
@@ -87,25 +87,24 @@ before(function(done){
   });
 
   // Bind the robot server to the test socket
-  robotServer.listen(TEST_SOCKET, function(){
-  });
+  robotServer.listen(TEST_SOCKET, function() {});
   // Create the robot
   Robot = require('../lib/pinet.js')(socketServer, db, {
     port: TEST_SOCKET
   });
   BadRobot = require("../lib/pinet.js")(badSocketServer, db, {
     port: "doesNotExist"
-  })
-})
+  });
+});
 
 
-describe("PiNet", function () {
-  describe("#constructor", function(){
+describe("PiNet", function() {
+  describe("#constructor", function() {
 
-    it('should create an object', function(){
+    it('should create an object', function() {
       expect(Robot).to.be.an('object');
     });
-    it('should have all the methods', function(){
+    it('should have all the methods', function() {
       expect(Robot.update).to.be.a('function');
       expect(Robot.writeCommandsToSock).to.be.a('function');
       expect(Robot.writeMissionToSock).to.be.a('function');
@@ -114,159 +113,177 @@ describe("PiNet", function () {
       expect(Robot.defaultState).to.be.a('function');
     });
   });
-  describe('#update', function(){
-    it('should send an update to the server', function(done){
+  describe('#update', function() {
+    it('should send an update to the server', function(done) {
       // make the data random to make sure we are getting the actual data
-      var testSpeed = Math.floor(Math.random()*100);
+      var testSpeed = Math.floor(Math.random() * 100);
       Robot.componentStatus.speed = testSpeed;
 
       var start = Date.now();
       Robot.update();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
 
         if ((end - start) < NETWORKING_TIMEOUT) {
           var strData = data.toString();
           strData = strData.replace("&", "");
-          var json = JSON.parse(strData)
+          var json = JSON.parse(strData);
           expect(json.commands).to.be.an(Object);
           var comm = json.commands;
           expect(comm).to.only.have.keys(['light', 'laser', 'ai', 'keys', 'speed', 'camMove']);
           expect(comm.speed).to.be(testSpeed);
           done();
         } else {
-          done(new Error('Timeout ' + (end - start) + "ms"))
+          done(new Error('Timeout ' + (end - start) + "ms"));
         }
       });
     });
-    it('should send append an & to the message for chunk parsing', function(done){
+    it('should send append an & to the message for chunk parsing', function(done) {
       // make the data random to make sure we are getting the actual data
-      var testSpeed = Math.floor(Math.random()*100);
+      var testSpeed = Math.floor(Math.random() * 100);
       Robot.componentStatus.speed = testSpeed;
 
       var start = Date.now();
       Robot.update();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
 
         if ((end - start) < NETWORKING_TIMEOUT) {
           var strData = data.toString();
           expect(strData[strData.length - 1]).to.be("&");
           strData = strData.replace("&", "");
-          var json = JSON.parse(strData)
+          var json = JSON.parse(strData);
           expect(json.commands.speed).to.be(testSpeed);
           done();
         } else {
-          done(new Error('Timeout ' + (end - start) + "ms"))
+          done(new Error('Timeout ' + (end - start) + "ms"));
         }
       });
     });
-    it('should set message to the value of \'commands\'', function(done){
+    it('should set message to the value of \'commands\'', function(done) {
       // make the data random to make sure we are getting the actual data
-      var testSpeed = Math.floor(Math.random()*100);
+      var testSpeed = Math.floor(Math.random() * 100);
       Robot.componentStatus.speed = testSpeed;
 
       var start = Date.now();
       Robot.update();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
 
         if ((end - start) < NETWORKING_TIMEOUT) {
           var strData = data.toString();
           strData = strData.replace("&", "");
-          var json = JSON.parse(strData)
+          var json = JSON.parse(strData);
           expect(json.message).to.be("commands");
           expect(json.commands).to.be.an(Object);
           var comm = json.commands;
           expect(comm.speed).to.be(testSpeed);
           done();
         } else {
-          done(new Error('Timeout ' + (end - start) + "ms"))
+          done(new Error('Timeout ' + (end - start) + "ms"));
         }
       });
     });
   });
-  describe("#writeCommandsToSock", function(){
-    it('should send an update to the server', function(done){
+  describe("#writeCommandsToSock", function() {
+    it('should send an update to the server', function(done) {
       // make the data random to make sure we are getting the actual data
-      var testSpeed = Math.floor(Math.random()*100);
+      var testSpeed = Math.floor(Math.random() * 100);
       Robot.componentStatus.speed = testSpeed;
 
       var start = Date.now();
       Robot.writeCommandsToSock();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
 
         if ((end - start) < NETWORKING_TIMEOUT) {
           var strData = data.toString();
           strData = strData.replace("&", "");
-          var json = JSON.parse(strData)
+          var json = JSON.parse(strData);
           expect(json.commands).to.be.an(Object);
           var comm = json.commands;
           expect(comm).to.only.have.keys(['light', 'laser', 'ai', 'keys', 'speed', 'camMove']);
           expect(comm.speed).to.be(testSpeed);
           done();
         } else {
-          done(new Error('Timeout ' + (end - start) + "ms"))
+          done(new Error('Timeout ' + (end - start) + "ms"));
         }
       });
     });
-    it('should send append an & to the message for chunk parsing', function(done){
+    it('should send append an & to the message for chunk parsing', function(done) {
       // make the data random to make sure we are getting the actual data
-      var testSpeed = Math.floor(Math.random()*100);
+      var testSpeed = Math.floor(Math.random() * 100);
       Robot.componentStatus.speed = testSpeed;
 
       var start = Date.now();
       Robot.writeCommandsToSock();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
 
         if ((end - start) < NETWORKING_TIMEOUT) {
           var strData = data.toString();
           expect(strData[strData.length - 1]).to.be("&");
           strData = strData.replace("&", "");
-          var json = JSON.parse(strData)
+          var json = JSON.parse(strData);
           expect(json.commands.speed).to.be(testSpeed);
           done();
         } else {
-          done(new Error('Timeout ' + (end - start) + "ms"))
+          done(new Error('Timeout ' + (end - start) + "ms"));
         }
       });
     });
-    it('should set message to the value of \'commands\'', function(done){
+    it('should set message to the value of \'commands\'', function(done) {
       // make the data random to make sure we are getting the actual data
-      var testSpeed = Math.floor(Math.random()*100);
+      var testSpeed = Math.floor(Math.random() * 100);
       Robot.componentStatus.speed = testSpeed;
 
       var start = Date.now();
       Robot.writeCommandsToSock();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
 
         if ((end - start) < NETWORKING_TIMEOUT) {
           var strData = data.toString();
           strData = strData.replace("&", "");
-          var json = JSON.parse(strData)
+          var json = JSON.parse(strData);
           expect(json.message).to.be("commands");
           expect(json.commands).to.be.an(Object);
           var comm = json.commands;
           expect(comm.speed).to.be(testSpeed);
           done();
         } else {
-          done(new Error('Timeout ' + (end - start) + "ms"))
+          done(new Error('Timeout ' + (end - start) + "ms"));
         }
       });
     });
   });
-  describe("#writeMissionToSock", function(){
-    it("should send a mission to the server", function(done){
+  describe("#writeMissionToSock", function() {
+    it("should send a mission to the server", function(done) {
       var mission = {
-        moves:  [{"command":"F","delay":184},{"command":"STOP","delay":394},{"command":"F","delay":173},{"command":"STOP","delay":353},{"command":"B","delay":248},{"command":"STOP","delay":0}],
+        moves: [{
+          "command": "F",
+          "delay": 184
+        }, {
+          "command": "STOP",
+          "delay": 394
+        }, {
+          "command": "F",
+          "delay": 173
+        }, {
+          "command": "STOP",
+          "delay": 353
+        }, {
+          "command": "B",
+          "delay": 248
+        }, {
+          "command": "STOP",
+          "delay": 0
+        }],
         status: "start"
       };
       var start = Date.now();
       Robot.writeMissionToSock(mission);
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
         if ((end - start) < NETWORKING_TIMEOUT * 2) {
           var strData = data.toString();
@@ -280,14 +297,32 @@ describe("PiNet", function () {
         }
       });
     });
-    it("should append a & to help parsing", function(done){
+    it("should append a & to help parsing", function(done) {
       var mission = {
-        moves:  [{"command":"F","delay":456},{"command":"STOP","delay":123},{"command":"F","delay":234},{"command":"STOP","delay":123},{"command":"B","delay":567},{"command":"STOP","delay":0}],
+        moves: [{
+          "command": "F",
+          "delay": 456
+        }, {
+          "command": "STOP",
+          "delay": 123
+        }, {
+          "command": "F",
+          "delay": 234
+        }, {
+          "command": "STOP",
+          "delay": 123
+        }, {
+          "command": "B",
+          "delay": 567
+        }, {
+          "command": "STOP",
+          "delay": 0
+        }],
         status: "start"
       };
       var start = Date.now();
       Robot.writeMissionToSock(mission);
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
         if ((end - start) < NETWORKING_TIMEOUT * 2) {
           var strData = data.toString();
@@ -301,12 +336,11 @@ describe("PiNet", function () {
         }
       });
     });
-    it("should not include status or moves when not in the mission", function(done){
-      var mission = {
-      };
+    it("should not include status or moves when not in the mission", function(done) {
+      var mission = {};
       var start = Date.now();
       Robot.writeMissionToSock(mission);
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
         if ((end - start) < NETWORKING_TIMEOUT * 2) {
           var strData = data.toString();
@@ -320,12 +354,12 @@ describe("PiNet", function () {
       });
     });
   });
-  describe("#writeToRobot", function(){
-    it("should send given message to the robot", function(done){
+  describe("#writeToRobot", function() {
+    it("should send given message to the robot", function(done) {
       var message = "The random number is: " + Math.random();
       var start = Date.now();
       Robot.writeToRobot(message);
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
         if ((end - start) < NETWORKING_TIMEOUT * 2) {
           var strData = data.toString();
@@ -337,11 +371,11 @@ describe("PiNet", function () {
         }
       });
     });
-    it("should append an & to any message", function(done){
+    it("should append an & to any message", function(done) {
       var message = "The random number is: " + Math.random();
       var start = Date.now();
       Robot.writeToRobot(message);
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
         if ((end - start) < NETWORKING_TIMEOUT * 2) {
           var strData = data.toString();
@@ -356,11 +390,11 @@ describe("PiNet", function () {
       });
     });
   });
-  describe("#defaultState", function(){
-    it("should send the robot the default state", function(done){
+  describe("#defaultState", function() {
+    it("should send the robot the default state", function(done) {
       var start = Date.now();
       Robot.defaultState();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
         if ((end - start) < NETWORKING_TIMEOUT * 2) {
           var strData = data.toString();
@@ -372,9 +406,9 @@ describe("PiNet", function () {
           expect(json.commands.light).to.be(0);
           expect(json.commands.ai).to.be(0);
           expect(json.commands.laser).to.be(0);
-          expect(json.commands.keys).to.eql([0,0,0,0]);
+          expect(json.commands.keys).to.eql([0, 0, 0, 0]);
           expect(json.commands.speed).to.be(100);
-          expect(json.commands.camMove).to.eql([0,0,0,0]);
+          expect(json.commands.camMove).to.eql([0, 0, 0, 0]);
           done();
         } else {
           done(new Error('Timeout ' + (end - start) + "ms"));
@@ -382,11 +416,11 @@ describe("PiNet", function () {
       });
     });
   });
-  describe("#raiseAlert", function(){
-    it("should send the robot the default state", function(done){
+  describe("#raiseAlert", function() {
+    it("should send the robot the default state", function(done) {
       var start = Date.now();
       Robot.raiseAlert();
-      pythonSocket.once('data', function(data){
+      pythonSocket.once('data', function(data) {
         var end = Date.now();
         if ((end - start) < NETWORKING_TIMEOUT * 2) {
           var strData = data.toString();
@@ -398,9 +432,9 @@ describe("PiNet", function () {
           expect(json.commands.light).to.be(0);
           expect(json.commands.ai).to.be(0);
           expect(json.commands.laser).to.be(0);
-          expect(json.commands.keys).to.eql([0,0,0,0]);
+          expect(json.commands.keys).to.eql([0, 0, 0, 0]);
           expect(json.commands.speed).to.be(100);
-          expect(json.commands.camMove).to.eql([0,0,0,0]);
+          expect(json.commands.camMove).to.eql([0, 0, 0, 0]);
           done();
         } else {
           done(new Error('Timeout ' + (end - start) + "ms"));
@@ -411,10 +445,9 @@ describe("PiNet", function () {
 });
 
 
-after(function(){
+after(function() {
   socketClient.disconnect();
   socketServer.close();
   robotServer.close();
   pythonSocket.destroy();
-  delete Robot
-})
+});

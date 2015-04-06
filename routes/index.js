@@ -4,11 +4,13 @@ var config = require('../config/config.json');
 var isAuthenticated = require("./lib/routerUtil.js").isAuthenticated;
 
 
-var indexRouter = express.Router();
-var userRouter = require("./users.js");
 
 /* GET home page. */
 module.exports = function(app, passport, db) {
+
+  var indexRouter = express.Router();
+  var userRouter = require("./users.js")();
+  var apiRouter = require("./api.js")(db);
 
   // Index
   indexRouter.get('/', function(req, res, next) {
@@ -73,6 +75,7 @@ module.exports = function(app, passport, db) {
   app.use(checkIp);
 
   // Register the routers
+  app.use('/api', apiRouter);
   app.use('/user', userRouter);
   app.use('/', indexRouter);
 
