@@ -44,13 +44,13 @@ html
           form(method='post', role="form")
             .form-group
               label.control-label(for='oldPassword') Old Password
-              input#oldPassword.form-control(type='password', name='oldPassword', onkeypress='nameEnter(event)' placeholder='Enter Old Password')
+              input#oldPassword.form-control(type='password', name='oldPassword', placeholder='Enter Old Password')
             .form-group
               label.control-label(for='newPassword') New Password
-              input#newPassword.form-control(type='password', name='newPassword', onkeypress='submitEnter(event)', placeholder='Enter New Password')
+              input#newPassword.form-control(type='password', name='newPassword', placeholder='Enter New Password')
             .form-group
               label.control-label(for='newPasswordAgain') Retype new Password again
-              input#newPasswordAgain.form-control(type='password', name='newPasswordAgain', onkeypress='submitEnter(event)', placeholder='Enter New Password again')
+              input#newPasswordAgain.form-control(type='password', name='newPasswordAgain', placeholder='Enter New Password again')
 
             button#submitbutton(class='btn btn-default') Confirm
           #Error

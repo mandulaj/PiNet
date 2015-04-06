@@ -1,5 +1,5 @@
 
-(function(){
+(function (io, $, window){
   function Admin(){
     var self = this;
     this.socket = io("/admin", {
@@ -104,4 +104,4 @@
   $(document).ready(function(){
     window.admin = new Admin();
   });
-})()
+})(io, $, window)
