@@ -1,5 +1,9 @@
 
 (function (io, $, window){
+  /**
+   * Admin app object handling all io and events
+   * @constructor
+  */
   function Admin(){
     var self = this;
     this.socket = io("/admin", {
@@ -80,6 +84,11 @@
     //
     // });
   }
+
+  /**
+   * Kicks the user with a given index
+   * @param{number} i Index of the user in the sockets array
+  */
   Admin.prototype.kick = function(i) {
     this.socket.emit('kick', {
       id: this.sockets[i].id
@@ -87,6 +96,10 @@
     this.socket.emit("requrestList");
   };
 
+  /**
+   * Bans the user with a given index
+   * @param{number} i Index of the user in the sockets array
+  */
   Admin.prototype.ban = function(i) {
     this.socket.emit('banUser', {
       id: this.users[i].id
@@ -94,6 +107,10 @@
     this.socket.emit("requrestList");
   };
 
+  /**
+   * Unban a user with a give index
+   * @param{number} i Index of the user in the sockets array
+  */
   Admin.prototype.unban = function(i) {
     this.socket.emit('unbanUser', {
       id: this.users[i].id
@@ -101,6 +118,7 @@
     this.socket.emit("requrestList");
   };
 
+  // Initialization of the admin interface
   $(document).ready(function(){
     window.admin = new Admin();
   });

@@ -4,12 +4,16 @@
   function exportedEvents() {
     // used to export events
   }
-
+  // Initialization
   $(document).ready(function() {
     var errorbox = $("#Error");
     $("#submitbutton").click(submitValues);
   });
 
+  /**
+   * Handles enter key in the name fields
+   * @param{Event} e Key-press event triggering this function
+  */
   exportedEvents.prototype.nameEnter = function(e) {
     if (e.keyCode === 13) {
       e.preventDefault();
@@ -20,6 +24,10 @@
     }
   };
 
+  /**
+   * Handles the enter key in the final field
+   * @param{Event} e Key-press event triggering this function
+  */
   exportedEvents.prototype.submitEnter = function(e) {
     if (e.keyCode == 13) {
       e.preventDefault();
@@ -27,6 +35,10 @@
     }
   }
 
+  /**
+   * Checks the values and sends them to the server
+   * @param{Event} event Event triggering this function
+  */
   var submitValues = function(event) {
     if (event) event.preventDefault();
     var errorMsg = "";
@@ -75,6 +87,7 @@
     }
   };
 
+  // exporting the public login handler
   window.loginHandler = new exportedEvents();
 
 })($, sessionStorage, window)

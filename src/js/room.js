@@ -1,13 +1,82 @@
-// JavaScript Document
+/**
+ * @fileoverview Main controller room JavaScript file handling all events and communication with the robot.
+ * @author Jakub Mandula <jakub.aludnam@gmail.com>
+*/
 
 (function ($, window, io) {
-  /* Object for handling events and passing them to the robot
+  // Helper functions
 
-    @param {Robot} - robot object to which the events should be passed
+/**
+ * Generates a bitmap of the keylist
+ * @private
+ * @param{Array.<boolean>} keylist Array of boolean values to be converted to a bitmap
+ * @return{number} Bitmap of the keylist
+*/
+var generateNumber = function(keylist) {
+  var res = 0;
+  var bit = 1;
+  for (var i in keylist) {
+    if (keylist[i]) {
+      res |= bit;
+    }
+    bit *= 2;
+  }
+  return res;
+}
+
+// Prevents opposite keys being pressed at the same time
+/**
+ * Checks the keys pressed and fixes impossible situations
+ * @private
+ * @param{Array.<boolean>} keys Array of keys to be sanitized
+ * @return{Array.<boolean>} a sanitized version of the input
+*/
+function sanitizeKeys(keys) {
+  var result = keys;
+  // Case both left and right arrows are pressed
+  if (keys[1] && keys[3]) {
+    result[1] = false;
+    result[3] = false;
+  }
+
+  // Case both up and down arrows are pressed
+  if (keys[0]&& keys[2]) {
+    result[0] = false;
+    result[2] = false;
+  }
+  return result;
+}
+
+/**
+ * Compares two arrays
+ * @private
+ * @param{Array} array1 First array.
+ * @param{Array} array2 Second array to be compared to the first.
+ * @return{boolean} True if both arrays are equal, false otherwise.
+*/
+function equalArray(array1, array2) {
+  if (array1.length !== array2.length) {
+    return false;
+  }
+  for (var i = 0; i < array1.length; i++) {
+    if (array1[i] !== array2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+
+  /**
+   * Object for handling events and passing them to the robot
+   * @param {Robot} robot Object to which the events should be passed
+   * @constructor
   */
   function KeyEventHandler(robot) {
     var self = this;
     this.robot = robot;
+
     this.is_touch_device = 'ontouchstart' in window; // are we using a touch device
     this.dragging = false; // used to check if we are dragging the speed slider
     this.keys = [38, 37, 40, 39, 87, 65, 83, 68, 88]; // all key codes we are using
@@ -246,8 +315,9 @@
     stream.setAttribute("src", streamPath);
   }
 
-  /* Presses down the keys with the specified index and triggers and update
-    @param {Number} index - index of the key in the keyStatus array
+  /**
+   * Presses down the keys with the specified index and triggers and update
+   * @param {number} index Index of the key in the keyStatus array
   */
   KeyEventHandler.prototype.handleDown = function(index) {
     // only trigger if the index is valid and the key is not already pressed
@@ -258,8 +328,9 @@
     }
   };
 
-  /* Lifts the keys with the specified index and triggers and update
-    @param {Number} index - index of the key in the keyStatus array
+  /**
+   * Lifts the keys with the specified index and triggers and update
+   * @param {number} index Index of the key in the keyStatus array
   */
   KeyEventHandler.prototype.handleUp = function(index) {
     // only trigger if the index is valid and the key is already pressed
@@ -271,7 +342,8 @@
   };
 
 
-  /* Lifts all keys and triggers and update on the robot object
+  /**
+   * Lifts all keys and triggers and update on the robot object
   */
   KeyEventHandler.prototype.allUp = function() {
     for (var i = this.keyElements.length - 1; i >= 0; i--) {
@@ -283,7 +355,8 @@
   };
 
 
-  /* Updates the values in the Robot object
+  /**
+   * Updates the values in the Robot object
   */
   KeyEventHandler.prototype.update = function() {
     var self = this;
@@ -307,7 +380,9 @@
     });
   };
 
-  /* Object used to send and receive information from the robot
+  /**
+   * Object used to send and receive information from the robot
+   * @constructor
   */
   function Robot() {
     var self = this;
@@ -352,12 +427,15 @@
 
   }
 
-
+  /**
+   * Update the status widget with the values form the server
+   * @param{Object} status Status object includes the data about the robot computer
+  */
   Robot.prototype.updateStatus = function(status) {
-    var mem = status.mem;
-    var cpu = status.cpu;
-    var lav = cpu.avload[0] * 100;
-    var freeRam = (mem.free / mem.total) * 100;
+    var mem = status.mem || "No Data";
+    var cpu = status.cpu || "No Data";
+    var lav = cpu.avload[0] * 100 || "No Data";
+    var freeRam = (mem.free / mem.total) * 100 || "No Data";
     var suffix = "";
     var memory;
 
@@ -377,6 +455,10 @@
     $(".piStats>#stat_totalRam").html(memory.toFixed(2) + suffix);
   };
 
+  /**
+   * Updates the local user input status and trigger a global update
+   * @param{object} data Data object containing the inputs provided by the user
+  */
   Robot.prototype.updateUserInput = function(data) {
     this.componentStatus.keys = data.keys;
     this.componentStatus.cam = data.cam;
@@ -388,58 +470,19 @@
     this.update();
   };
 
+  /**
+   * Global update pushing local data to the robot server
+  */
   Robot.prototype.update = function() {
     var self = this;
-    // Creates a shorter version of the keylist
-    function generateNumber(keylist) {
-      var res = 0;
-      var bit = 1;
-      for (var i in keylist) {
-        if (keylist[i]) {
-          res |= bit;
-        }
-        bit *= 2;
-      }
-      return res;
-    }
-
-    // Prevents opposite keys being pressed at the same time
-    function sanatizeKeys(keys) {
-      var result = keys;
-      // Case both left and right arrows are pressed
-      if (keys[1] === true && keys[3] === true) {
-        result[1] = false;
-        result[3] = false;
-      }
-
-      // Case both up and down arrows are pressed
-      if (keys[0] === true && keys[2] === true) {
-        result[0] = false;
-        result[2] = false;
-      }
-      return result;
-    }
-
-    function equalArray(array1, array2) {
-      if (array1.length !== array2.length) {
-        return false;
-      }
-      for (var i = 0; i < array1.length; i++) {
-        if (array1[i] !== array2[i]) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    // sanatize robot movement keys
-    var keyMoves = sanatizeKeys(this.componentStatus.keys);
+    // sanitize robot movement keys
+    var keyMoves = sanitizeKeys(this.componentStatus.keys);
 
     // TODO: implement this on the serverside
     // keyMoves = generateNumber(keyMoves);
 
-    // sanatize camera movement keys
-    var camMoves = sanatizeKeys(this.componentStatus.cam);
+    // sanitize camera movement keys
+    var camMoves = sanitizeKeys(this.componentStatus.cam);
 
     if (camMoves[0] === -1) {
       camMoves = "default";
@@ -497,6 +540,9 @@
 
   };
 
+  /**
+   * Starts a new recording and pushes a new recording to the recordings array
+  */
   Robot.prototype.addNewRecording = function() {
     if (!this.recStatus) {
       this.recStatus = true;
@@ -508,14 +554,25 @@
     }
   };
 
+  /**
+   * Stops any recording
+  */
   Robot.prototype.stopRecording = function() {
+    // FIXME: possible duplicate of stopMissionRecording
     this.recStatus = false;
   };
 
+  /**
+   * Gets the current recording status
+   * @return{boolean} True if recording is in progress, false otherwise
+  */
   Robot.prototype.getRecordingStatus = function() {
     return this.recStatus;
   };
 
+  /**
+   * Renders a list of all the saved recordings
+  */
   Robot.prototype.drawRecordings = function() {
     if (this.recordings.length === 0) {
       $("#rec_window_content").html("No recordings Yet!");
@@ -527,19 +584,30 @@
     }
   };
 
+  /**
+   * Aborts all mission currently in progress
+  */
   Robot.prototype.stopAllMissions = function() {
     for (var i = 0; i < this.recordings.length; i++) {
       this.recordings[i].hardStop();
     }
   };
 
+  /**
+   * Stops the current recording
+  */
   Robot.prototype.stopMissionRecording = function() {
     this.recordings[this.recordings.length - 1].stopLastRecord();
 
   };
 
 
-  /* Recording object ***/
+  /**
+   * Object representing a mission recording
+   * @constructor
+   * @param{string} name Name of the mission(usually a date)
+   * @param{Socket} socket Socket object used to send commands regarding the mission
+  */
   function Recording(name, socket) {
     this.name = name;
     this.socket = socket;
@@ -548,32 +616,38 @@
     this.status = "stop";
     this.time = 0;
   }
-
-  Recording.prototype.add = function(moves) {
+  /**
+   * Adds a new move to the recording
+   * @param{Move} move A Move object representing a new move
+  */
+  Recording.prototype.add = function(move) {
     var date;
-    if (this.moves.length !== 0) {
+    if (this.move.length !== 0) {
       date = new Date();
       var timeNow = date.getTime();
       var timeDiff = timeNow - this.time;
       this.time = timeNow;
-      this.moves[this.moves.length - 1].setTimeDelay(timeDiff);
+      this.move[this.move.length - 1].setTimeDelay(timeDiff);
     } else {
       date = new Date();
       this.time = date.getTime();
     }
-    this.moves.push(moves);
+    this.moves.push(move);
 
   };
-
-  Recording.prototype.start = function(obj) {
+  /**
+   * Start the current recording
+   * @param{element} element The button element used to trigger the event
+  */
+  Recording.prototype.start = function(element) {
     var self = this;
-    this.startButton = obj;
+    this.startButton = element;
     if (this.status == "start") {
       this.socket.emit("mission", {
         status: "stop"
       });
       this.status = "stop";
-      $(obj).css("background-image", "url(/static/images/videoplay.png)");
+      $(element).css("background-image", "url(/static/images/videoplay.png)");
     } else if (this.status == "stop") {
       this.status = "start";
       this.socket.emit("mission", {
@@ -581,10 +655,12 @@
         moves: this.moves
       });
       console.log(window.JSON.stringify(this.moves));
-      $(obj).css("background-image", "url(/static/images/videostop.png)");
+      $(element).css("background-image", "url(/static/images/videostop.png)");
     }
   };
-
+  /**
+   * Aborts the Mission
+  */
   Recording.prototype.hardStop = function() {
     this.status = "stop";
     this.socket.emit("mission", {
@@ -597,23 +673,28 @@
     var timeNow = date.getTime() / 1000;
     var timeDiff = timeNow - this.time;
 
-    this.moves[this.moves.length].setStop(timeDiff);
+    this.moves[this.moves.length].setTimeDelay(timeDiff);
   };
 
+  /**
+   * Object representing a move
+   * @constructor
+   * @param{string} command Command string identifying the move
+  */
   function Move(command) {
     this.command = command;
     this.delay = 0;
   }
 
+  /**
+   * Sets the time delay for the move
+   * @param{number} delay Time of pause in milliseconds
+  */
   Move.prototype.setTimeDelay = function(delay) {
     this.delay = delay;
   };
 
-  Move.prototype.setStop = function(delay) {
-    this.delay = delay;
-  };
-
-
+  // Initialization
   $(document).ready(function() {
     $(".cover").fadeOut(500); // TODO: use HTML5 transitions
     window.PiNet = new Robot();
