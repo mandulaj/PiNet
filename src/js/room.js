@@ -1,7 +1,7 @@
 // JavaScript Document
 
 
-(function ($, window, io) {
+(function($, window, io) {
   /* Object for handling events and passing them to the robot
 
     @param {Robot} - robot object to which the events should be passed
@@ -36,7 +36,7 @@
     $(document).keydown(function(e) {
       var index = self.keys.indexOf(e.keyCode);
       if (index != -1) { // prevents scrolling when arrow keys are pressed
-        e.preventDefault()
+        e.preventDefault();
       }
       self.handleDown(index);
     });
@@ -44,7 +44,7 @@
       var index = self.keys.indexOf(e.keyCode);
       self.handleUp(index);
     });
-    console.log(this.is_touch_device)
+    console.log(this.is_touch_device);
 
     /* registers events for a given element
 
@@ -273,7 +273,7 @@
 
 
   /* Lifts all keys and triggers and update on the robot object
-  */
+   */
   KeyEventHandler.prototype.allUp = function() {
     for (var i = this.keyElements.length - 1; i >= 0; i--) {
       this.keyStatus[i] = false;
@@ -295,7 +295,7 @@
   };
 
   /* Updates the values in the Robot object
-  */
+   */
   KeyEventHandler.prototype.update = function() {
     var self = this;
     // set cam to default if the default key is being pressed
@@ -317,7 +317,7 @@
   };
 
   /* Object used to send and receive information from the robot
-  */
+   */
   function Robot() {
     var self = this;
     this.keyEventHandler = new KeyEventHandler(this);
@@ -351,11 +351,11 @@
       self.updateStatus(data.load);
     });
 
-    this.socket.on("kicked", function(){
+    this.socket.on("kicked", function() {
       alert("You have been kicked!");
     });
 
-    this.socket.on("banned", function(){
+    this.socket.on("banned", function() {
       alert("You have been banned!");
     });
   }
@@ -625,4 +625,4 @@
     window.PiNet = new Robot();
   });
 
-})($, window, io)
+})($, window, io);

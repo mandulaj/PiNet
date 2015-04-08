@@ -1,6 +1,6 @@
 // JavaScript Document
 
-(function ($, sessionStorage, window) {
+(function($, sessionStorage, window) {
   function exportedEvents() {
     // used to export events
   }
@@ -25,7 +25,7 @@
       e.preventDefault();
       submitValues(e);
     }
-  }
+  };
 
   var submitValues = function(event) {
     if (event) event.preventDefault();
@@ -77,5 +77,4 @@
 
   window.loginHandler = new exportedEvents();
 
-})($, sessionStorage, window)
-
+})($, sessionStorage, window);

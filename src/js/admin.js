@@ -1,5 +1,4 @@
-
-(function (io, $, window){
+(function(io, $, window) {
   function KeyEventHandler(admin) {
     var self = this;
     this.admin = admin;
@@ -241,4 +240,4 @@
     });
   });
 
-})(io, $, window)
+})(io, $, window);
