@@ -1,4 +1,4 @@
-(function() {
+(function (io, $, window) {
   function KeyEventHandler(admin) {
     var self = this;
     this.admin = admin;
@@ -44,7 +44,6 @@
       }*/
 
       element.parent().children("span").removeClass("hidden glyphicon-ok glyphicon-remove");
-
       if (!passwordPass) {
         element.parent().children("span").addClass("glyphicon-remove");
         element.parent().addClass("has-error");
@@ -122,7 +121,12 @@
     return true;
   };
 
-  function Admin() {
+
+  /**
+   * Admin app object handling all io and events
+   * @constructor
+  */
+  function Admin(){
     var self = this;
     this.eventHandler = new KeyEventHandler(this);
 
@@ -175,7 +179,7 @@
         tableb.append(text);
       }
 
-      for (var j = 0; i < users.length; j++) {
+      for (var j = 0; j < users.length; j++) {
         text = "";
         addClass = "";
         banned = users[j].banned == 1;
@@ -205,6 +209,11 @@
     //
     // });
   }
+
+  /**
+   * Kicks the user with a given index
+   * @param{number} i Index of the user in the sockets array
+  */
   Admin.prototype.kick = function(i) {
     this.socket.emit('kick', {
       id: this.sockets[i].id
@@ -212,6 +221,10 @@
     this.socket.emit("requrestList");
   };
 
+  /**
+   * Bans the user with a given index
+   * @param{number} i Index of the user in the sockets array
+  */
   Admin.prototype.ban = function(i) {
     this.socket.emit('banUser', {
       id: this.users[i].id
@@ -219,6 +232,10 @@
     this.socket.emit("requrestList");
   };
 
+  /**
+   * Unban a user with a give index
+   * @param{number} i Index of the user in the sockets array
+  */
   Admin.prototype.unban = function(i) {
     this.socket.emit('unbanUser', {
       id: this.users[i].id
@@ -226,11 +243,13 @@
     this.socket.emit("requrestList");
   };
 
+
   Admin.prototype.requrestList = function() {
     this.socket.emit("requrestList");
   };
 
-  $(document).ready(function() {
+  // Initialization of the admin interface
+  $(document).ready(function(){
     window.admin = new Admin();
     $("#refresh").click(function() {
       $("#refresh span").addClass("rotate");
@@ -240,4 +259,5 @@
       }, 1000);
     });
   });
-})();
+
+})(io, $, window);
