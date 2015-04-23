@@ -1,14 +1,18 @@
 // JavaScript Document
 
-(function($, window) {
+(function ($, window) {
+  // Initialization
+  $(document).ready(function(){
+    $("#submitbutton").click(function(e){
 
-  $(document).ready(function() {
-    $("#submitbutton").click(function(e) {
       e.preventDefault();
       submitForm();
     });
   });
 
+  /**
+   * Checks the values and sends them the server
+  */
   function submitForm() {
     var errors = getErrors();
 
@@ -47,6 +51,12 @@
     });
   }
 
+  // TODO: implement cb function
+  /**
+   * Checks the old password with the server
+   * @param{string} password The old password being checked with the server
+   * @param{function(boolean)} cb callback function with the status of the password (True if correct)
+  */
   function checkOldPassword(password) {
     $.ajax({
       url: "/api/checkPassword",
@@ -62,7 +72,10 @@
     });
   }
 
-
+  /**
+   * Collects all the errors
+   * @return{string} string of all the errors found
+  */
   function getErrors() {
     var error = "";
     $("#Success").html("");
@@ -101,7 +114,5 @@
     }
     return error;
   }
-
-
 
 })($, window);
