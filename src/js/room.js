@@ -32,7 +32,7 @@
    * @param{Array.<boolean>} keys Array of keys to be sanitized
    * @return{Array.<boolean>} a sanitized version of the input
   */
-  function sanitizeKeys(keys) {
+  var sanitizeKeys = function (keys) {
     var result = keys;
     // Case both left and right arrows are pressed
     if (keys[1] && keys[3]) {
@@ -55,7 +55,7 @@
    * @param{Array} array2 Second array to be compared to the first.
    * @return{boolean} True if both arrays are equal, false otherwise.
   */
-  function equalArray(array1, array2) {
+  var equalArray = function (array1, array2) {
     if (array1.length !== array2.length) {
       return false;
     }
@@ -67,7 +67,27 @@
     return true;
   }
 
+  /**
+   * Convert degrees to radians
+   * @param {number} deg Degree value
+   * @return {number} Value in radians
+  */
+  var degToRad = function (deg) {
+    return deg * Math.PI / 180;
+  }
 
+  /**
+   * Scale a given angle by a factor while keeping it in the bounds
+   * @param {number} angle Angle in radians to be scaled
+   * @param {number} factor Factor by which the angle should be scaled
+   * @return {number} resultant angle
+  */
+  var scaleAngle = function (angle, factor) {
+    var resultAngle = angle * factor;
+    if (resultAngle > Math.PI / 2) resultGamma = Math.PI / 2;
+    if (resultAngle < -Math.PI / 2) resultGamma = -Math.PI / 2;
+    return resultAngle;
+  }
 
   /**
    * Object for handling events and passing them to the robot
@@ -333,7 +353,7 @@
       function addButton (title, content, className) {
         $(".sideBar > span").last().after("<div class='component-btn " + className + "'>" + content + "</div><span>" + title + "</span>");
       }
-
+      // Add buttons for the orientation calibration and switch
       addButton("Calibrate", "Go", "calibration");
       addButton("Use orientation", "Off", "orientation-switch")
 
@@ -352,18 +372,20 @@
         var $this = $(this)
         $this.css("background", "white");
 
-        self.calibrateOrientation(self.current.alpha, self.current.beta, self.current.gamma)
+        self.calibrateOrientation(self.orientation.current.alpha, self.orientation.current.beta, self.orientation.current.gamma)
 
         setTimeout(function () {
           $this.css("background", "");
-        }, 100);
+          console.log(self.orientation)
+        }, 200);
 
       });
 
       var lastTimeStamp = 0;
       window.addEventListener("deviceorientation", function (e) {
-        if(e.timeStamp - lastTimeStamp > 500) { // execute every 500 milliseconds
+        if(e.timeStamp - lastTimeStamp > 300) { // execute every 300 milliseconds
           self.updateOrientation(e.alpha, e.beta, e.gamma);
+          lastTimeStamp = e.timeStamp
         }
       }, true);
     }
@@ -377,9 +399,37 @@
    * @return {Object{direction:number, speed:number}} The direction and speed calculated from the orientation angel.
   */
   KeyEventHandler.prototype.calclulateDrectionValues = function(beta, gamma) {
-    // Compensate for the calibrated tilt
-    var resultBeta = beta - this.orientation.calibrated.beta;
-    var resultGamma = gamma - this.orientation.calibrated.gamma;
+    // Compensate for the calibrated tilt and convert to radians
+    var resultBeta = degToRad(beta - this.orientation.calibrated.beta);
+    var resultGamma = degToRad(gamma - this.orientation.calibrated.gamma);
+    //console.log(resultBeta, resultGamma)
+    var direction = 0;
+    var speed = 100;
+
+    resultGamma = scaleAngle(resultGamma, 2);
+
+    // stop if we are close to the default position +- 5 deg
+    if (Math.abs(resultBeta) < 0.08726) {
+      speed = 0;
+    } else {
+      speed = Math.sin(Math.abs(resultBeta)) * 1.6; // reduce the tilt required for full speed
+      if (speed > 1) speed = 1; // clip speed at 1
+    }
+
+    if (resultBeta > 0) { // we are going back when beta is positive
+      if (resultGamma < 0) {
+
+        direction = -Math.PI - resultGamma;
+      } else {
+        direction = Math.PI - resultGamma;
+      }
+    } else {
+      direction = resultGamma;
+    }
+
+
+    console.log("speed", Math.floor(speed*100), "direction", Math.floor(direction * 180 / Math.PI))
+    //console.log(resultGamma + Math.PI / 2)
 
 
 
@@ -400,7 +450,7 @@
     };
     if (this.orientation.useOrientation) {
       var data = this.calclulateDrectionValues(beta, gamma);
-      this.robot.updateOrientation(data.direction, data.speed)
+      //this.robot.updateOrientation(data.direction, data.speed)
     }
 
   };
@@ -411,9 +461,9 @@
    * @param {number} gamma The gamma angle of the device
   */
   KeyEventHandler.prototype.calibrateOrientation = function(alpha, beta, gamma) {
-    this.calibrated.alpha = alpha;
-    this.calibrated.beta = beta;
-    this.calibrated.gamma = gamma;
+    this.orientation.calibrated.alpha = alpha;
+    this.orientation.calibrated.beta = beta;
+    this.orientation.calibrated.gamma = gamma;
   };
 
 
