@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "ssl": true,
+  "ssl": false,
   "keys": {
     "key": "./keys/server.key",
     "cert": "./keys/server.crt"
